@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Descubra Seu Perfume Ideal · Quiz Personalizado</title>
+<meta name="description" content="Quiz personalizado de fragrâncias. Descubra o perfume certo para o seu perfil, tipo de pele e personalidade."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#0A0A0A;--charcoal:#1A1A1A;--mid:#6B6B6B;--light:#D4D4D4;
+  --cream:#F5F0E8;--white:#FFFFFF;--gold:#C9A84C;--gold-l:#E8CF7A;
+  --fd:'Cormorant Garamond',Georgia,serif;--fb:'Inter',system-ui,sans-serif;
+  --r-full:999px;--r-xl:32px;--r-lg:24px;--r-md:16px;--r-sm:8px;
+  --sh-sm:0 2px 8px rgba(0,0,0,.08);--sh-md:0 8px 32px rgba(0,0,0,.12);
+  --sh-lg:0 20px 60px rgba(0,0,0,.18);--sh-gold:0 0 40px rgba(201,168,76,.15);
+  --tr:.3s cubic-bezier(.4,0,.2,1);
+}
+html{font-size:16px;scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font-family:var(--fb);background:var(--cream);color:var(--charcoal);min-height:100vh;overflow-x:hidden}
+
+/* ——— HERO ——— */
+.hero{position:relative;min-height:100vh;background:var(--black);display:flex;align-items:center;overflow:hidden;padding:4rem 2.5rem}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 70% 50%,rgba(201,168,76,.06),transparent 70%),radial-gradient(ellipse 40% 60% at 20% 80%,rgba(201,168,76,.04),transparent 60%);pointer-events:none}
+.hero-bg{position:absolute;inset:0;pointer-events:none}
+.pt{position:absolute;border-radius:50%;background:var(--gold);opacity:.12;animation:fl 8s ease-in-out infinite}
+.pt1{width:3px;height:3px;top:20%;left:15%}.pt2{width:2px;height:2px;top:60%;left:8%;animation-delay:2s}
+.pt3{width:4px;height:4px;top:35%;right:20%;animation-delay:1s}.pt4{width:2px;height:2px;top:75%;right:35%;animation-delay:3s}
+.pt5{width:3px;height:3px;top:10%;right:45%;animation-delay:1.5s}
+@keyframes fl{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-12px) scale(1.2)}}
+.hero-content{position:relative;z-index:2;max-width:600px}
+.eyebrow{display:inline-block;font-size:.72rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem;border:1px solid rgba(201,168,76,.3);padding:6px 16px;border-radius:var(--r-full)}
+.hero h1{font-family:var(--fd);font-size:clamp(2.6rem,6vw,4.2rem);font-weight:300;line-height:1.15;color:var(--white);margin-bottom:1.5rem}
+.hero h1 em{font-style:italic;color:var(--gold-l)}
+.hero p.sub{font-size:1.05rem;font-weight:300;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:2.5rem;max-width:440px}
+.btn-cta{display:inline-flex;align-items:center;gap:10px;background:var(--gold);color:var(--black);border:none;border-radius:var(--r-full);padding:16px 36px;font-family:var(--fb);font-size:.95rem;font-weight:500;letter-spacing:.04em;cursor:pointer;transition:var(--tr);box-shadow:0 4px 24px rgba(201,168,76,.3);white-space:nowrap}
+.btn-cta:hover{background:var(--gold-l);box-shadow:0 8px 32px rgba(201,168,76,.45);transform:translateY(-2px)}
+.btn-cta.full{width:100%;justify-content:center}
+.proof{display:flex;align-items:center;gap:8px;margin-top:1.5rem;font-size:.82rem;color:rgba(255,255,255,.35)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--gold);display:inline-block;animation:pu 2.5s ease-in-out infinite}
+@keyframes pu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.hv{position:absolute;right:8%;top:50%;transform:translateY(-50%);width:clamp(180px,22vw,300px);display:flex;align-items:center;justify-content:center}
+.ring{position:absolute;border-radius:50%;border:1px solid rgba(201,168,76,.12);animation:re 6s ease-in-out infinite}
+.r1{width:160px;height:160px}.r2{width:240px;height:240px;animation-delay:1.5s}.r3{width:320px;height:320px;animation-delay:3s}
+@keyframes re{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.1;transform:scale(1.04)}}
+.hvi{position:relative;z-index:1;width:110px;animation:gf 5s ease-in-out infinite}
+@keyframes gf{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* ——— QUIZ ——— */
+.quiz-sec{min-height:100vh;background:var(--cream);display:flex;align-items:center;justify-content:center;padding:4rem 1.5rem}
+.qwrap{width:100%;max-width:680px}
+.prog-row{display:flex;align-items:center;gap:1rem;margin-bottom:2.5rem}
+.prog-bar{flex:1;height:3px;background:rgba(201,168,76,.15);border-radius:var(--r-full);overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-l));border-radius:var(--r-full);transition:width .5s cubic-bezier(.4,0,.2,1);width:0%}
+.prog-lbl{font-size:.75rem;font-weight:500;color:var(--mid);white-space:nowrap;letter-spacing:.04em}
+.qcard{background:var(--white);border-radius:var(--r-xl);padding:4rem 2.5rem;box-shadow:var(--sh-lg);border:1px solid rgba(201,168,76,.08);animation:ci .4s cubic-bezier(.4,0,.2,1)}
+@keyframes ci{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.qnum{font-size:.72rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem}
+.qtext{font-family:var(--fd);font-size:clamp(1.4rem,3vw,1.9rem);font-weight:400;color:var(--black);line-height:1.3;margin-bottom:.4rem}
+.qhint{font-size:.8rem;color:var(--mid);margin-bottom:1.5rem;line-height:1.5}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
+.opts.c2{grid-template-columns:1fr 1fr}.opts.c3{grid-template-columns:1fr 1fr 1fr}
+.opt{background:var(--cream);border:1.5px solid transparent;border-radius:var(--r-md);padding:16px 20px;text-align:left;cursor:pointer;transition:var(--tr);font-family:var(--fb);font-size:.9rem;color:var(--charcoal);display:flex;align-items:center;gap:10px;line-height:1.4}
+.opt:hover{border-color:var(--gold);background:rgba(201,168,76,.05);transform:translateY(-1px);box-shadow:var(--sh-sm)}
+.opt.sel{background:var(--black);border-color:var(--gold);color:var(--white);box-shadow:var(--sh-gold)}
+.opt.sel .ck{background:var(--gold);border-color:var(--gold)}.opt.sel .ck::after{opacity:1}
+.ck{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--light);flex-shrink:0;position:relative;transition:var(--tr)}
+.ck::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:var(--black);opacity:0;transition:var(--tr)}
+.oe{font-size:1.1rem;flex-shrink:0}
+.qnav{display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;gap:1rem}
+.btn-back{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1.5px solid var(--light);border-radius:var(--r-full);padding:12px 24px;font-family:var(--fb);font-size:.88rem;color:var(--mid);cursor:pointer;transition:var(--tr)}
+.btn-back:hover{border-color:var(--charcoal);color:var(--charcoal)}
+.btn-next{display:inline-flex;align-items:center;gap:8px;background:var(--black);color:var(--white);border:none;border-radius:var(--r-full);padding:14px 32px;font-family:var(--fb);font-size:.92rem;font-weight:500;cursor:pointer;transition:var(--tr);margin-left:auto}
+.btn-next:disabled{background:var(--light);color:var(--mid);cursor:not-allowed}
+.btn-next:not(:disabled):hover{background:var(--charcoal);transform:translateY(-1px);box-shadow:var(--sh-md)}
+
+/* ——— LEAD ——— */
+.lead-sec{min-height:100vh;background:var(--black);display:flex;align-items:center;justify-content:center;padding:4rem 1.5rem}
+.lbox{width:100%;max-width:480px;background:rgba(255,255,255,.03);backdrop-filter:blur(20px);border:1px solid rgba(201,168,76,.2);border-radius:var(--r-xl);padding:4rem 2.5rem;text-align:center;animation:ci .5s ease}
+.lbox .ico{font-size:2.5rem;margin-bottom:1.5rem;display:block}
+.lbox h2{font-family:var(--fd);font-size:clamp(1.8rem,4vw,2.4rem);font-weight:400;color:var(--white);margin-bottom:1rem}
+.lbox .sub{font-size:.95rem;font-weight:300;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:2.5rem}
+.lform{text-align:left;display:flex;flex-direction:column;gap:1rem}
+.fg{display:flex;flex-direction:column;gap:6px}
+.fg label{font-size:.8rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.fg input{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:var(--r-md);padding:14px 18px;font-family:var(--fb);font-size:.95rem;color:var(--white);outline:none;transition:var(--tr)}
+.fg input::placeholder{color:rgba(255,255,255,.25)}
+.fg input:focus{border-color:var(--gold);background:rgba(201,168,76,.05);box-shadow:0 0 0 3px rgba(201,168,76,.12)}
+.req{color:var(--gold)}.opt-lbl{color:rgba(255,255,255,.3);font-size:.75rem;text-transform:none;letter-spacing:0;font-weight:400}
+.priv{text-align:center;font-size:.78rem;color:rgba(255,255,255,.3);margin-top:.5rem}
+
+/* ——— RESULTADO ——— */
+.res-sec{background:var(--cream);min-height:100vh;padding:4rem 1.5rem}
+.res-wrap{max-width:900px;margin:0 auto}
+.res-hero{text-align:center;padding:6rem 0 4rem}
+.res-badge{display:inline-block;background:var(--black);color:var(--gold);font-size:.72rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;padding:8px 20px;border-radius:var(--r-full);margin-bottom:1.5rem}
+.res-hero h2{font-family:var(--fd);font-size:clamp(2rem,5vw,3rem);font-weight:300;color:var(--black);margin-bottom:1rem;line-height:1.2}
+.res-hero h2 em{font-style:italic;color:var(--gold)}
+.res-hero p{font-size:1rem;font-weight:300;color:var(--mid);line-height:1.75;max-width:560px;margin:0 auto}
+.skin-note{display:inline-block;margin-top:1rem;font-size:.82rem;color:var(--gold);background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);border-radius:var(--r-full);padding:6px 16px}
+.divider{text-align:center;margin:4rem 0 2.5rem}
+.divider p{font-size:.72rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--mid);display:flex;align-items:center;gap:1rem;justify-content:center}
+.divider p::before,.divider p::after{content:'';flex:1;max-width:80px;height:1px;background:rgba(0,0,0,.1)}
+.pcards{display:flex;flex-direction:column;gap:1.5rem;margin-bottom:4rem}
+.pcard{background:var(--white);border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--sh-md);border:1px solid rgba(0,0,0,.05);display:grid;grid-template-columns:200px 1fr;transition:var(--tr);animation:ci .5s ease both}
+.pcard:hover{box-shadow:var(--sh-lg);transform:translateY(-3px)}
+.pcard:nth-child(1){animation-delay:.1s}.pcard:nth-child(2){animation-delay:.2s}.pcard:nth-child(3){animation-delay:.3s}
+.cimg{background:linear-gradient(135deg,var(--black),var(--charcoal));display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2.5rem 1.5rem;gap:1rem;position:relative;overflow:hidden}
+.cimg::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(201,168,76,.08),transparent 70%)}
+.cico{font-size:2rem;position:relative}.clbl{font-size:.68rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);text-align:center;position:relative}
+.cvis{position:relative;z-index:1;margin:1rem 0}.cvis svg{width:64px;opacity:.9}
+.cbody{padding:2.5rem;display:flex;flex-direction:column;justify-content:space-between}
+.cbrand{font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.cname{font-family:var(--fd);font-size:1.6rem;font-weight:400;color:var(--black);margin-bottom:1rem;line-height:1.2}
+.cdesc{font-size:.88rem;font-weight:300;color:var(--mid);line-height:1.65;flex:1;margin-bottom:1rem}
+.ctip{font-size:.75rem;color:var(--gold);background:rgba(201,168,76,.07);border-radius:var(--r-sm);padding:8px 12px;margin-bottom:1rem;line-height:1.5}
+.ctags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1.5rem}
+.ctag{font-size:.7rem;font-weight:500;color:var(--charcoal);background:var(--cream);border-radius:var(--r-full);padding:4px 12px}
+.btn-want{display:inline-flex;align-items:center;gap:8px;background:var(--black);color:var(--white);border:none;border-radius:var(--r-full);padding:12px 24px;font-family:var(--fb);font-size:.85rem;font-weight:500;cursor:pointer;transition:var(--tr);align-self:flex-start}
+.btn-want:hover{background:var(--gold);color:var(--black);transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,168,76,.35)}
+.mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:4rem}
+.mini{background:var(--white);border-radius:var(--r-lg);padding:1.5rem;text-align:center;box-shadow:var(--sh-sm);border:1px solid rgba(0,0,0,.04);transition:var(--tr);animation:ci .5s ease both}
+.mini:nth-child(1){animation-delay:.4s}.mini:nth-child(2){animation-delay:.5s}.mini:nth-child(3){animation-delay:.6s}
+.mini:hover{transform:translateY(-2px);box-shadow:var(--sh-md)}
+.mini .mico{font-size:1.8rem;margin-bottom:8px}.mini .mbrand{font-size:.65rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.mini .mname{font-family:var(--fd);font-size:1rem;font-weight:400;color:var(--black);margin-bottom:4px}
+.mini .mnote{font-size:.75rem;color:var(--mid)}
+.res-cta{text-align:center;padding:4rem 0}
+.btn-restart{background:transparent;border:1.5px solid rgba(0,0,0,.15);border-radius:var(--r-full);padding:12px 28px;font-family:var(--fb);font-size:.88rem;color:var(--mid);cursor:pointer;transition:var(--tr)}
+.btn-restart:hover{border-color:var(--charcoal);color:var(--charcoal)}
+
+/* ——— FOOTER ——— */
+footer{background:var(--black);padding:4rem 1.5rem}
+.fi{max-width:640px;margin:0 auto;text-align:center;display:flex;flex-direction:column;gap:1rem}
+.fp{display:flex;align-items:center;justify-content:center;gap:8px;font-size:.85rem;color:rgba(255,255,255,.5)}
+.fb2{font-size:.75rem;letter-spacing:.08em;color:rgba(255,255,255,.2)}
+.fc{font-size:.72rem;color:rgba(255,255,255,.15)}
+
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+@media(max-width:768px){
+  .hero{flex-direction:column;text-align:center;align-items:center;padding:6rem 1rem 2rem}
+  .hero p.sub{max-width:100%}.proof{justify-content:center}
+  .hv{position:static;transform:none;margin-top:2rem;width:140px}
+  .r1{width:120px;height:120px}.r2{width:180px;height:180px}.r3{display:none}
+  .quiz-sec,.lead-sec,.res-sec{padding:2.5rem 1rem}
+  .qcard{padding:2.5rem 1.5rem}
+  .opts.c3,.opts.c2{grid-template-columns:1fr 1fr}
+  .pcard{grid-template-columns:1fr}
+  .cimg{padding:1.5rem;flex-direction:row;justify-content:flex-start;gap:1rem}
+  .cvis{margin:0}.cvis svg{width:44px}
+  .mini-grid{grid-template-columns:1fr}
+  .lbox{padding:2.5rem 1.5rem}
+}
+@media(max-width:420px){
+  .opts,.opts.c2,.opts.c3{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg">
+    <div class="pt pt1"></div><div class="pt pt2"></div>
+    <div class="pt pt3"></div><div class="pt pt4"></div><div class="pt pt5"></div>
+  </div>
+  <div class="hero-content">
+    <span class="eyebrow">Quiz de Fragrâncias Personalizadas</span>
+    <h1>Descubra quais perfumes<br/><em>combinam com a sua</em><br/>personalidade.</h1>
+    <p class="sub">12 perguntas que analisam seu perfil, tipo de pele e desejos para indicar a fragrância certa — de verdade.</p>
+    <button class="btn-cta" onclick="Q.start()">
+      Começar Quiz
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <p class="proof"><span class="dot"></span>Mais de <strong>1.000 pessoas</strong> já descobriram sua fragrância ideal</p>
+  </div>
+  <div class="hv" aria-hidden="true">
+    <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+    <div class="hvi">
+      <svg viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="40" y="10" width="40" height="8" rx="4" fill="#C9A84C" opacity="0.6"/>
+        <rect x="50" y="6" width="20" height="6" rx="3" fill="#C9A84C" opacity="0.4"/>
+        <rect x="20" y="18" width="80" height="130" rx="12" fill="rgba(201,168,76,0.08)" stroke="#C9A84C" stroke-width="1"/>
+        <rect x="28" y="30" width="64" height="100" rx="8" fill="rgba(201,168,76,0.05)"/>
+        <text x="60" y="88" text-anchor="middle" font-family="Cormorant Garamond" font-size="11" fill="#C9A84C" opacity="0.7">PARFUM</text>
+        <line x1="35" y1="100" x2="85" y2="100" stroke="#C9A84C" stroke-width="0.5" opacity="0.4"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section class="quiz-sec" id="quiz-sec" style="display:none;">
+  <div class="qwrap">
+    <div class="prog-row">
+      <div class="prog-bar"><div class="prog-fill" id="pf"></div></div>
+      <span class="prog-lbl" id="pl">1 de 12</span>
+    </div>
+    <div id="qw"></div>
+    <div class="qnav">
+      <button class="btn-back" id="bb" onclick="Q.prev()" style="display:none;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M3 8L7 4M3 8L7 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Voltar
+      </button>
+      <button class="btn-next" id="bn" onclick="Q.next()" disabled>
+        Continuar
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- LEAD -->
+<section class="lead-sec" id="lead-sec" style="display:none;">
+  <div class="lbox">
+    <span class="ico">✨</span>
+    <h2>Seu resultado está pronto!</h2>
+    <p class="sub">Informe seus dados para desbloquear seu resultado personalizado.</p>
+    <div class="lform">
+      <div class="fg"><label>Seu nome</label><input type="text" id="ln" placeholder="Como posso te chamar?" autocomplete="given-name"/></div>
+      <div class="fg"><label>WhatsApp <span class="req">*</span></label><input type="tel" id="lw" placeholder="(21) 99999-9999" autocomplete="tel" required/></div>
+      <div class="fg"><label>E-mail <span class="opt-lbl">(opcional)</span></label><input type="email" id="le" placeholder="seu@email.com" autocomplete="email"/></div>
+      <button class="btn-cta full" onclick="Q.lead()">
+        Ver Meu Resultado
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <p class="priv">🔒 Seus dados estão seguros. Não enviamos spam.</p>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTADO -->
+<section class="res-sec" id="res-sec" style="display:none;">
+  <div class="res-wrap" id="rw"></div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fi">
+    <p class="fp"><span class="dot"></span>Mais de <strong>1.000 pessoas</strong> já descobriram sua fragrância ideal através deste teste.</p>
+    <p class="fb2">Perfumes de: O Boticário · Eudora · O.U.i Paris</p>
+    <p class="fc">&copy; 2025 Quiz Fragrâncias · Todos os direitos reservados</p>
+  </div>
+</footer>
+
+<script>
+'use strict';
+
+/* ============================================================
+   PERFUMES — O Boticário, Eudora e O.U.i Paris
+   Cada tag que combinar com as respostas soma +1 ponto.
+   shop: link direto pra sua loja (botão "Quero esse")
+   genero: 'feminino' | 'masculino' | 'unissex'
+============================================================ */
+const LOJA = 'https://minhaloja.grupoboticario.com.br/wallace-perfumes';
+
+const PERFUMES = [
+  /* ——— O BOTICÁRIO ——— */
+  {
+    id:'boticario_lily', brand:'O Boticário', name:'Lily', concentration:'EDT',
+    genero:'feminino', shop: LOJA,
+    description:'Floral aquático com lírio branco, bergamota e almíscar. Delicado e luminoso — perfeito para quem quer ser lembrada com leveza e feminilidade.',
+    skinTip:'Florais aquáticos evaporam mais rápido em pele seca. Aplique logo após hidratar e a fixação melhora muito.',
+    icon:'🌸',
+    tags:['floral','feminino','delicadeza','dia','fresco','romantico','curta_duracao','pele_oleosa','percebida_delicada','desejo_amor','ambiente_natureza','alegria']
+  },
+  {
+    id:'boticario_malbec', brand:'O Boticário', name:'Malbec Gold', concentration:'EDP',
+    genero:'masculino', shop: LOJA,
+    description:'Amadeirado especiado com notas vinosas e baunilha. Uma presença que se anuncia antes mesmo de você entrar na sala.',
+    skinTip:'Amadeirados fixam excepcionalmente bem em pele oleosa. Em pele seca, aplique no pescoço e pulsos para prolongar.',
+    icon:'🍷',
+    tags:['amadeirado','masculino','noite','especial','poder','sofisticacao','longa_duracao','pele_oleosa','percebida_poderosa','desejo_reconhecimento','ambiente_jantar']
+  },
+  {
+    id:'boticario_egeo', brand:'O Boticário', name:'Egeo Pulso', concentration:'EDT',
+    genero:'masculino', shop: LOJA,
+    description:'Cítrico fresco com energia de manhã cedo. Para o homem moderno que quer transmitir confiança sem esforço.',
+    skinTip:'Cítricos são voláteis. Em pele seca, reaplicar em 4-5h mantém o frescor. Pele oleosa prolonga naturalmente.',
+    icon:'⚡',
+    tags:['citrico','masculino','dia','trabalho','confianca','alegria','media_duracao','pele_mista','percebida_confiante','desejo_crescimento','ambiente_escritorio','moderno']
+  },
+  {
+    id:'boticario_ryo', brand:'O Boticário', name:'Ryo Rouge', concentration:'EDP',
+    genero:'feminino', shop: LOJA,
+    description:'Oriental floral com framboesa, rosa e âmbar. Para quem quer ser percebida como misteriosa e irresistível.',
+    skinTip:'Orientais são os mais fixantes de todos. Em pele oleosa pode intensificar muito — aplique com moderação.',
+    icon:'🌹',
+    tags:['oriental','feminino','noite','especial','sensualidade','marcante','longa_duracao','pele_seca','percebida_misteriosa','desejo_amor','ambiente_jantar']
+  },
+  {
+    id:'boticario_homem', brand:'O Boticário', name:'Malbec Black', concentration:'EDP',
+    genero:'masculino', shop: LOJA,
+    description:'Intenso e marcante, com notas de pimenta negra, couro e sândalo. Para o homem que quer deixar uma impressão duradoura.',
+    skinTip:'Notas de couro e pimenta fixam muito bem. Em pele oleosa uma borrifada já basta pelo dia todo.',
+    icon:'🖤',
+    tags:['amadeirado','masculino','noite','especial','poder','marcante','longa_duracao','pele_oleosa','percebida_poderosa','desejo_reconhecimento','ambiente_festa']
+  },
+  {
+    id:'boticario_floratta', brand:'O Boticário', name:'Floratta in Rose', concentration:'EDT',
+    genero:'feminino', shop: LOJA,
+    description:'Floral romântico com rosa, pêssego e almíscar branco. A escolha clássica para a mulher que quer ser percebida com delicadeza e charme.',
+    skinTip:'Florais leves duram mais em pele oleosa. Aplique nos pulsos e pescoço para um rastro sutil e elegante.',
+    icon:'🌷',
+    tags:['floral','feminino','dia','romantico','delicadeza','media_duracao','pele_oleosa','percebida_delicada','desejo_amor','ambiente_natureza','classico']
+  },
+  /* ——— EUDORA ——— */
+  {
+    id:'eudora_niina', brand:'Eudora', name:'Niina', concentration:'EDT',
+    genero:'feminino', shop: LOJA,
+    description:'Floral moderno com neroli, jasmim e almíscar branco. Para a mulher atual que quer ser percebida como confiante e autêntica.',
+    skinTip:'Almíscar branco fixa bem em todos os tipos de pele. Ótimo para o dia a dia sem precisar reaplicar.',
+    icon:'🌺',
+    tags:['floral','feminino','dia','faculdade','moderno','alegria','media_duracao','romantico','pele_mista','percebida_confiante','desejo_crescimento','ambiente_escritorio']
+  },
+  {
+    id:'eudora_glamour', brand:'Eudora', name:'Glamour Intense', concentration:'EDP',
+    genero:'feminino', shop: LOJA,
+    description:'Oriental sofisticado com tuberosa, âmbar e baunilha. Para quem quer entrar em qualquer lugar e ser a pessoa mais marcante da sala.',
+    skinTip:'Orientais intensos fixam mais em pele oleosa. Em pele seca, borrifar nas roupas garante durabilidade.',
+    icon:'✨',
+    tags:['oriental','feminino','noite','especial','eventos','sofisticacao','sensualidade','longa_duracao','pele_seca','percebida_misteriosa','desejo_reconhecimento','ambiente_festa']
+  },
+  {
+    id:'eudora_eclipse', brand:'Eudora', name:'Eclipse', concentration:'EDT',
+    genero:'masculino', shop: LOJA,
+    description:'Aromático cítrico com lavanda, cedro e patchouli. Masculino e discreto para quem quer ser percebido como sólido e confiável.',
+    skinTip:'Cedro e patchouli fixam bem em todos os tipos de pele. Confiável para o uso diário prolongado.',
+    icon:'🌑',
+    tags:['citrico','masculino','dia','trabalho','media_duracao','discreto','classico','pele_mista','percebida_confiante','desejo_paz','ambiente_escritorio']
+  },
+  {
+    id:'eudora_homem', brand:'Eudora', name:'Tradition For Men', concentration:'EDT',
+    genero:'masculino', shop: LOJA,
+    description:'Aromático amadeirado com notas de bergamota, lavanda e vetiver. Clássico e elegante para o homem que valoriza presença sem exagero.',
+    skinTip:'Notas de vetiver e amadeirado fixam bem. Funciona em todos os tipos de pele com boa durabilidade.',
+    icon:'🎩',
+    tags:['amadeirado','masculino','dia','trabalho','elegante','classico','media_duracao','pele_mista','percebida_elegante','desejo_reconhecimento','ambiente_escritorio']
+  },
+  /* ——— O.U.i PARIS ——— */
+  {
+    id:'oui_rose', brand:'O.U.i Paris', name:'Joie de Vivre Rosé', concentration:'EDP',
+    genero:'feminino', shop: LOJA,
+    description:'Floral rosé luxuoso com framboesa, rosa de Damasco e sândalo. A elegância francesa para quem quer ser percebida como sofisticada e inesquecível.',
+    skinTip:'A concentração EDP garante boa projeção. Em pele seca, hidrate antes de aplicar para potencializar.',
+    icon:'🥂',
+    tags:['floral','doce','feminino','especial','eventos','elegante','sofisticacao','romantico','longa_duracao','pele_seca','percebida_elegante','desejo_reconhecimento','ambiente_jantar']
+  },
+  {
+    id:'oui_nuit', brand:'O.U.i Paris', name:'Bonne Nuit', concentration:'EDP',
+    genero:'feminino', shop: LOJA,
+    description:'Oriental amadeirado com oud, âmbar negro e baunilha. Uma declaração de poder e mistério para noites inesquecíveis.',
+    skinTip:'Oud e âmbar negro são os mais fixantes. Em pele oleosa projeta muito — aplique com cuidado.',
+    icon:'🌙',
+    tags:['oriental','amadeirado','noite','especial','sensualidade','poder','longa_duracao','marcante','elegante','pele_oleosa','percebida_misteriosa','desejo_liberdade','ambiente_festa']
+  },
+  {
+    id:'oui_frais', brand:'O.U.i Paris', name:'Jardin Frais', concentration:'EDT',
+    genero:'masculino', shop: LOJA,
+    description:'Citrus verde com limão siciliano, folhas verdes e almíscar. Refinado e discreto para quem valoriza elegância sem exagero.',
+    skinTip:'Cítricos precisam de reaplicação ao longo do dia. Guarde o frasco na bolsa para um toque rápido.',
+    icon:'🍋',
+    tags:['citrico','fresco','masculino','dia','trabalho','media_duracao','discreto','moderno','pele_mista','percebida_elegante','desejo_paz','ambiente_escritorio']
+  },
+];
+
+/* ============================================================
+   12 PERGUNTAS
+============================================================ */
+const QUESTIONS = [
+  {
+    id:'genero', text:'Você é:', layout:'c2',
+    options:[
+      {label:'Mulher', emoji:'👩', tags:['feminino']},
+      {label:'Homem',  emoji:'👨', tags:['masculino']},
+    ]
+  },
+  {
+    id:'idade', text:'Qual a sua faixa de idade?', layout:'c2',
+    options:[
+      {label:'Até 18', emoji:'🎒', tags:['alegria','fresco']},
+      {label:'18–25',  emoji:'🎓', tags:['moderno','alegria']},
+      {label:'26–35',  emoji:'💼', tags:['sofisticacao','moderno']},
+      {label:'36–50',  emoji:'🌿', tags:['classico','elegante']},
+      {label:'50+',    emoji:'✨', tags:['classico','elegante','sofisticacao']},
+    ]
+  },
+  {
+    id:'pele', text:'Como é a sua pele?',
+    hint:'Isso afeta diretamente quanto tempo o perfume dura em você.',
+    layout:'c3',
+    options:[
+      {label:'Seca — o perfume some rápido em mim',      emoji:'🏜️', tags:['pele_seca']},
+      {label:'Oleosa — o perfume fica forte o dia todo', emoji:'💧', tags:['pele_oleosa']},
+      {label:'Mista — depende do dia',                   emoji:'🌤️', tags:['pele_mista']},
+    ]
+  },
+  {
+    id:'transpiracao', text:'Você transpira muito no dia a dia?',
+    hint:'A transpiração reativa as moléculas do perfume — pode ser seu maior aliado.',
+    layout:'c2',
+    options:[
+      {label:'Pouco — minha pele quase não sua',      emoji:'❄️', tags:['pele_seca','curta_duracao']},
+      {label:'Moderado — sudo em atividade física',   emoji:'🚶', tags:['pele_mista','media_duracao']},
+      {label:'Bastante — sudo em qualquer situação',  emoji:'🔥', tags:['pele_oleosa','longa_duracao']},
+      {label:'Muito — sudo mesmo no frio',            emoji:'💦', tags:['pele_oleosa','longa_duracao']},
+    ]
+  },
+  {
+    id:'percebida', text:'Quando você entra em um ambiente, como quer que as pessoas te sintam?',
+    hint:'Seu perfume fala de você antes mesmo de você abrir a boca.',
+    layout:'c3',
+    options:[
+      {label:'Elegante e sofisticada',    emoji:'👑', tags:['percebida_elegante','elegante','sofisticacao']},
+      {label:'Misteriosa e irresistível', emoji:'🌑', tags:['percebida_misteriosa','sensualidade','marcante']},
+      {label:'Delicada e acolhedora',     emoji:'🌸', tags:['percebida_delicada','delicadeza','romantico']},
+      {label:'Confiante e competente',    emoji:'💼', tags:['percebida_confiante','confianca','moderno']},
+      {label:'Poderosa e marcante',       emoji:'⚡', tags:['percebida_poderosa','poder','marcante']},
+      {label:'Alegre e descontraída',     emoji:'😊', tags:['percebida_alegre','alegria','fresco']},
+      {label:'Livre e autêntica',         emoji:'🌊', tags:['percebida_livre','fresco','moderno']},
+    ]
+  },
+  {
+    id:'desejo', text:'O que você está buscando nessa fase da sua vida?',
+    hint:'O perfume certo ressoa com quem você está se tornando.',
+    layout:'c3',
+    options:[
+      {label:'Crescimento profissional', emoji:'📈', tags:['desejo_crescimento','confianca','trabalho']},
+      {label:'Amor e conexão',           emoji:'💕', tags:['desejo_amor','romantico','floral']},
+      {label:'Liberdade e aventura',     emoji:'🌍', tags:['desejo_liberdade','fresco','moderno']},
+      {label:'Reconhecimento e status',  emoji:'🏆', tags:['desejo_reconhecimento','sofisticacao','elegante']},
+      {label:'Paz e equilíbrio',         emoji:'🕊️', tags:['desejo_paz','discreto','fresco']},
+      {label:'Confiança e autoestima',   emoji:'💪', tags:['desejo_crescimento','confianca','poder']},
+    ]
+  },
+  {
+    id:'ambiente', text:'Qual dessas imagens combina mais com você?',
+    hint:'Não pense muito — escolha a que seu coração sentir primeiro.',
+    layout:'c3',
+    options:[
+      {label:'Praia ao entardecer',           emoji:'🌅', tags:['ambiente_praia','fresco','alegria','desejo_liberdade']},
+      {label:'Escritório moderno e agitado',  emoji:'🏙️', tags:['ambiente_escritorio','confianca','moderno','desejo_crescimento']},
+      {label:'Jantar à luz de velas',         emoji:'🕯️', tags:['ambiente_jantar','sensualidade','elegante','desejo_amor']},
+      {label:'Trilha na floresta',            emoji:'🌲', tags:['ambiente_natureza','fresco','discreto','desejo_paz']},
+      {label:'Festa badalada e agitada',      emoji:'🎉', tags:['ambiente_festa','marcante','alegria','desejo_reconhecimento']},
+      {label:'Viagem solo descobrindo algo',  emoji:'✈️', tags:['desejo_liberdade','moderno','fresco']},
+    ]
+  },
+  {
+    id:'estilo', text:'Qual estilo combina mais com você?', layout:'c3',
+    options:[
+      {label:'Elegante',  emoji:'🎩', tags:['elegante','sofisticacao','classico']},
+      {label:'Romântico', emoji:'💕', tags:['romantico','floral','delicadeza']},
+      {label:'Moderno',   emoji:'⚡', tags:['moderno','citrico','fresco']},
+      {label:'Clássico',  emoji:'📿', tags:['classico','amadeirado','elegante']},
+      {label:'Marcante',  emoji:'🔥', tags:['marcante','poder','oriental']},
+      {label:'Discreto',  emoji:'🌿', tags:['discreto','fresco','delicadeza']},
+    ]
+  },
+  {
+    id:'ocasiao', text:'Quando você mais usa perfume?', layout:'c2',
+    options:[
+      {label:'Trabalho',  emoji:'💼', tags:['trabalho','dia','discreto']},
+      {label:'Faculdade', emoji:'📚', tags:['faculdade','dia','fresco']},
+      {label:'Igreja',    emoji:'🙏', tags:['dia','delicadeza','fresco']},
+      {label:'Eventos',   emoji:'🎉', tags:['eventos','especial','marcante']},
+      {label:'Encontros', emoji:'💑', tags:['noite','sensualidade','romantico']},
+      {label:'Todo dia',  emoji:'☀️', tags:['dia','media_duracao','fresco']},
+    ]
+  },
+  {
+    id:'familia', text:'Você prefere fragrâncias:', layout:'c3',
+    options:[
+      {label:'Doces',       emoji:'🍬', tags:['doce','oriental','romantico']},
+      {label:'Amadeiradas', emoji:'🪵', tags:['amadeirado','classico','poder']},
+      {label:'Cítricas',    emoji:'🍋', tags:['citrico','fresco','alegria']},
+      {label:'Florais',     emoji:'🌸', tags:['floral','delicadeza','romantico']},
+      {label:'Orientais',   emoji:'🌙', tags:['oriental','sensualidade','marcante']},
+      {label:'Frescas',     emoji:'💨', tags:['fresco','discreto','moderno']},
+    ]
+  },
+  {
+    id:'duracao', text:'Quanto tempo você quer que o perfume dure?', layout:'c2',
+    options:[
+      {label:'Até 4h — leve e sutil',         emoji:'⏱️', tags:['curta_duracao']},
+      {label:'6h — o dia de trabalho',         emoji:'⏰', tags:['media_duracao']},
+      {label:'8h — manhã até a noite',         emoji:'⌚', tags:['media_duracao','longa_duracao']},
+      {label:'O máximo possível — quero impacto', emoji:'🏆', tags:['longa_duracao']},
+    ]
+  },
+  {
+    id:'transmitir', text:'Em uma palavra: o que você quer transmitir com seu perfume?', layout:'c3',
+    options:[
+      {label:'Sofisticação', emoji:'👑', tags:['sofisticacao','elegante','classico']},
+      {label:'Sensualidade', emoji:'🔥', tags:['sensualidade','noite','marcante']},
+      {label:'Delicadeza',   emoji:'🌷', tags:['delicadeza','floral','romantico']},
+      {label:'Confiança',    emoji:'💪', tags:['confianca','moderno','amadeirado']},
+      {label:'Poder',        emoji:'⚡', tags:['poder','marcante','longa_duracao']},
+      {label:'Alegria',      emoji:'😊', tags:['alegria','fresco','citrico']},
+    ]
+  },
+];
+
+/* ============================================================
+   PERFIS OLFATIVOS
+============================================================ */
+const PROFILES = [
+  {
+    id:'floral', name:'Floral Romântico',
+    dominantTags:['floral','romantico','delicadeza','desejo_amor','percebida_delicada'],
+    description:'Você tem uma presença suave e luminosa que as pessoas não conseguem ignorar. Sua essência comunica carinho, cuidado e autenticidade. Perfumes florais são a sua linguagem natural — envolventes sem serem invasivos.'
+  },
+  {
+    id:'oriental', name:'Oriental Sensual',
+    dominantTags:['oriental','sensualidade','marcante','percebida_misteriosa','noite'],
+    description:'Você carrega um magnetismo que poucos conseguem explicar. Mistério, profundidade e presença são os pilares da sua personalidade. Fragrâncias quentes e intensas falam o que as palavras não conseguem.'
+  },
+  {
+    id:'citrico', name:'Cítrico Vibrante',
+    dominantTags:['citrico','fresco','alegria','percebida_alegre','desejo_liberdade','moderno'],
+    description:'Você é energia em movimento. Leve, autêntico e espontâneo — sua presença muda o humor do ambiente. Perfumes frescos e cítricos acompanham seu ritmo e comunicam quem você é sem esforço.'
+  },
+  {
+    id:'amadeirado', name:'Amadeirado Sofisticado',
+    dominantTags:['amadeirado','sofisticacao','classico','percebida_elegante','desejo_reconhecimento'],
+    description:'Você é alguém que as pessoas respeitam antes mesmo de você falar. Solidez, classe e presença são o que te definem. Fragrâncias amadeiradas e ricas são o complemento natural da sua personalidade.'
+  },
+  {
+    id:'fresco', name:'Fresco e Autêntico',
+    dominantTags:['fresco','discreto','desejo_paz','percebida_confiante'],
+    description:'Você não precisa gritar para ser notado. Sua presença é sólida e confortante. Quem está ao seu lado se sente bem — e o seu perfume reforça exatamente isso: confiança sem arrogância.'
+  },
+];
+
+/* ============================================================
+   LÓGICA
+============================================================ */
+const WHATSAPP = '5521982910639';
+
+const Q = (() => {
+  let s = { i:0, ans:[], scores:{}, lead:{} };
+
+  const $ = id => document.getElementById(id);
+  const arrow = dir => `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M${dir==='r'?'3 8H13M13 8L9 4M13 8L9 12':'13 8H3M3 8L7 4M3 8L7 12'}" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+  function start() {
+    $('hero').style.display = 'none';
+    $('quiz-sec').style.display = 'flex';
+    render(0);
+  }
+
+  function render(idx) {
+    const q = QUESTIONS[idx], total = QUESTIONS.length;
+    $('pf').style.width = Math.round((idx/total)*100)+'%';
+    $('pl').textContent = `${idx+1} de ${total}`;
+    $('bb').style.display = idx > 0 ? 'inline-flex' : 'none';
+    const bn = $('bn');
+    bn.disabled = true;
+    const last = idx === total-1;
+    bn.innerHTML = (last ? 'Ver Resultado' : 'Continuar') + ' ' + arrow('r');
+
+    $('qw').innerHTML = `
+      <div class="qcard">
+        <p class="qnum">Pergunta ${idx+1}</p>
+        <h2 class="qtext">${q.text}</h2>
+        ${q.hint ? `<p class="qhint">${q.hint}</p>` : ''}
+        <div class="opts ${q.layout||''}" role="group">
+          ${q.options.map((o,i) => `
+            <button class="opt" data-i="${i}" data-t='${JSON.stringify(o.tags)}'
+              onclick="Q.pick(this,${idx})" aria-pressed="false">
+              <span class="ck" aria-hidden="true"></span>
+              ${o.emoji ? `<span class="oe" aria-hidden="true">${o.emoji}</span>` : ''}
+              <span>${o.label}</span>
+            </button>`).join('')}
+        </div>
+      </div>`;
+
+    if (s.ans[idx]) {
+      const sv = JSON.stringify(s.ans[idx]);
+      $('qw').querySelectorAll('.opt').forEach(b => {
+        if (b.dataset.t === sv) { b.classList.add('sel'); b.setAttribute('aria-pressed','true'); }
+      });
+      bn.disabled = false;
+    }
+  }
+
+  function pick(btn, idx) {
+    btn.closest('.opts').querySelectorAll('.opt').forEach(b => {
+      b.classList.remove('sel'); b.setAttribute('aria-pressed','false');
+    });
+    btn.classList.add('sel'); btn.setAttribute('aria-pressed','true');
+    s.ans[idx] = JSON.parse(btn.dataset.t);
+    $('bn').disabled = false;
+    if (idx < QUESTIONS.length-1) {
+      setTimeout(() => { if (!$('bn').disabled) next(); }, 440);
+    }
+  }
+
+  function next() {
+    if ($('bn').disabled) return;
+    if (s.i < QUESTIONS.length-1) { s.i++; render(s.i); }
+    else { score(); leadCapture(); }
+  }
+
+  function prev() {
+    if (s.i > 0) { s.i--; render(s.i); }
+  }
+
+  function score() {
+    // Detectar gênero respondido na pergunta 0
+    const generoTags = s.ans[0] || [];
+    s.genero = generoTags.includes('feminino') ? 'feminino' : 'masculino';
+
+    s.scores = {};
+    // Só pontua perfumes do gênero correspondente
+    PERFUMES.filter(p => p.genero === s.genero).forEach(p => { s.scores[p.id] = 0; });
+    s.ans.forEach(list => {
+      if (!list) return;
+      list.forEach(tag => {
+        PERFUMES.filter(p => p.genero === s.genero).forEach(p => {
+          if (p.tags.includes(tag)) s.scores[p.id]++;
+        });
+      });
+    });
+  }
+
+  function skinType() {
+    const tc = {};
+    s.ans.forEach(list => { if(!list) return; list.forEach(t => { tc[t]=(tc[t]||0)+1; }); });
+    const oil=tc['pele_oleosa']||0, dry=tc['pele_seca']||0, mix=tc['pele_mista']||0;
+    if (oil >= dry && oil >= mix) return 'oleosa';
+    if (dry > mix) return 'seca';
+    return 'mista';
+  }
+
+  function profile() {
+    const tc = {};
+    s.ans.forEach(list => { if(!list) return; list.forEach(t => { tc[t]=(tc[t]||0)+1; }); });
+    let best=PROFILES[0], bestS=-1;
+    PROFILES.forEach(p => {
+      const sc = p.dominantTags.reduce((a,t)=>a+(tc[t]||0),0);
+      if (sc > bestS) { bestS=sc; best=p; }
+    });
+    return best;
+  }
+
+  function topN(n, excl) {
+    return PERFUMES.filter(p => p.genero === s.genero && !excl.includes(p.id))
+      .sort((a,b)=>(s.scores[b.id]||0)-(s.scores[a.id]||0)).slice(0,n);
+  }
+
+  function forOcc(occ, excl) {
+    return PERFUMES.filter(p => p.genero === s.genero && p.tags.includes(occ) && !excl.includes(p.id))
+      .sort((a,b)=>(s.scores[b.id]||0)-(s.scores[a.id]||0))[0]||null;
+  }
+
+  function leadCapture() {
+    $('quiz-sec').style.display='none';
+    $('lead-sec').style.display='flex';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function lead() {
+    const name=$('ln').value.trim(), phone=$('lw').value.trim(), email=$('le').value.trim();
+    if (!phone) {
+      const el=$('lw'); el.style.borderColor='#E53E3E'; el.focus();
+      el.style.animation='shake .4s ease';
+      setTimeout(()=>{el.style.animation='';el.style.borderColor='';},600);
+      return;
+    }
+    s.lead={name,phone,email};
+    result();
+  }
+
+  function result() {
+    $('lead-sec').style.display='none';
+    $('res-sec').style.display='block';
+    window.scrollTo({top:0,behavior:'smooth'});
+
+    const prof=profile(), skin=skinType(), excl=[];
+    const day=forOcc('dia',excl);     if(day)     excl.push(day.id);
+    const night=forOcc('noite',excl); if(night)   excl.push(night.id);
+    const spec=forOcc('especial',excl);if(spec)   excl.push(spec.id);
+    const three=[day,night,spec].map(p=>{ if(p) return p; const t=topN(1,excl)[0]; if(t) excl.push(t.id); return t; });
+    const also=topN(3,excl);
+
+    const skinMsg={
+      oleosa:'Pele Oleosa — os perfumes fixam muito bem em você. Às vezes, menos é mais.',
+      seca:'Pele Seca — hidrate antes de aplicar e prefira concentrações EDP para durar mais.',
+      mista:'Pele Mista — fixação moderada. EDP é sua melhor aposta para o dia todo.',
+    };
+
+    const occs=[
+      {icon:'🌞',label:'Melhor para o dia'},
+      {icon:'🌙',label:'Melhor para a noite'},
+      {icon:'✨',label:'Para ocasiões especiais'},
+    ];
+
+    const cards=three.map((p,i)=>{
+      if(!p) return '';
+      const o=occs[i];
+      const cleanTags=p.tags.filter(t=>!t.includes('_')||['curta_duracao','media_duracao','longa_duracao'].includes(t)).slice(0,3);
+      return `<article class="pcard">
+        <div class="cimg">
+          <div class="cico">${o.icon}</div>
+          <div class="clbl">${o.label}</div>
+          <div class="cvis">${bottle(p.icon)}</div>
+        </div>
+        <div class="cbody">
+          <div>
+            <p class="cbrand">${p.brand} · ${p.concentration}</p>
+            <h3 class="cname">${p.name}</h3>
+            <p class="cdesc">${p.description}</p>
+            <p class="ctip">💡 ${p.skinTip}</p>
+            <div class="ctags">${cleanTags.map(t=>`<span class="ctag">${fmt(t)}</span>`).join('')}</div>
+          </div>
+          <button class="btn-want" onclick="Q.want('${p.shop}','${p.brand}','${p.name}')">
+            Quero esse ${arrow('r')}
+          </button>
+        </div>
+      </article>`;
+    }).join('');
+
+    const minis=also.map(p=>`
+      <div class="mini">
+        <div class="mico">${p.icon}</div>
+        <p class="mbrand">${p.brand}</p>
+        <p class="mname">${p.name}</p>
+        <p class="mnote">${p.concentration} · ${fmt(p.tags[0])}</p>
+      </div>`).join('');
+
+    const first=s.lead.name?s.lead.name.split(' ')[0]:'';
+    $('rw').innerHTML=`
+      <div class="res-hero">
+        <span class="res-badge">Seu Perfil Olfativo</span>
+        <h2>Você é <em>${prof.name}</em>${first?`<br>Olá, ${first}!`:''}</h2>
+        <p>${prof.description}</p>
+        <span class="skin-note">🧬 ${skinMsg[skin]}</span>
+      </div>
+      <div class="divider"><p>Suas Recomendações Personalizadas</p></div>
+      <div class="pcards">${cards}</div>
+      <div class="divider"><p>Você também pode gostar</p></div>
+      <div class="mini-grid">${minis}</div>
+      <div class="res-cta"><button class="btn-restart" onclick="Q.restart()">Refazer o quiz</button></div>`;
+  }
+
+  function want(shopUrl, brand, name) {
+    window.open(shopUrl, '_blank', 'noopener');
+  }
+
+  function restart() {
+    s={i:0,ans:[],scores:{},lead:{}};
+    $('res-sec').style.display='none';
+    $('hero').style.display='flex';
+    $('rw').innerHTML='';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function bottle(icon) {
+    return `<svg viewBox="0 0 80 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="28" y="6" width="24" height="5" rx="2.5" fill="#C9A84C" opacity="0.5"/>
+      <rect x="33" y="2" width="14" height="5" rx="2" fill="#C9A84C" opacity="0.3"/>
+      <rect x="10" y="11" width="60" height="92" rx="10" fill="rgba(201,168,76,0.07)" stroke="#C9A84C" stroke-width="0.8"/>
+      <rect x="18" y="22" width="44" height="70" rx="7" fill="rgba(201,168,76,0.04)"/>
+      <text x="40" y="62" text-anchor="middle" font-size="22">${icon}</text>
+      <line x1="18" y1="72" x2="62" y2="72" stroke="#C9A84C" stroke-width="0.5" opacity="0.3"/>
+    </svg>`;
+  }
+
+  function fmt(tag) {
+    const M={floral:'Floral',oriental:'Oriental',amadeirado:'Amadeirado',citrico:'Cítrico',fresco:'Fresco',doce:'Doce',feminino:'Feminino',masculino:'Masculino',unissex:'Unissex',dia:'Dia',noite:'Noite',especial:'Especial',trabalho:'Trabalho',faculdade:'Faculdade',eventos:'Eventos',elegante:'Elegante',sofisticacao:'Sofisticado',classico:'Clássico',moderno:'Moderno',romantico:'Romântico',marcante:'Marcante',discreto:'Discreto',sensualidade:'Sensual',delicadeza:'Delicado',confianca:'Confiança',poder:'Poder',alegria:'Alegria',longa_duracao:'Longa Duração',media_duracao:'Média Duração',curta_duracao:'Leve'};
+    return M[tag]||tag;
+  }
+
+  return {start,next,prev,pick,lead,want,restart};
+})();
+</script>
+</body>
+</html>

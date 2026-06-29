@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Análise Estética Personalizada · IA</title>
+<meta name="description" content="Descubra quais procedimentos estéticos combinam com você. Análise personalizada com simulação por IA."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ============================================================
+   CLÍNICA ESTÉTICA IA — Aplicação Premium Single Page
+   Design: minimalismo luxo inspirado em Apple + Dior + Chanel
+============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --black:#0A0A0A;--charcoal:#1C1C1C;--dark:#2A2A2A;
+  --mid:#737373;--silver:#A8A8A8;--light:#E5E5E5;
+  --cream:#FAF9F7;--white:#FFFFFF;
+  --gold:#B8955A;--gold-l:#D4AF7A;--gold-dim:rgba(184,149,90,.1);
+  --rose:#C9847A;
+  --fd:'Cormorant Garamond',Georgia,serif;
+  --fb:'Inter',system-ui,sans-serif;
+  --sh-sm:0 2px 12px rgba(0,0,0,.06);
+  --sh-md:0 8px 40px rgba(0,0,0,.1);
+  --sh-lg:0 24px 80px rgba(0,0,0,.14);
+  --tr:.35s cubic-bezier(.4,0,.2,1);
+}
+
+html{font-size:16px;scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font-family:var(--fb);background:var(--cream);color:var(--charcoal);overflow-x:hidden}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh}
+.screen.active{display:flex;flex-direction:column}
+
+/* ── HERO ── */
+#screen-hero{
+  background:var(--black);
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+  padding:80px 24px;
+}
+
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 75% 30%,rgba(184,149,90,.07) 0%,transparent 65%),
+    radial-gradient(ellipse 50% 70% at 25% 80%,rgba(201,132,122,.05) 0%,transparent 60%);
+  pointer-events:none;
+}
+
+.hero-lines{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.hero-lines::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg,transparent,transparent 120px,rgba(255,255,255,.015) 120px,rgba(255,255,255,.015) 121px);
+}
+
+.hero-inner{position:relative;z-index:2;max-width:680px;text-align:center}
+
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:.68rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--gold);border:1px solid rgba(184,149,90,.3);
+  padding:7px 18px;border-radius:999px;margin-bottom:40px;
+}
+.hero-eyebrow-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+
+.hero-title{
+  font-family:var(--fd);font-size:clamp(2.8rem,6vw,4.6rem);font-weight:300;
+  color:var(--white);line-height:1.12;letter-spacing:-.02em;margin-bottom:24px;
+}
+.hero-title em{font-style:italic;color:var(--gold-l)}
+
+.hero-sub{
+  font-size:1rem;font-weight:300;color:rgba(255,255,255,.45);
+  line-height:1.75;max-width:480px;margin:0 auto 48px;
+}
+
+.btn-hero{
+  display:inline-flex;align-items:center;gap:12px;
+  background:var(--white);color:var(--black);
+  border:none;border-radius:999px;
+  padding:18px 44px;
+  font-family:var(--fb);font-size:.88rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;
+  cursor:pointer;transition:var(--tr);
+  box-shadow:0 0 0 1px rgba(255,255,255,.1),0 8px 32px rgba(0,0,0,.4);
+}
+.btn-hero:hover{background:var(--cream);transform:translateY(-2px);box-shadow:0 0 0 1px rgba(255,255,255,.2),0 16px 48px rgba(0,0,0,.5)}
+.btn-hero svg{transition:transform .3s}
+.btn-hero:hover svg{transform:translateX(4px)}
+
+/* Benefícios */
+.hero-benefits{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:12px;
+  margin-top:48px;
+}
+.benefit{
+  display:flex;align-items:center;gap:6px;
+  font-size:.72rem;font-weight:400;letter-spacing:.04em;
+  color:rgba(255,255,255,.3);
+}
+.benefit-check{
+  width:16px;height:16px;border-radius:50%;
+  background:rgba(184,149,90,.15);border:1px solid rgba(184,149,90,.3);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-size:.5rem;color:var(--gold);
+}
+
+.hero-proof{
+  margin-top:64px;font-size:.75rem;color:rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.proof-stars{color:var(--gold);letter-spacing:2px;font-size:.6rem}
+
+/* ── QUIZ ── */
+#screen-quiz{background:var(--cream);align-items:center;justify-content:center;padding:48px 24px}
+
+.quiz-wrap{width:100%;max-width:620px}
+
+.quiz-header{margin-bottom:32px}
+.quiz-progress-bar{height:2px;background:rgba(0,0,0,.08);border-radius:999px;overflow:hidden;margin-bottom:12px}
+.quiz-progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-l));border-radius:999px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.quiz-meta{display:flex;justify-content:space-between;align-items:center}
+.quiz-step{font-size:.68rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--silver)}
+.quiz-pct{font-size:.68rem;font-weight:500;color:var(--gold)}
+
+.quiz-card{
+  background:var(--white);border-radius:28px;
+  padding:52px 48px;box-shadow:var(--sh-lg);
+  border:1px solid rgba(0,0,0,.04);
+  animation:slide-in .4s cubic-bezier(.4,0,.2,1);
+}
+@keyframes slide-in{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+
+.quiz-qnum{font-size:.68rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.quiz-qtxt{font-family:var(--fd);font-size:clamp(1.5rem,3vw,2rem);font-weight:400;color:var(--black);line-height:1.3;margin-bottom:8px}
+.quiz-qhint{font-size:.82rem;color:var(--silver);line-height:1.6;margin-bottom:32px}
+
+/* Opções */
+.quiz-opts{display:grid;gap:10px}
+.quiz-opts.c2{grid-template-columns:1fr 1fr}
+.quiz-opts.c3{grid-template-columns:1fr 1fr 1fr}
+
+.qopt{
+  background:var(--cream);border:1.5px solid transparent;
+  border-radius:14px;padding:16px 20px;
+  display:flex;align-items:center;gap:12px;
+  cursor:pointer;transition:var(--tr);
+  font-family:var(--fb);font-size:.88rem;color:var(--charcoal);
+  text-align:left;
+}
+.qopt:hover{border-color:var(--gold);background:var(--gold-dim);transform:translateY(-1px)}
+.qopt.sel{background:var(--black);border-color:var(--gold);color:var(--white)}
+.qopt.sel .qopt-dot{background:var(--gold);border-color:var(--gold)}
+.qopt.sel .qopt-dot::after{opacity:1}
+.qopt-dot{
+  width:18px;height:18px;border-radius:50%;border:1.5px solid var(--light);
+  flex-shrink:0;position:relative;transition:var(--tr);
+}
+.qopt-dot::after{
+  content:'';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:7px;height:7px;border-radius:50%;background:var(--black);opacity:0;transition:var(--tr);
+}
+.qopt-ico{font-size:1rem;flex-shrink:0}
+
+.quiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:12px}
+.btn-back{
+  display:inline-flex;align-items:center;gap:6px;
+  background:transparent;border:1.5px solid var(--light);
+  border-radius:999px;padding:12px 24px;
+  font-family:var(--fb);font-size:.84rem;color:var(--silver);cursor:pointer;transition:var(--tr);
+}
+.btn-back:hover{border-color:var(--charcoal);color:var(--charcoal)}
+.btn-next{
+  display:inline-flex;align-items:center;gap:8px;margin-left:auto;
+  background:var(--black);color:var(--white);border:none;
+  border-radius:999px;padding:14px 32px;
+  font-family:var(--fb);font-size:.88rem;font-weight:500;cursor:pointer;transition:var(--tr);
+}
+.btn-next:disabled{background:var(--light);color:var(--silver);cursor:not-allowed}
+.btn-next:not(:disabled):hover{background:var(--dark);transform:translateY(-1px);box-shadow:var(--sh-md)}
+
+/* ── UPLOAD ── */
+#screen-upload{background:var(--black);align-items:center;justify-content:center;padding:64px 24px}
+
+.upload-wrap{width:100%;max-width:520px;text-align:center}
+.upload-eyebrow{font-size:.68rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
+.upload-title{font-family:var(--fd);font-size:clamp(2rem,4vw,2.8rem);font-weight:300;color:var(--white);line-height:1.2;margin-bottom:12px}
+.upload-title em{font-style:italic;color:var(--gold-l)}
+.upload-sub{font-size:.88rem;font-weight:300;color:rgba(255,255,255,.4);line-height:1.7;margin-bottom:40px}
+
+.upload-zone{
+  display:block;
+  border:1.5px dashed rgba(184,149,90,.3);border-radius:24px;
+  padding:60px 40px;cursor:pointer;transition:var(--tr);
+  background:rgba(255,255,255,.02);position:relative;overflow:hidden;
+  text-align:center;
+}
+.upload-zone:hover{border-color:var(--gold);background:rgba(184,149,90,.04)}
+.upload-zone.has-img{border-style:solid;border-color:var(--gold)}
+.upload-icon{font-size:2.5rem;margin-bottom:16px;opacity:.5}
+.upload-label{font-size:.88rem;color:rgba(255,255,255,.4);line-height:1.6}
+.upload-label strong{color:var(--gold);font-weight:500}
+.upload-preview{
+  width:100%;max-height:340px;object-fit:cover;
+  border-radius:16px;display:none;
+}
+.upload-preview.show{display:block}
+#file-input{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  opacity:0;cursor:pointer;font-size:0;
+}
+
+.upload-tips{
+  display:flex;flex-direction:column;gap:8px;margin-top:32px;text-align:left;
+}
+.upload-tip{
+  display:flex;align-items:center;gap:10px;
+  font-size:.75rem;color:rgba(255,255,255,.25);
+}
+.upload-tip-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:.5;flex-shrink:0}
+
+.btn-upload{margin-top:32px}
+
+/* ── LEAD CAPTURE ── */
+#screen-lead{background:var(--black);align-items:center;justify-content:center;padding:64px 24px}
+
+.lead-wrap{
+  width:100%;max-width:480px;
+  background:rgba(255,255,255,.03);
+  backdrop-filter:blur(20px);
+  border:1px solid rgba(184,149,90,.15);
+  border-radius:28px;padding:52px 44px;
+  animation:slide-in .5s ease;
+}
+.lead-badge{
+  display:inline-block;background:var(--gold-dim);border:1px solid rgba(184,149,90,.2);
+  border-radius:999px;padding:6px 16px;
+  font-size:.68rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:24px;
+}
+.lead-title{font-family:var(--fd);font-size:2rem;font-weight:300;color:var(--white);margin-bottom:8px}
+.lead-sub{font-size:.88rem;font-weight:300;color:rgba(255,255,255,.4);line-height:1.6;margin-bottom:32px}
+
+.lead-form{display:flex;flex-direction:column;gap:14px}
+.form-field{display:flex;flex-direction:column;gap:6px}
+.form-label{font-size:.72rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.form-input{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;padding:14px 18px;
+  font-family:var(--fb);font-size:.92rem;color:var(--white);outline:none;transition:var(--tr);
+}
+.form-input::placeholder{color:rgba(255,255,255,.2)}
+.form-input:focus{border-color:var(--gold);background:rgba(184,149,90,.05);box-shadow:0 0 0 3px rgba(184,149,90,.1)}
+.form-req{color:var(--gold)}.form-opt{color:rgba(255,255,255,.25);font-size:.7rem;text-transform:none;letter-spacing:0;font-weight:300}
+
+.lgpd-wrap{
+  display:flex;align-items:flex-start;gap:12px;
+  background:rgba(255,255,255,.03);border-radius:12px;
+  padding:14px 16px;margin-top:4px;
+}
+.lgpd-checkbox{
+  width:18px;height:18px;border-radius:4px;border:1.5px solid rgba(255,255,255,.2);
+  background:transparent;cursor:pointer;flex-shrink:0;margin-top:2px;
+  appearance:none;-webkit-appearance:none;transition:var(--tr);position:relative;
+}
+.lgpd-checkbox:checked{background:var(--gold);border-color:var(--gold)}
+.lgpd-checkbox:checked::after{
+  content:'✓';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);font-size:.65rem;color:var(--black);font-weight:700;
+}
+.lgpd-text{font-size:.72rem;color:rgba(255,255,255,.3);line-height:1.6}
+
+.lead-privacy{text-align:center;font-size:.72rem;color:rgba(255,255,255,.2);margin-top:12px}
+
+/* ── PROCESSAMENTO ── */
+#screen-processing{background:var(--black);align-items:center;justify-content:center;padding:40px 24px}
+
+.processing-wrap{text-align:center;max-width:480px}
+.processing-ring{
+  width:100px;height:100px;border-radius:50%;
+  border:2px solid rgba(184,149,90,.1);
+  border-top-color:var(--gold);
+  animation:spin 1.2s linear infinite;margin:0 auto 40px;
+  position:relative;
+}
+.processing-ring::after{
+  content:'✦';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  font-size:1.2rem;color:var(--gold);opacity:.6;
+  animation:counter-spin 1.2s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes counter-spin{to{transform:translate(-50%,-50%) rotate(-360deg)}}
+
+.processing-title{font-family:var(--fd);font-size:2.2rem;font-weight:300;color:var(--white);margin-bottom:12px}
+.processing-status{font-size:.82rem;color:rgba(255,255,255,.3);margin-bottom:40px;min-height:20px;transition:opacity .3s}
+
+.processing-steps{display:flex;flex-direction:column;gap:12px;text-align:left}
+.proc-step{
+  display:flex;align-items:center;gap:14px;
+  background:rgba(255,255,255,.03);border-radius:12px;padding:14px 18px;
+  border:1px solid rgba(255,255,255,.05);opacity:.3;transition:all .5s;
+}
+.proc-step.done{opacity:1;border-color:rgba(184,149,90,.2)}
+.proc-step.active{opacity:1;border-color:rgba(184,149,90,.3);background:rgba(184,149,90,.05)}
+.proc-icon{font-size:1rem;width:32px;text-align:center;flex-shrink:0}
+.proc-text{font-size:.82rem;color:rgba(255,255,255,.6)}
+.proc-check{margin-left:auto;color:var(--gold);font-size:.8rem;opacity:0;transition:opacity .3s}
+.proc-step.done .proc-check{opacity:1}
+
+/* ── RESULTADO ── */
+#screen-result{background:var(--cream);padding:0}
+
+.result-hero{
+  background:var(--black);padding:80px 24px 100px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.result-hero::after{
+  content:'';position:absolute;bottom:-1px;left:0;right:0;height:60px;
+  background:var(--cream);
+  clip-path:ellipse(55% 100% at 50% 100%);
+}
+.result-badge2{
+  display:inline-block;background:rgba(184,149,90,.12);
+  border:1px solid rgba(184,149,90,.25);border-radius:999px;
+  padding:7px 20px;font-size:.68rem;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:24px;
+}
+.result-name{font-family:var(--fd);font-size:clamp(2.4rem,5vw,3.6rem);font-weight:300;color:var(--white);margin-bottom:12px}
+.result-name em{font-style:italic;color:var(--gold-l)}
+.result-summary{font-size:.95rem;font-weight:300;color:rgba(255,255,255,.45);max-width:480px;margin:0 auto;line-height:1.75}
+
+.result-body{max-width:860px;margin:0 auto;padding:60px 24px}
+
+/* Seções */
+.result-section{margin-bottom:60px}
+.result-section-label{
+  font-size:.68rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:24px;display:flex;align-items:center;gap:12px;
+}
+.result-section-label::after{content:'';flex:1;height:1px;background:rgba(0,0,0,.08)}
+
+/* Observações */
+.obs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.obs-card{
+  background:var(--white);border-radius:16px;padding:20px;
+  box-shadow:var(--sh-sm);border:1px solid rgba(0,0,0,.04);
+}
+.obs-icon{font-size:1.4rem;margin-bottom:8px}
+.obs-label{font-size:.72rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--silver);margin-bottom:4px}
+.obs-value{font-size:.9rem;font-weight:400;color:var(--charcoal)}
+
+/* Procedimentos */
+.proc-cards{display:flex;flex-direction:column;gap:16px}
+.proc-card{
+  background:var(--white);border-radius:20px;padding:28px;
+  box-shadow:var(--sh-sm);border:1px solid rgba(0,0,0,.04);
+  display:grid;grid-template-columns:64px 1fr;gap:20px;
+  align-items:start;transition:var(--tr);
+  animation:slide-in .5s ease both;
+}
+.proc-card:hover{box-shadow:var(--sh-md);transform:translateY(-2px)}
+.proc-card:nth-child(1){animation-delay:.05s}
+.proc-card:nth-child(2){animation-delay:.1s}
+.proc-card:nth-child(3){animation-delay:.15s}
+.proc-card:nth-child(4){animation-delay:.2s}
+.proc-card:nth-child(5){animation-delay:.25s}
+
+.proc-card-icon{
+  width:64px;height:64px;border-radius:16px;
+  background:linear-gradient(135deg,var(--black),var(--charcoal));
+  display:flex;align-items:center;justify-content:center;font-size:1.6rem;
+  flex-shrink:0;
+}
+.proc-card-brand{font-size:.65rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.proc-card-name{font-family:var(--fd);font-size:1.3rem;font-weight:400;color:var(--black);margin-bottom:6px}
+.proc-card-desc{font-size:.82rem;font-weight:300;color:var(--mid);line-height:1.6;margin-bottom:14px}
+.proc-card-meta{display:flex;flex-wrap:wrap;gap:8px}
+.proc-meta-pill{
+  font-size:.68rem;font-weight:500;color:var(--charcoal);
+  background:var(--cream);border-radius:999px;padding:4px 12px;
+  border:1px solid rgba(0,0,0,.06);
+}
+
+/* Simulação */
+.sim-wrap{
+  background:var(--white);border-radius:24px;padding:32px;
+  box-shadow:var(--sh-md);border:1px solid rgba(0,0,0,.04);text-align:center;
+}
+.sim-placeholder{
+  background:linear-gradient(135deg,#1A1A1A,#2A2A2A);
+  border-radius:16px;padding:80px 40px;
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+}
+.sim-icon{font-size:2.5rem;opacity:.4}
+.sim-txt{font-size:.82rem;color:rgba(255,255,255,.3);line-height:1.6;max-width:320px}
+.sim-badge-ai{
+  display:inline-block;background:rgba(184,149,90,.1);border:1px solid rgba(184,149,90,.2);
+  border-radius:999px;padding:5px 14px;font-size:.65rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--gold);margin-top:8px;
+}
+.sim-disclaimer{
+  font-size:.72rem;color:var(--silver);margin-top:16px;line-height:1.6;
+  padding:12px 16px;background:rgba(0,0,0,.03);border-radius:10px;
+}
+
+/* CTA Final */
+.result-cta{
+  background:var(--black);border-radius:24px;padding:52px 40px;
+  text-align:center;margin-top:60px;
+  position:relative;overflow:hidden;
+}
+.result-cta::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(184,149,90,.08),transparent 60%);
+  pointer-events:none;
+}
+.cta-title{font-family:var(--fd);font-size:2rem;font-weight:300;color:var(--white);margin-bottom:8px}
+.cta-sub{font-size:.88rem;font-weight:300;color:rgba(255,255,255,.4);line-height:1.7;margin-bottom:32px;max-width:400px;margin-left:auto;margin-right:auto}
+.btn-whatsapp{
+  display:inline-flex;align-items:center;gap:10px;
+  background:#25D366;color:var(--white);border:none;border-radius:999px;
+  padding:18px 40px;font-family:var(--fb);font-size:.88rem;font-weight:500;
+  cursor:pointer;transition:var(--tr);box-shadow:0 8px 32px rgba(37,211,102,.25);
+}
+.btn-whatsapp:hover{background:#22C45E;transform:translateY(-2px);box-shadow:0 12px 40px rgba(37,211,102,.35)}
+.cta-proof{margin-top:24px;font-size:.72rem;color:rgba(255,255,255,.2)}
+
+/* FOOTER */
+.site-footer{background:var(--black);padding:32px 24px;text-align:center}
+.footer-txt{font-size:.72rem;color:rgba(255,255,255,.15)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .quiz-card{padding:36px 24px}
+  .quiz-opts.c2,.quiz-opts.c3{grid-template-columns:1fr}
+  .lead-wrap{padding:36px 24px}
+  .proc-card{grid-template-columns:1fr}
+  .proc-card-icon{width:48px;height:48px;font-size:1.2rem}
+  .result-body{padding:40px 16px}
+  .result-cta{padding:40px 24px}
+  .obs-grid{grid-template-columns:1fr 1fr}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     TELA 1 — HERO
+══════════════════════════════════════════════ -->
+<div id="screen-hero" class="screen active">
+  <div class="hero-bg"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">
+      <span class="hero-eyebrow-dot"></span>
+      Análise Estética por Inteligência Artificial
+    </div>
+    <h1 class="hero-title">
+      Descubra quais procedimentos<br/>
+      <em>mais combinam</em><br/>
+      com você.
+    </h1>
+    <p class="hero-sub">
+      Responda ao teste, envie uma selfie e receba uma análise personalizada com simulação ilustrativa feita por Inteligência Artificial.
+    </p>
+    <button class="btn-hero" onclick="App.go('quiz')">
+      Fazer minha análise gratuita
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="hero-benefits">
+      <div class="benefit"><div class="benefit-check">✓</div>Análise personalizada</div>
+      <div class="benefit"><div class="benefit-check">✓</div>Simulação facial por IA</div>
+      <div class="benefit"><div class="benefit-check">✓</div>Resultado imediato</div>
+      <div class="benefit"><div class="benefit-check">✓</div>Sem compromisso</div>
+      <div class="benefit"><div class="benefit-check">✓</div>100% gratuito</div>
+    </div>
+    <p class="hero-proof">
+      <span class="proof-stars">★★★★★</span>
+      &nbsp;Mais de <strong style="color:rgba(255,255,255,.4)">5.000 análises</strong> personalizadas já realizadas
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TELA 2 — QUIZ
+══════════════════════════════════════════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-wrap">
+    <div class="quiz-header">
+      <div class="quiz-progress-bar">
+        <div class="quiz-progress-fill" id="quiz-fill"></div>
+      </div>
+      <div class="quiz-meta">
+        <span class="quiz-step" id="quiz-step">Pergunta 1</span>
+        <span class="quiz-pct" id="quiz-pct">0%</span>
+      </div>
+    </div>
+    <div id="quiz-card-wrap"></div>
+    <div class="quiz-nav">
+      <button class="btn-back" id="quiz-back" onclick="App.prev()" style="display:none">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <path d="M13 8H3M3 8L7 4M3 8L7 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Voltar
+      </button>
+      <button class="btn-next" id="quiz-next" onclick="App.next()" disabled>
+        Continuar
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TELA 3 — UPLOAD
+══════════════════════════════════════════════ -->
+<div id="screen-upload" class="screen">
+  <div class="upload-wrap">
+    <p class="upload-eyebrow">Etapa Final do Diagnóstico</p>
+    <h2 class="upload-title">Agora envie<br/><em>sua selfie</em></h2>
+    <p class="upload-sub">Nossa IA vai analisar seu rosto e cruzar com suas respostas para gerar uma simulação personalizada.</p>
+
+    <label for="file-input" class="upload-zone" id="upload-zone">
+      <input type="file" id="file-input" accept="image/*" capture="user" onchange="App.handlePhoto(event)"/>
+      <div id="upload-placeholder">
+        <div class="upload-icon">📸</div>
+        <p class="upload-label">
+          <strong>Toque aqui para escolher uma foto</strong><br/>
+          ou tire uma selfie agora<br/>
+          <span style="font-size:.72rem;margin-top:8px;display:block;color:rgba(255,255,255,.2)">JPG, PNG ou HEIC · Máx. 10MB</span>
+        </p>
+      </div>
+      <img id="upload-preview" class="upload-preview" alt="Sua selfie"/>
+    </label>
+
+    <div class="upload-tips">
+      <div class="upload-tip"><div class="upload-tip-dot"></div>Foto frontal, boa iluminação</div>
+      <div class="upload-tip"><div class="upload-tip-dot"></div>Rosto bem centralizado na imagem</div>
+      <div class="upload-tip"><div class="upload-tip-dot"></div>Evite óculos escuros ou chapéu</div>
+      <div class="upload-tip"><div class="upload-tip-dot"></div>Suas fotos não são armazenadas</div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:32px;justify-content:center">
+      <button class="btn-back" onclick="App.go('quiz')">Voltar</button>
+      <button class="btn-next btn-upload" id="btn-upload" onclick="App.go('lead')" disabled>
+        Analisar minha foto
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <p style="text-align:center;margin-top:16px;font-size:.72rem;color:rgba(255,255,255,.2)">
+      Não tem uma foto agora?
+      <button onclick="App.go('lead')" style="background:none;border:none;color:rgba(184,149,90,.6);cursor:pointer;font-size:.72rem;text-decoration:underline;font-family:var(--fb)">Continuar sem foto</button>
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TELA 4 — LEAD CAPTURE
+══════════════════════════════════════════════ -->
+<div id="screen-lead" class="screen">
+  <div class="lead-wrap">
+    <div class="lead-badge">✦ Sua análise está sendo preparada</div>
+    <h2 class="lead-title">Quase lá!</h2>
+    <p class="lead-sub">Preencha seus dados para receber sua análise personalizada e agendar sua avaliação gratuita.</p>
+    <div class="lead-form">
+      <div class="form-field">
+        <label class="form-label">Nome completo <span class="form-req">*</span></label>
+        <input class="form-input" type="text" id="f-name" placeholder="Seu nome" autocomplete="given-name"/>
+      </div>
+      <div class="form-field">
+        <label class="form-label">WhatsApp <span class="form-req">*</span></label>
+        <input class="form-input" type="tel" id="f-phone" placeholder="(11) 99999-9999" autocomplete="tel"/>
+      </div>
+      <div class="form-field">
+        <label class="form-label">E-mail <span class="form-opt">(opcional)</span></label>
+        <input class="form-input" type="email" id="f-email" placeholder="seu@email.com" autocomplete="email"/>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Cidade <span class="form-req">*</span></label>
+        <input class="form-input" type="text" id="f-city" placeholder="Sua cidade"/>
+      </div>
+      <div class="lgpd-wrap">
+        <input type="checkbox" id="lgpd" class="lgpd-checkbox"/>
+        <label for="lgpd" class="lgpd-text">
+          Autorizo o uso da minha imagem exclusivamente para fins de análise e simulação estética, conforme a <strong style="color:rgba(255,255,255,.4)">LGPD</strong>. Meus dados não serão compartilhados com terceiros.
+        </label>
+      </div>
+      <button class="btn-next" style="width:100%;justify-content:center;padding:18px" onclick="App.submitLead()">
+        Ver minha análise completa
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <p class="lead-privacy">🔒 Seus dados estão protegidos. Sem spam.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TELA 5 — PROCESSAMENTO IA
+══════════════════════════════════════════════ -->
+<div id="screen-processing" class="screen">
+  <div class="processing-wrap">
+    <div class="processing-ring"></div>
+    <h2 class="processing-title">Analisando seu perfil</h2>
+    <p class="processing-status" id="proc-status">Iniciando análise facial...</p>
+    <div class="processing-steps">
+      <div class="proc-step" id="ps1">
+        <div class="proc-icon">🔍</div>
+        <div class="proc-text">Analisando estrutura facial</div>
+        <div class="proc-check">✓</div>
+      </div>
+      <div class="proc-step" id="ps2">
+        <div class="proc-icon">🧠</div>
+        <div class="proc-text">Cruzando respostas do quiz</div>
+        <div class="proc-check">✓</div>
+      </div>
+      <div class="proc-step" id="ps3">
+        <div class="proc-icon">💎</div>
+        <div class="proc-text">Selecionando procedimentos ideais</div>
+        <div class="proc-check">✓</div>
+      </div>
+      <div class="proc-step" id="ps4">
+        <div class="proc-icon">✨</div>
+        <div class="proc-text">Gerando simulação ilustrativa</div>
+        <div class="proc-check">✓</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TELA 6 — RESULTADO
+══════════════════════════════════════════════ -->
+<div id="screen-result" class="screen">
+  <div class="result-hero">
+    <div class="result-badge2">✦ Seu Perfil Estético</div>
+    <h2 class="result-name" id="result-name">Perfil <em>Personalizado</em></h2>
+    <p class="result-summary" id="result-summary"></p>
+  </div>
+
+  <div class="result-body">
+
+    <!-- Observações -->
+    <div class="result-section">
+      <div class="result-section-label">Pontos Identificados</div>
+      <div class="obs-grid" id="obs-grid"></div>
+    </div>
+
+    <!-- Procedimentos -->
+    <div class="result-section">
+      <div class="result-section-label">Procedimentos Recomendados</div>
+      <div class="proc-cards" id="proc-cards"></div>
+    </div>
+
+    <!-- Simulação IA -->
+    <div class="result-section">
+      <div class="result-section-label">Simulação Ilustrativa por IA</div>
+      <div class="sim-wrap">
+        <div class="sim-placeholder">
+          <div class="sim-icon">🤖</div>
+          <p class="sim-txt">A simulação por IA é gerada após a integração com nossa API de análise facial. Ela mostra uma representação ilustrativa do possível resultado após os procedimentos sugeridos.</p>
+          <div class="sim-badge-ai">Powered by AI</div>
+        </div>
+        <p class="sim-disclaimer">
+          ⚠️ A simulação é apenas uma representação ilustrativa gerada por Inteligência Artificial e não representa uma garantia de resultado. Os resultados reais podem variar de pessoa para pessoa.
+        </p>
+      </div>
+    </div>
+
+    <!-- CTA WhatsApp -->
+    <div class="result-cta">
+      <h3 class="cta-title">Gostou da sua análise?</h3>
+      <p class="cta-sub">Agora receba uma avaliação profissional para descobrir quais procedimentos realmente são ideais para você.</p>
+      <button class="btn-whatsapp" id="btn-whatsapp" onclick="App.openWhatsApp()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+        Agendar minha avaliação pelo WhatsApp
+      </button>
+      <p class="cta-proof">Resposta em até 24h · Avaliação 100% gratuita</p>
+    </div>
+
+  </div>
+
+  <footer class="site-footer">
+    <p class="footer-txt">© 2025 · Análise Estética IA · Todos os direitos reservados</p>
+  </footer>
+</div>
+
+<script>
+'use strict';
+
+/* ============================================================
+   CONFIGURAÇÃO — edite aqui
+============================================================ */
+const CONFIG = {
+  WHATSAPP: '5521999999999', // ← Substitua pelo número da clínica
+  CLINICA:  'Clínica Estética',
+};
+
+/* ============================================================
+   BANCO DE PROCEDIMENTOS
+============================================================ */
+const PROCEDIMENTOS = [
+  {
+    id:'botox', nome:'Botox', icon:'💉',
+    desc:'Relaxamento muscular que suaviza rugas e linhas de expressão, especialmente na testa e região dos olhos.',
+    beneficios:'Rugas suavizadas · Prevenção de marcas · Resultado natural',
+    duracao:'4 a 6 meses', invasividade:'Baixo', tags:['rugas','linhas','testa','olhos','parecer_jovem','rejuvenescimento'],
+  },
+  {
+    id:'preenchimento', nome:'Preenchimento Labial', icon:'👄',
+    desc:'Ácido hialurônico que adiciona volume, define o contorno e hidrata os lábios com resultado natural.',
+    beneficios:'Volume natural · Contorno definido · Hidratação profunda',
+    duracao:'8 a 12 meses', invasividade:'Baixo', tags:['labios','harmonia','volume','beleza','autoestima'],
+  },
+  {
+    id:'bioestimulador', nome:'Bioestimulador de Colágeno', icon:'✨',
+    desc:'Estimula a produção natural de colágeno, melhorando a firmeza, elasticidade e qualidade geral da pele.',
+    beneficios:'Firmeza restaurada · Skin glow · Efeito lifting', 
+    duracao:'12 a 24 meses', invasividade:'Baixo', tags:['flacidez','pele','rejuvenescimento','qualidade','autoestima'],
+  },
+  {
+    id:'skinbooster', nome:'Skinbooster', icon:'💧',
+    desc:'Microinjeções de ácido hialurônico que hidratam profundamente a pele, melhorando luminosidade e textura.',
+    beneficios:'Pele radiante · Hidratação profunda · Textura uniforme',
+    duracao:'6 a 9 meses', invasividade:'Baixo', tags:['pele','hidratacao','luminosidade','textura','beleza'],
+  },
+  {
+    id:'harmonizacao', nome:'Harmonização Facial', icon:'⚖️',
+    desc:'Conjunto de procedimentos que equilibram as proporções do rosto, valorizando os traços naturais.',
+    beneficios:'Harmonia total · Autoestima elevada · Resultado personalizado',
+    duracao:'Variável', invasividade:'Moderado', tags:['harmonia','proporcoes','autoestima','beleza','confianca'],
+  },
+  {
+    id:'ultrassom', nome:'Ultrassom Microfocado', icon:'🔬',
+    desc:'Tecnologia não-invasiva que estimula colágeno nas camadas profundas da pele com efeito tensor visível.',
+    beneficios:'Lifting sem cirurgia · Firmeza · Sem tempo de recuperação',
+    duracao:'12 a 18 meses', invasividade:'Nenhum', tags:['flacidez','papada','lifting','rejuvenescimento'],
+  },
+  {
+    id:'fios', nome:'Fios de PDO', icon:'🧵',
+    desc:'Fios biocompatíveis que promovem lifting imediato e estimulam colágeno para resultado progressivo.',
+    beneficios:'Lifting imediato · Colágeno estimulado · Natural',
+    duracao:'12 a 18 meses', invasividade:'Moderado', tags:['flacidez','lifting','queixo','mandibula','rejuvenescimento'],
+  },
+  {
+    id:'peeling', nome:'Peeling Químico', icon:'🌟',
+    desc:'Renovação celular que trata manchas, cicatrizes, poros dilatados e melhora a textura da pele.',
+    beneficios:'Pele renovada · Manchas reduzidas · Textura uniforme',
+    duracao:'3 a 6 meses', invasividade:'Baixo', tags:['pele','manchas','textura','beleza','poros'],
+  },
+];
+
+/* ============================================================
+   PERGUNTAS — 12 perguntas inteligentes
+============================================================ */
+const QUESTIONS = [
+  {
+    id:'sexo', text:'Qual é o seu sexo?', layout:'c2',
+    opts:[
+      {label:'Feminino', ico:'👩', tags:['feminino']},
+      {label:'Masculino', ico:'👨', tags:['masculino']},
+    ]
+  },
+  {
+    id:'idade', text:'Qual é a sua idade?', layout:'c3',
+    opts:[
+      {label:'18 a 25 anos', ico:'🌸', tags:['jovem']},
+      {label:'26 a 35 anos', ico:'✨', tags:['jovem_adulto']},
+      {label:'36 a 45 anos', ico:'💫', tags:['adulto']},
+      {label:'46 a 55 anos', ico:'🌟', tags:['maduro']},
+      {label:'55+ anos',     ico:'👑', tags:['senior']},
+    ]
+  },
+  {
+    id:'queixa', text:'O que mais te incomoda no seu rosto?', hint:'Escolha a principal queixa.',
+    layout:'c2',
+    opts:[
+      {label:'Rugas e linhas finas',  ico:'〰️', tags:['rugas','linhas','parecer_jovem']},
+      {label:'Flacidez e papada',     ico:'🤲', tags:['flacidez','papada','lifting']},
+      {label:'Lábios sem volume',     ico:'👄', tags:['labios','volume']},
+      {label:'Pele opaca ou manchas', ico:'🌿', tags:['pele','manchas','textura']},
+      {label:'Olheiras e inchaço',    ico:'👁️', tags:['olheiras','cansaco']},
+      {label:'Queixo ou mandíbula',   ico:'⚖️', tags:['queixo','mandibula','harmonia']},
+      {label:'Nariz',                 ico:'👃', tags:['nariz','harmonia']},
+      {label:'Bigode chinês',         ico:'〽️', tags:['bigode','rugas','linhas']},
+    ]
+  },
+  {
+    id:'objetivo', text:'Qual resultado você deseja alcançar?', layout:'c2',
+    opts:[
+      {label:'Parecer mais jovem',   ico:'⏳', tags:['parecer_jovem','rejuvenescimento']},
+      {label:'Mais harmonia facial', ico:'⚖️', tags:['harmonia','proporcoes']},
+      {label:'Pele mais bonita',     ico:'✨', tags:['pele','beleza','luminosidade']},
+      {label:'Mais definição',       ico:'💎', tags:['definicao','queixo','mandibula']},
+      {label:'Aparência natural',    ico:'🌿', tags:['natural','discreto']},
+      {label:'Mais autoestima',      ico:'💪', tags:['autoestima','confianca']},
+    ]
+  },
+  {
+    id:'experiencia', text:'Você já realizou procedimentos estéticos?', layout:'c2',
+    opts:[
+      {label:'Nunca realizei',     ico:'🆕', tags:['nunca']},
+      {label:'Uma vez apenas',     ico:'1️⃣', tags:['iniciante']},
+      {label:'Algumas vezes',      ico:'✅', tags:['experiente']},
+      {label:'Faço com frequência',ico:'⭐', tags:['frequente']},
+    ]
+  },
+  {
+    id:'estilo', text:'Qual estilo de resultado você prefere?', layout:'c2',
+    opts:[
+      {label:'Natural e sutil',    ico:'🌱', tags:['natural','discreto']},
+      {label:'Discreto e elegante',ico:'💎', tags:['elegante','sofisticado']},
+      {label:'Mais sofisticado',   ico:'👑', tags:['sofisticado','marcante']},
+      {label:'Bem marcante',       ico:'🔥', tags:['marcante','impactante']},
+    ]
+  },
+  {
+    id:'duracao_res', text:'Por quanto tempo quer o resultado?', layout:'c2',
+    opts:[
+      {label:'Curto prazo (até 6 meses)',   ico:'🌸', tags:['curto']},
+      {label:'Médio prazo (6 a 12 meses)',  ico:'🌿', tags:['medio']},
+      {label:'Longo prazo (1 a 2 anos)',    ico:'🌳', tags:['longo']},
+      {label:'Permanente, se possível',     ico:'♾️', tags:['permanente']},
+    ]
+  },
+  {
+    id:'invasividade', text:'Qual nível de procedimento você aceita?', layout:'c2',
+    opts:[
+      {label:'Apenas não-invasivos',     ico:'💆', tags:['nao_invasivo']},
+      {label:'Minimamente invasivos',    ico:'💉', tags:['mini_invasivo']},
+      {label:'Aberto a qualquer opção',  ico:'✅', tags:['qualquer']},
+      {label:'Prefiro consultar antes',  ico:'🤔', tags:['consulta']},
+    ]
+  },
+  {
+    id:'rotina', text:'Como você descreve sua rotina de skincare?', layout:'c2',
+    opts:[
+      {label:'Não tenho rotina',            ico:'🤷', tags:['sem_rotina']},
+      {label:'Básica (hidratante e FPS)',    ico:'🧴', tags:['basica']},
+      {label:'Intermediária (séruns)',       ico:'✨', tags:['intermediaria']},
+      {label:'Avançada (ativos e clínicos)', ico:'🔬', tags:['avancada']},
+    ]
+  },
+  {
+    id:'motivo', text:'Qual é o maior motivador para você fazer isso agora?', layout:'c2',
+    opts:[
+      {label:'Autoestima e bem-estar',   ico:'💛', tags:['autoestima']},
+      {label:'Aparência profissional',   ico:'💼', tags:['profissional','confianca']},
+      {label:'Evento especial',          ico:'🎉', tags:['evento']},
+      {label:'Desejo pessoal antigo',    ico:'🌟', tags:['pessoal','autoestima']},
+    ]
+  },
+  {
+    id:'preocupacao', text:'O que mais te preocupa em relação a procedimentos?', layout:'c2',
+    opts:[
+      {label:'Resultado artificial',   ico:'😟', tags:['natural']},
+      {label:'Dor ou desconforto',     ico:'😬', tags:['nao_invasivo']},
+      {label:'Custo benefício',        ico:'💰', tags:['custo']},
+      {label:'Tempo de recuperação',   ico:'⏰', tags:['recuperacao']},
+      {label:'Não me preocupo',        ico:'😊', tags:['confiante']},
+    ]
+  },
+  {
+    id:'urgencia', text:'Em quanto tempo pretende começar?', layout:'c2',
+    opts:[
+      {label:'O quanto antes!',       ico:'🚀', tags:['urgente']},
+      {label:'Próximo mês',           ico:'📅', tags:['breve']},
+      {label:'Nos próximos 3 meses',  ico:'🗓️', tags:['medio_prazo']},
+      {label:'Ainda estou pesquisando',ico:'🔍', tags:['pesquisando']},
+    ]
+  },
+];
+
+/* ============================================================
+   PERFIS ESTÉTICOS
+============================================================ */
+const PERFIS = [
+  {
+    id:'rejuvenescimento', nome:'Rejuvenescimento Natural',
+    dom:['parecer_jovem','rejuvenescimento','rugas','linhas'],
+    resumo:'Seu foco principal é recuperar a jovialidade e vitalidade do seu rosto de forma natural e progressiva. Os procedimentos indicados para você combinam eficácia com resultado discreto.',
+  },
+  {
+    id:'harmonia', nome:'Harmonia e Equilíbrio',
+    dom:['harmonia','proporcoes','queixo','mandibula'],
+    resumo:'Você busca equilíbrio e proporção entre os traços do seu rosto. A harmonização facial é o caminho ideal para realçar sua beleza natural com resultado elegante.',
+  },
+  {
+    id:'pele', nome:'Pele Radiante',
+    dom:['pele','beleza','luminosidade','textura','manchas'],
+    resumo:'A qualidade da sua pele é sua prioridade. Com os procedimentos certos, você vai transformar a textura, luminosidade e saúde da sua pele de dentro para fora.',
+  },
+  {
+    id:'autoestima', nome:'Autoestima e Confiança',
+    dom:['autoestima','confianca','beleza','pessoal'],
+    resumo:'Você quer se sentir mais confiante e bem consigo mesmo. Os procedimentos indicados vão realçar o que você já tem de melhor e elevar sua autoestima.',
+  },
+  {
+    id:'lifting', nome:'Firmeza e Definição',
+    dom:['flacidez','papada','lifting','definicao'],
+    resumo:'Você busca firmeza, definição e um efeito tensor natural. As técnicas mais modernas de lifting não-cirúrgico foram feitas para o seu perfil.',
+  },
+];
+
+/* ============================================================
+   APP
+============================================================ */
+const App = (() => {
+  let s = {
+    idx: 0,
+    answers: [],
+    scores: {},
+    lead: {},
+    photoURL: null,
+  };
+
+  const $ = id => document.getElementById(id);
+  const ARR_R = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+  /* Navegar entre telas */
+  function go(screen) {
+    document.querySelectorAll('.screen').forEach(el => {
+      el.classList.remove('active');
+      el.style.display = 'none';
+    });
+    const target = $('screen-' + screen);
+    target.classList.add('active');
+    target.style.display = 'flex';
+    target.style.flexDirection = 'column';
+    setTimeout(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, 50);
+
+    if (screen === 'quiz') renderQ(s.idx);
+    if (screen === 'processing') runProcessing();
+  }
+
+  /* Renderizar pergunta */
+  function renderQ(idx) {
+    const q = QUESTIONS[idx];
+    const total = QUESTIONS.length;
+    const pct = Math.round((idx / total) * 100);
+
+    $('quiz-fill').style.width = pct + '%';
+    $('quiz-step').textContent = `Pergunta ${idx + 1} de ${total}`;
+    $('quiz-pct').textContent = pct + '%';
+    $('quiz-back').style.display = idx > 0 ? 'inline-flex' : 'none';
+
+    const bn = $('quiz-next');
+    bn.disabled = true;
+    const isLast = idx === total - 1;
+    bn.innerHTML = (isLast ? 'Ver minha análise' : 'Continuar') + ' ' + ARR_R;
+
+    const opts = q.opts.map((o, i) => `
+      <button class="qopt" data-i="${i}" data-t='${JSON.stringify(o.tags)}'
+        onclick="App.pick(this, ${idx})" aria-pressed="false">
+        <span class="qopt-dot"></span>
+        ${o.ico ? `<span class="qopt-ico">${o.ico}</span>` : ''}
+        <span>${o.label}</span>
+      </button>`).join('');
+
+    $('quiz-card-wrap').innerHTML = `
+      <div class="quiz-card">
+        <p class="quiz-qnum">Pergunta ${idx + 1}</p>
+        <h2 class="quiz-qtxt">${q.text}</h2>
+        ${q.hint ? `<p class="quiz-qhint">${q.hint}</p>` : ''}
+        <div class="quiz-opts ${q.layout || ''}" role="group">${opts}</div>
+      </div>`;
+
+    /* Restaurar seleção */
+    if (s.answers[idx]) {
+      const sv = JSON.stringify(s.answers[idx]);
+      $('quiz-card-wrap').querySelectorAll('.qopt').forEach(b => {
+        if (b.dataset.t === sv) { b.classList.add('sel'); b.setAttribute('aria-pressed','true'); }
+      });
+      bn.disabled = false;
+    }
+  }
+
+  function pick(btn, idx) {
+    btn.closest('.quiz-opts').querySelectorAll('.qopt').forEach(b => {
+      b.classList.remove('sel'); b.setAttribute('aria-pressed','false');
+    });
+    btn.classList.add('sel'); btn.setAttribute('aria-pressed','true');
+    s.answers[idx] = JSON.parse(btn.dataset.t);
+    $('quiz-next').disabled = false;
+    /* Auto-avançar nas primeiras perguntas rápidas */
+    const q = QUESTIONS[idx];
+    if (['sexo','idade','experiencia','estilo','urgencia'].includes(q.id)) {
+      setTimeout(() => { if (!$('quiz-next').disabled) next(); }, 400);
+    }
+  }
+
+  function next() {
+    if ($('quiz-next').disabled) return;
+    if (s.idx < QUESTIONS.length - 1) { s.idx++; renderQ(s.idx); }
+    else { calcScores(); go('upload'); }
+  }
+
+  function prev() {
+    if (s.idx > 0) { s.idx--; renderQ(s.idx); }
+  }
+
+  /* Calcular pontuações */
+  function calcScores() {
+    s.scores = {};
+    PROCEDIMENTOS.forEach(p => { s.scores[p.id] = 0; });
+    s.answers.forEach(list => {
+      if (!list) return;
+      list.forEach(tag => {
+        PROCEDIMENTOS.forEach(p => { if (p.tags.includes(tag)) s.scores[p.id]++; });
+      });
+    });
+  }
+
+  /* Foto */
+  function handlePhoto(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      s.photoURL = ev.target.result;
+      const prev = $('upload-preview');
+      prev.src = s.photoURL;
+      prev.classList.add('show');
+      $('upload-placeholder').style.display = 'none';
+      $('upload-zone').classList.add('has-img');
+      $('btn-upload').disabled = false;
+      $('btn-upload').innerHTML = 'Analisar minha foto ' + ARR_R;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  /* Lead */
+  function submitLead() {
+    const name  = $('f-name').value.trim();
+    const phone = $('f-phone').value.trim();
+    const city  = $('f-city').value.trim();
+    const lgpd  = $('lgpd').checked;
+
+    if (!name || !phone || !city) {
+      ['f-name','f-phone','f-city'].forEach(id => {
+        if (!$(id).value.trim()) {
+          $(id).style.borderColor='#E53E3E';
+          $(id).style.animation='shake .4s ease';
+          setTimeout(()=>{ $(id).style.animation=''; $(id).style.borderColor=''; }, 600);
+        }
+      });
+      return;
+    }
+    if (!lgpd) {
+      $('lgpd').style.outline = '2px solid #E53E3E';
+      setTimeout(() => { $('lgpd').style.outline=''; }, 1500);
+      return;
+    }
+
+    s.lead = {
+      name, phone,
+      email: $('f-email').value.trim(),
+      city,
+    };
+    go('processing');
+  }
+
+  /* Processamento simulado */
+  function runProcessing() {
+    const steps = [
+      { id:'ps1', msg:'Analisando estrutura facial...', delay:1200 },
+      { id:'ps2', msg:'Cruzando respostas do quiz...', delay:2800 },
+      { id:'ps3', msg:'Selecionando procedimentos ideais...', delay:4400 },
+      { id:'ps4', msg:'Gerando simulação ilustrativa...', delay:6000 },
+    ];
+
+    steps.forEach((st, i) => {
+      setTimeout(() => {
+        $('proc-status').textContent = st.msg;
+        $(st.id).classList.add('active');
+      }, st.delay);
+      setTimeout(() => {
+        $(st.id).classList.remove('active');
+        $(st.id).classList.add('done');
+      }, st.delay + 1000);
+    });
+
+    setTimeout(() => {
+      buildResult();
+      go('result');
+    }, 7800);
+  }
+
+  /* Construir resultado */
+  function buildResult() {
+    try {
+      /* Perfil */
+      const tc = {};
+      s.answers.forEach(list => { if(!list) return; list.forEach(t=>{tc[t]=(tc[t]||0)+1;}); });
+      let perfil = PERFIS[0], bestS = -1;
+      PERFIS.forEach(p => {
+        const sc = p.dom.reduce((a,t)=>a+(tc[t]||0),0);
+        if (sc > bestS) { bestS=sc; perfil=p; }
+      });
+
+      $('result-name').innerHTML = `Perfil <em>${perfil.nome}</em>`;
+      $('result-summary').textContent = perfil.resumo;
+
+      /* Observações */
+      const age = s.answers[1] ? s.answers[1][0] : 'jovem_adulto';
+      const ageLabel = {jovem:'18–25 anos',jovem_adulto:'26–35 anos',adulto:'36–45 anos',maduro:'46–55 anos',senior:'55+ anos'}[age]||'—';
+
+      const findLabel = (qIdx) => {
+        if (!s.answers[qIdx]) return '—';
+        const saved = JSON.stringify(s.answers[qIdx]);
+        const found = QUESTIONS[qIdx].opts.find(o => JSON.stringify(o.tags) === saved);
+        return found ? found.label : '—';
+      };
+
+      $('obs-grid').innerHTML = [
+        {icon:'🎂', label:'Faixa Etária',     value:ageLabel},
+        {icon:'🎯', label:'Queixa Principal', value:findLabel(2)},
+        {icon:'✨', label:'Objetivo',          value:findLabel(3)},
+        {icon:'💎', label:'Estilo Preferido', value:findLabel(5)},
+      ].map(o=>`
+        <div class="obs-card">
+          <div class="obs-icon">${o.icon}</div>
+          <div class="obs-label">${o.label}</div>
+          <div class="obs-value">${o.value}</div>
+        </div>`).join('');
+
+      /* Top procedimentos — garante que scores existem */
+      if (!s.scores || Object.keys(s.scores).length === 0) {
+        PROCEDIMENTOS.forEach(p => { s.scores[p.id] = 0; });
+      }
+
+      const top = [...PROCEDIMENTOS]
+        .sort((a,b)=>(s.scores[b.id]||0)-(s.scores[a.id]||0))
+        .slice(0, 5);
+
+      $('proc-cards').innerHTML = top.map(p=>`
+        <div class="proc-card">
+          <div class="proc-card-icon">${p.icon}</div>
+          <div>
+            <p class="proc-card-brand">Procedimento Recomendado</p>
+            <h3 class="proc-card-name">${p.nome}</h3>
+            <p class="proc-card-desc">${p.desc}</p>
+            <div class="proc-card-meta">
+              <span class="proc-meta-pill">⏱ ${p.duracao}</span>
+              <span class="proc-meta-pill">🩺 ${p.invasividade}</span>
+              ${p.beneficios.split('·').map(b=>`<span class="proc-meta-pill">✓ ${b.trim()}</span>`).join('')}
+            </div>
+          </div>
+        </div>`).join('');
+
+      /* Foto da pessoa no resultado */
+      if (s.photoURL) {
+        const simWrap = document.querySelector('.sim-placeholder');
+        if (simWrap) {
+          simWrap.innerHTML = `
+            <img src="${s.photoURL}" style="width:100%;max-height:320px;object-fit:cover;border-radius:12px;margin-bottom:16px;" alt="Sua foto"/>
+            <div class="sim-badge-ai">📸 Foto recebida · Simulação por IA em breve</div>`;
+        }
+      }
+
+    } catch(e) {
+      console.error('Erro ao construir resultado:', e);
+    }
+  }
+
+  /* Abrir WhatsApp */
+  function openWhatsApp() {
+    const idade = s.answers[1]
+      ? QUESTIONS[1].opts.find(o=>JSON.stringify(o.tags)===JSON.stringify(s.answers[1]))?.label
+      : '—';
+    const queixa = s.answers[2]
+      ? QUESTIONS[2].opts.find(o=>JSON.stringify(o.tags)===JSON.stringify(s.answers[2]))?.label
+      : '—';
+    const obj = s.answers[3]
+      ? QUESTIONS[3].opts.find(o=>JSON.stringify(o.tags)===JSON.stringify(s.answers[3]))?.label
+      : '—';
+
+    const top3 = PROCEDIMENTOS
+      .sort((a,b)=>(s.scores[b.id]||0)-(s.scores[a.id]||0))
+      .slice(0,3).map(p=>`✔ ${p.nome}`).join('\n');
+
+    const msg = encodeURIComponent(
+`🌟 *Novo Lead — Quiz Análise Estética*
+
+*Nome:* ${s.lead.name}
+*WhatsApp:* ${s.lead.phone}
+*E-mail:* ${s.lead.email || '—'}
+*Cidade:* ${s.lead.city}
+*Idade:* ${idade}
+
+*Queixa principal:* ${queixa}
+*Objetivo:* ${obj}
+
+*Procedimentos sugeridos pela IA:*
+${top3}
+
+---
+_"Olá! Acabei de concluir minha análise estética personalizada e gostaria de agendar uma avaliação gratuita."_`
+    );
+
+    window.open(`https://wa.me/${CONFIG.WHATSAPP}?text=${msg}`, '_blank', 'noopener');
+  }
+
+  /* Estilo shake */
+  const st = document.createElement('style');
+  st.textContent = `@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}`;
+  document.head.appendChild(st);
+
+  return { go, pick, next, prev, handlePhoto, submitLead, openWhatsApp };
+})();
+</script>
+</body>
+</html>

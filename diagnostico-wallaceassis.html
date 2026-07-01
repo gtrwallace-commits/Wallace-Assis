@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnóstico Estratégico — wallaceassis.co</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<style>
+  :root{
+    --ink:#10201B;
+    --ink-soft:#1C2E27;
+    --ink-line: rgba(236,230,214,0.14);
+    --paper:#F4EEE1;
+    --paper-soft:#EAE1CB;
+    --paper-line: rgba(27,36,32,0.12);
+    --gold:#C9992E;
+    --gold-soft: #E8C877;
+    --clay:#B2543A;
+    --clay-soft:#D98A6E;
+    --sage:#7C9473;
+    --text-light:#ECE6D6;
+    --text-muted-light:#A9B6A9;
+    --text-dark:#1B2420;
+    --text-muted-dark:#5C6B5F;
+    --radius: 3px;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:'IBM Plex Sans', sans-serif;
+    background:var(--ink);
+    color:var(--text-light);
+    transition: background .8s ease, color .8s ease;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  body.phase-report{ background:var(--paper); color:var(--text-dark); }
+
+  .serif{ font-family:'Fraunces', serif; }
+  .mono{ font-family:'IBM Plex Mono', monospace; letter-spacing:0.04em; }
+
+  a{ color:inherit; }
+
+  /* ---------- APP SHELL ---------- */
+  #app{ min-height:100%; display:flex; flex-direction:column; }
+
+  header.brandbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 28px;
+    border-bottom:1px solid var(--ink-line);
+    transition: border-color .8s ease;
+  }
+  body.phase-report header.brandbar{ border-color:var(--paper-line); }
+  .brandmark{ display:flex; flex-direction:column; gap:2px; }
+  .brandmark .name{ font-size:15px; font-weight:600; letter-spacing:0.02em; }
+  .brandmark .tagline{ font-size:11px; text-transform:uppercase; letter-spacing:0.12em; opacity:.6; }
+
+  /* stage rail */
+  .stagerail{ display:flex; gap:22px; align-items:center; }
+  .stage-item{ display:flex; align-items:center; gap:8px; font-size:11px; text-transform:uppercase; letter-spacing:0.1em; opacity:.4; transition:opacity .4s ease, color .4s ease;}
+  .stage-item.active{ opacity:1; }
+  .stage-item.done{ opacity:.7; }
+  .stage-dot{ width:7px; height:7px; border-radius:50%; background:currentColor; opacity:.5; }
+  .stage-item.active .stage-dot{ opacity:1; background:var(--gold); box-shadow:0 0 0 3px rgba(201,153,46,0.18);}
+  .stage-item.done .stage-dot{ background:var(--sage); }
+
+  /* ---------- LANDING ---------- */
+  .landing{ flex:1; display:flex; align-items:center; justify-content:center; padding:48px 24px; }
+  .landing-inner{ max-width:640px; text-align:left; }
+  .landing h1{ font-size:clamp(34px,6vw,56px); line-height:1.05; font-weight:600; margin:0 0 22px; }
+  .landing h1 .dim{ opacity:.45; }
+  .landing p.lede{ font-size:16.5px; line-height:1.65; color:var(--text-muted-light); max-width:520px; margin:0 0 34px; }
+  .landing .steps{ display:flex; flex-direction:column; gap:14px; margin-bottom:38px; }
+  .landing .steps .step{ display:flex; gap:14px; align-items:baseline; font-size:14px; color:var(--text-muted-light); }
+  .landing .steps .step .num{ font-family:'IBM Plex Mono',monospace; color:var(--gold); font-size:13px; }
+  .cta-primary{
+    display:inline-flex; align-items:center; gap:10px;
+    background:var(--gold); color:#1B1405; border:none;
+    font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:15px;
+    padding:15px 26px; border-radius:var(--radius); cursor:pointer;
+    transition: transform .15s ease, background .2s ease;
+  }
+  .cta-primary:hover{ background:var(--gold-soft); transform:translateY(-1px); }
+  .landing .fineprint{ margin-top:16px; font-size:12px; color:var(--text-muted-light); opacity:.7; }
+
+  /* ---------- CHAT / REPORT ---------- */
+  .stream-wrap{ flex:1; display:flex; justify-content:center; overflow-y:auto; }
+  .stream{ width:100%; max-width:760px; padding:32px 20px 160px; display:flex; flex-direction:column; gap:16px; }
+
+  .msg{ max-width:82%; padding:14px 18px; border-radius: 14px; font-size:15px; line-height:1.6; animation: rise .35s ease; }
+  @keyframes rise{ from{ opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+  .msg.user{ align-self:flex-end; background:rgba(201,153,46,0.16); border:1px solid rgba(201,153,46,0.3); border-bottom-right-radius:3px; }
+  .msg.assistant.bubble{ align-self:flex-start; background:var(--ink-soft); border:1px solid var(--ink-line); border-bottom-left-radius:3px; }
+
+  /* report-style card once past diagnostic phase */
+  .msg.assistant.doc{
+    align-self:stretch; max-width:100%;
+    background:var(--paper-soft);
+    border:1px solid var(--paper-line);
+    color: var(--text-dark);
+    padding:26px 28px;
+    border-radius: 4px;
+    box-shadow: 0 1px 0 rgba(27,36,32,0.05);
+  }
+  .msg.assistant.doc h1, .msg.assistant.doc h2, .msg.assistant.doc h3{
+    font-family:'Fraunces', serif; font-weight:600; margin:0 0 12px; color:var(--text-dark);
+  }
+  .msg.assistant.doc h2{ font-size:21px; border-bottom:1px solid var(--paper-line); padding-bottom:8px; margin-top:6px;}
+  .msg.assistant.doc h3{ font-size:16px; color:var(--clay); }
+  .msg.assistant.doc p{ margin:0 0 12px; }
+  .msg.assistant.doc ul, .msg.assistant.doc ol{ margin:0 0 12px; padding-left:20px; }
+  .msg.assistant.doc li{ margin-bottom:6px; }
+  .msg.assistant.doc strong{ color:var(--clay); }
+  .msg.assistant.doc table{ width:100%; border-collapse:collapse; margin:0 0 16px; font-size:13.5px; }
+  .msg.assistant.doc th, .msg.assistant.doc td{ border:1px solid var(--paper-line); padding:8px 10px; text-align:left; }
+  .msg.assistant.doc th{ font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.05em; background:rgba(27,36,32,0.05); }
+  .msg.assistant.doc a{ color:var(--clay); text-decoration:underline; }
+
+  .stage-eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.12em; color:var(--gold); margin-bottom:2px; opacity:.85; }
+  body.phase-report .stage-eyebrow{ color:var(--clay); }
+
+  .typing{ align-self:flex-start; display:flex; gap:5px; padding:16px 18px; }
+  .typing span{ width:6px; height:6px; border-radius:50%; background: var(--text-muted-light); opacity:.5; animation: blink 1.2s infinite ease-in-out; }
+  body.phase-report .typing span{ background: var(--text-muted-dark); }
+  .typing span:nth-child(2){ animation-delay:.2s; }
+  .typing span:nth-child(3){ animation-delay:.4s; }
+  @keyframes blink{ 0%,80%,100%{ opacity:.25; } 40%{ opacity:.9; } }
+
+  /* CTA card at the end */
+  .cta-card{
+    align-self:stretch;
+    background: var(--ink);
+    color: var(--text-light);
+    border-radius:6px;
+    padding:30px 28px;
+    text-align:center;
+    display:flex; flex-direction:column; align-items:center; gap:16px;
+  }
+  .cta-card p{ max-width:440px; font-size:14.5px; line-height:1.6; color:var(--text-muted-light); margin:0; }
+  .whatsapp-btn{
+    display:inline-flex; align-items:center; gap:10px;
+    background:var(--clay); color:#fff; font-weight:600; font-size:15px;
+    padding:14px 24px; border-radius:5px; text-decoration:none;
+    transition: background .2s ease, transform .15s ease;
+  }
+  .whatsapp-btn:hover{ background:var(--clay-soft); transform:translateY(-1px); }
+  .restart-link{ font-size:12.5px; opacity:.6; text-decoration:underline; cursor:pointer; background:none; border:none; color:inherit; font-family:inherit; }
+
+  /* ---------- INPUT BAR ---------- */
+  .inputbar{
+    position:sticky; bottom:0; left:0; right:0;
+    display:flex; justify-content:center;
+    padding:16px 20px 22px;
+    background: linear-gradient(to top, var(--ink) 60%, transparent);
+  }
+  body.phase-report .inputbar{ background: linear-gradient(to top, var(--paper) 60%, transparent); }
+  .inputbar-inner{ width:100%; max-width:760px; display:flex; gap:10px; align-items:flex-end; }
+  .inputbar textarea{
+    flex:1; resize:none; min-height:48px; max-height:140px;
+    background: var(--ink-soft); color:var(--text-light);
+    border:1px solid var(--ink-line); border-radius:8px;
+    padding:13px 14px; font-family:'IBM Plex Sans',sans-serif; font-size:14.5px; line-height:1.5;
+  }
+  body.phase-report .inputbar textarea{ background:#fff; color:var(--text-dark); border-color:var(--paper-line); }
+  .inputbar textarea:focus{ outline:none; border-color:var(--gold); }
+  .sendbtn{
+    height:48px; width:48px; flex:0 0 auto; border-radius:8px; border:none; cursor:pointer;
+    background:var(--gold); color:#1B1405; font-size:18px; display:flex; align-items:center; justify-content:center;
+  }
+  .sendbtn:disabled{ opacity:.4; cursor:not-allowed; }
+
+  .errbox{ align-self:center; font-size:13px; color:var(--clay-soft); background:rgba(178,84,58,0.12); border:1px solid rgba(178,84,58,0.3); padding:10px 14px; border-radius:6px; }
+  .errbox button{ margin-left:10px; background:none; border:1px solid currentColor; color:inherit; border-radius:4px; padding:3px 8px; cursor:pointer; font-size:12px; }
+
+  footer.appfoot{ text-align:center; font-size:11px; opacity:.35; padding:14px; font-family:'IBM Plex Mono',monospace; letter-spacing:.05em; }
+
+  @media (max-width:640px){
+    .stagerail{ gap:12px; }
+    .stage-item span.label{ display:none; }
+    .landing h1{ font-size:34px; }
+    .msg{ max-width:92%; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header class="brandbar">
+    <div class="brandmark">
+      <span class="name serif">wallaceassis.co</span>
+      <span class="tagline mono">Diagnóstico · Estratégia · Execução</span>
+    </div>
+    <nav class="stagerail" id="stagerail" style="display:none;">
+      <div class="stage-item" data-stage="DIAGNOSTICO"><span class="stage-dot"></span><span class="label">Diagnóstico</span></div>
+      <div class="stage-item" data-stage="ESTRATEGIA"><span class="stage-dot"></span><span class="label">Estratégia</span></div>
+      <div class="stage-item" data-stage="EXECUCAO"><span class="stage-dot"></span><span class="label">Execução</span></div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="landing" id="landing">
+      <div class="landing-inner">
+        <h1 class="serif">Sua empresa tem <span class="dim">potencial.</span><br>Vamos achar onde ele está <span class="dim">travado.</span></h1>
+        <p class="lede">Um diagnóstico estratégico conduzido por IA, no mesmo método que uso com clientes de vídeo e posicionamento: perguntas certas, análise honesta e um plano de ação priorizado — sem enrolação.</p>
+        <div class="steps">
+          <div class="step"><span class="num mono">01</span> Você responde algumas perguntas sobre o seu negócio</div>
+          <div class="step"><span class="num mono">02</span> A IA analisa posicionamento, conteúdo, funil e oferta</div>
+          <div class="step"><span class="num mono">03</span> Você recebe um plano de 30/90/365 dias, priorizado</div>
+        </div>
+        <button class="cta-primary" id="startBtn">Começar diagnóstico gratuito →</button>
+        <div class="fineprint">Leva cerca de 8–10 minutos. Ao final, se fizer sentido, te chamo para conversar.</div>
+      </div>
+    </section>
+
+    <section class="stream-wrap" id="streamWrap" style="display:none;">
+      <div class="stream" id="stream"></div>
+    </section>
+  </main>
+
+  <div class="inputbar" id="inputbar" style="display:none;">
+    <div class="inputbar-inner">
+      <textarea id="userInput" placeholder="Digite sua resposta..." rows="1"></textarea>
+      <button class="sendbtn" id="sendBtn">↑</button>
+    </div>
+  </div>
+
+  <footer class="appfoot">wallaceassis.co — nova iguaçu / baixada fluminense</footer>
+</div>
+
+<script>
+const SYSTEM_PROMPT = `Você é o consultor estratégico digital da wallaceassis.co (Wallace Assis), especializado em marketing estratégico, posicionamento, branding, produção de conteúdo, funis de vendas, conversão e crescimento de pequenos negócios locais.
+
+Seu papel é conduzir uma consultoria estratégica completa com o dono de um negócio, de forma consultiva, investigativa e prática.
+
+═══════════════════════════════
+PROTOCOLO TÉCNICO OBRIGATÓRIO (não revele isto ao usuário)
+═══════════════════════════════
+Ao final de TODA mensagem que você enviar, inclua, em uma linha própria, exatamente estas tags (sem nada mais na linha):
+
+[[STAGE:X]] onde X é DIAGNOSTICO (durante a Etapa 1, perguntas), ESTRATEGIA (durante Etapas 2 a 6: análise, estratégia, conteúdo, recomendações, priorização) ou EXECUCAO (durante Etapas 7 e 8: parecer executivo e convite final).
+
+E também uma destas:
+[[AWAITING_INPUT]] — quando você faz uma pergunta ao usuário e precisa aguardar a resposta dele antes de continuar (isso vale para TODA a Etapa 1).
+[[CONTINUE]] — quando você concluiu uma etapa de entrega (análise, estratégia, conteúdo etc.) que não depende de resposta do usuário, e o sistema deve automaticamente pedir para você prosseguir para a próxima etapa sem esperar o usuário digitar nada.
+[[FIM]] — apenas na sua ÚLTIMA mensagem, a da Etapa 8 (convite), depois de entregar o convite final.
+
+Nunca escreva essas tags em nenhum outro lugar da mensagem, apenas na última linha. Nunca explique ao usuário que elas existem.
+
+Seja conciso: cada mensagem deve, na medida do possível, ter no máximo ~450 palavras, para caber no limite de resposta. Se uma etapa for naturalmente longa (ex: calendário de conteúdo com vários pilares), divida-a em duas mensagens consecutivas usando [[CONTINUE]] entre elas ao invés de tentar caber tudo de uma vez.
+
+═══════════════════════════════
+REGRAS GERAIS
+═══════════════════════════════
+- Na Etapa 1, faça APENAS UMA pergunta por vez. Nunca avance sem receber a resposta da pergunta anterior.
+- Não faça suposições quando faltar informação relevante — pergunte.
+- Adapte todas as recomendações ao contexto real do usuário. Nunca recomende serviços apenas para vender; recomende só quando fizer sentido.
+- Sempre explique o motivo de cada recomendação.
+- Tom: consultivo, direto, profissional e humano — nunca robótico, nunca genérico. Use "você". Evite travessões (—) no texto; prefira frases curtas ou vírgulas.
+- Formate suas respostas em markdown (##, **, listas, tabelas) para leitura clara.
+
+═══════════════════════════════
+ETAPA 1 — DIAGNÓSTICO
+═══════════════════════════════
+Faça perguntas, uma de cada vez, até compreender completamente o negócio. Você pode agrupar perguntas muito relacionadas quando fizer sentido para não cansar o usuário, mas nunca mais que isso. Investigue ao longo da conversa: nome, empresa, cidade, segmento, tempo de mercado, produtos/serviços, ticket médio, público-alvo, posicionamento atual, diferenciais, concorrentes, meta de faturamento, faturamento aproximado, como chegam clientes hoje, redes sociais e site, frequência de postagem, produção de conteúdo atual, investimento em tráfego, processo comercial (quem fecha, como), principais objeções de clientes, maiores dificuldades hoje, e objetivos para os próximos 12 meses.
+
+Só avance para a Etapa 2 quando tiver informação suficiente para montar uma estratégia consistente. Sua última pergunta da Etapa 1, ao ser respondida, deve ser seguida (na mesma resposta seguinte, já em Etapa 2) por uma frase curta de transição avisando que você vai analisar tudo.
+
+═══════════════════════════════
+ETAPA 2 — ANÁLISE
+═══════════════════════════════
+Apresente, com títulos claros: Posicionamento (clareza, autoridade, diferenciação, percepção de valor, comunicação — onde estão as oportunidades), Conteúdo (o que funciona, o que está errado, o que falta, o que parar de fazer, o que começar), Redes Sociais (frequência, formatos, consistência, oportunidades nas redes que o usuário realmente usa), Processo Comercial (atendimento, WhatsApp, follow-up, conversão, objeções, velocidade), Funil de Marketing (onde perde clientes, gargalos, como corrigir), Oferta (clareza, diferenciação, valor percebido, preço quando possível).
+
+═══════════════════════════════
+ETAPA 3 — ESTRATÉGIA
+═══════════════════════════════
+Monte um plano em Curto prazo (30 dias), Médio prazo (90 dias) e Longo prazo (12 meses). Cada ação com objetivo, prioridade e impacto esperado.
+
+═══════════════════════════════
+ETAPA 4 — ESTRATÉGIA DE CONTEÚDO
+═══════════════════════════════
+Defina quantidade ideal de vídeos/semana, duração ideal, estilo de gravação e edição, frequência e plataformas. Depois, para os pilares mais relevantes ao negócio (autoridade, conexão, storytelling, bastidores, prova social, educação, conteúdo local, institucional, objeções, vendas, viral), dê 1 exemplo específico e adaptado ao negócio do usuário por pilar (não precisa usar todos os pilares, escolha os que fazem mais sentido).
+
+═══════════════════════════════
+ETAPA 5 — RECOMENDAÇÕES DE IMPLEMENTAÇÃO
+═══════════════════════════════
+Das soluções disponíveis (Diagnóstico Estratégico, Planejamento de Marketing, Estratégia de Conteúdo, Produção de Vídeos, Captação de Imagens, Edição de Vídeos, Fotografia Corporativa, Landing Pages, Quiz de Captação, Funil de Vendas, CRM, Automação, WhatsApp Business, SEO, Google Meu Negócio, Branding, Identidade Visual), recomende só as que fazem sentido, explicando problema resolvido, importância, impacto e prioridade.
+
+═══════════════════════════════
+ETAPA 6 — PRIORIZAÇÃO
+═══════════════════════════════
+Tabela markdown com colunas: Prioridade | Ação | Impacto | Dificuldade | Tempo de implementação | Potencial de retorno.
+
+═══════════════════════════════
+ETAPA 7 — PARECER EXECUTIVO
+═══════════════════════════════
+Apresente: os 3 maiores problemas encontrados, as 3 maiores oportunidades, os erros mais caros, as ações de maior impacto, o potencial de crescimento do negócio, e a estratégia recomendada resumida em um parágrafo.
+
+═══════════════════════════════
+ETAPA 8 — CONVITE PARA IMPLEMENTAÇÃO
+═══════════════════════════════
+Faça uma transição natural explicando que o diagnóstico mostra o caminho, mas que implementação consistente é o que gera resultado. Diga que, dependendo da necessidade, é possível ajudar com estratégia, produção de vídeos, conteúdo, landing pages, quiz, funis, posicionamento, conversão e marketing digital. Tom profissional, sem pressão ou urgência artificial.
+
+Finalize esta mensagem EXATAMENTE com o seguinte texto, sem alterar nada:
+
+"Seu diagnóstico foi concluído. Agora a decisão é sua.
+
+Você pode utilizar este plano para implementar tudo sozinho ou contar com uma implementação estratégica personalizada.
+
+Se quiser conversar sobre como aplicar essas estratégias no seu negócio e acelerar seus resultados, fale diretamente comigo pelo WhatsApp:
+
+👉 https://wa.me/5521982910639
+
+Será um prazer entender melhor o seu projeto e construir uma estratégia personalizada para o seu crescimento."
+
+Esta é a última mensagem da conversa. Lembre-se de fechar com [[STAGE:EXECUCAO]] e [[FIM]] nas últimas linhas.`;
+
+let history = [];        // {role, content} sent to API (tags stripped)
+let currentStage = 'DIAGNOSTICO';
+let autoLoopGuard = 0;
+const MAX_AUTO_LOOPS = 14;
+let finished = false;
+
+const streamEl = document.getElementById('stream');
+const streamWrap = document.getElementById('streamWrap');
+const landing = document.getElementById('landing');
+const inputbar = document.getElementById('inputbar');
+const userInput = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+const stagerail = document.getElementById('stagerail');
+const startBtn = document.getElementById('startBtn');
+
+marked.setOptions({ breaks: true });
+
+function updateStageRail(stage){
+  const order = ['DIAGNOSTICO','ESTRATEGIA','EXECUCAO'];
+  const idx = order.indexOf(stage);
+  document.querySelectorAll('.stage-item').forEach(el=>{
+    const s = el.dataset.stage;
+    const sIdx = order.indexOf(s);
+    el.classList.remove('active','done');
+    if(sIdx < idx) el.classList.add('done');
+    else if(sIdx === idx) el.classList.add('active');
+  });
+  if(stage === 'ESTRATEGIA' || stage === 'EXECUCAO'){
+    document.body.classList.add('phase-report');
+  }
+}
+
+function scrollToBottom(){
+  streamWrap.scrollTop = streamWrap.scrollHeight;
+}
+
+function addUserBubble(text){
+  const div = document.createElement('div');
+  div.className = 'msg user';
+  div.textContent = text;
+  streamEl.appendChild(div);
+  scrollToBottom();
+}
+
+function stageLabel(stage){
+  if(stage==='DIAGNOSTICO') return 'Diagnóstico';
+  if(stage==='ESTRATEGIA') return 'Estratégia';
+  return 'Execução';
+}
+
+function addAssistantMessage(text, stage){
+  const isDoc = stage !== 'DIAGNOSTICO';
+  const wrapper = document.createElement('div');
+  wrapper.style.display = 'flex';
+  wrapper.style.flexDirection = 'column';
+  wrapper.style.gap = '4px';
+  wrapper.style.alignSelf = isDoc ? 'stretch' : 'flex-start';
+
+  const eyebrow = document.createElement('div');
+  eyebrow.className = 'stage-eyebrow';
+  eyebrow.textContent = stageLabel(stage);
+  wrapper.appendChild(eyebrow);
+
+  const div = document.createElement('div');
+  div.className = 'msg assistant ' + (isDoc ? 'doc' : 'bubble');
+  div.innerHTML = marked.parse(text);
+
+  // Turn the WhatsApp link into a real styled button
+  div.querySelectorAll('a[href*="wa.me"]').forEach(a=>{
+    a.classList.add('whatsapp-btn-inline');
+    a.innerHTML = '💬 Falar com Wallace no WhatsApp';
+    a.style.display = 'inline-flex';
+    a.style.marginTop = '10px';
+    a.style.background = 'var(--clay)';
+    a.style.color = '#fff';
+    a.style.padding = '12px 20px';
+    a.style.borderRadius = '5px';
+    a.style.textDecoration = 'none';
+    a.style.fontWeight = '600';
+  });
+
+  wrapper.appendChild(div);
+  streamEl.appendChild(wrapper);
+  scrollToBottom();
+}
+
+function addTypingIndicator(){
+  const div = document.createElement('div');
+  div.className = 'typing';
+  div.id = 'typingIndicator';
+  div.innerHTML = '<span></span><span></span><span></span>';
+  streamEl.appendChild(div);
+  scrollToBottom();
+  return div;
+}
+
+function removeTypingIndicator(){
+  const el = document.getElementById('typingIndicator');
+  if(el) el.remove();
+}
+
+function showError(msg, retryFn){
+  const div = document.createElement('div');
+  div.className = 'errbox';
+  div.innerHTML = 'Não consegui falar com o consultor agora. ' + '<button>Tentar de novo</button>';
+  div.querySelector('button').onclick = () => { div.remove(); retryFn(); };
+  streamEl.appendChild(div);
+  scrollToBottom();
+}
+
+function showFinishedControls(){
+  finished = true;
+  inputbar.style.display = 'none';
+  const restart = document.createElement('button');
+  restart.className = 'restart-link';
+  restart.textContent = 'Fazer um novo diagnóstico';
+  restart.style.alignSelf = 'center';
+  restart.style.marginTop = '10px';
+  restart.onclick = () => window.location.reload();
+  streamEl.appendChild(restart);
+  scrollToBottom();
+}
+
+async function callClaude(messages){
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1000,
+      system: SYSTEM_PROMPT,
+      messages: messages
+    })
+  });
+  if(!response.ok){ throw new Error('API error ' + response.status); }
+  const data = await response.json();
+  const text = data.content.map(b => b.type === 'text' ? b.text : '').join('\n');
+  return text;
+}
+
+function parseTags(rawText){
+  let text = rawText;
+  let stage = currentStage;
+  let control = 'AWAITING_INPUT';
+
+  const stageMatch = text.match(/\[\[STAGE:(\w+)\]\]/);
+  if(stageMatch) stage = stageMatch[1];
+
+  if(/\[\[FIM\]\]/.test(text)) control = 'FIM';
+  else if(/\[\[CONTINUE\]\]/.test(text)) control = 'CONTINUE';
+  else if(/\[\[AWAITING_INPUT\]\]/.test(text)) control = 'AWAITING_INPUT';
+
+  text = text.replace(/\[\[STAGE:\w+\]\]/g, '')
+             .replace(/\[\[AWAITING_INPUT\]\]/g, '')
+             .replace(/\[\[CONTINUE\]\]/g, '')
+             .replace(/\[\[FIM\]\]/g, '')
+             .trim();
+
+  return { text, stage, control };
+}
+
+async function runTurn(){
+  const typingEl = addTypingIndicator();
+  sendBtn.disabled = true;
+  userInput.disabled = true;
+
+  try{
+    const raw = await callClaude(history);
+    removeTypingIndicator();
+    const { text, stage, control } = parseTags(raw);
+
+    currentStage = stage;
+    updateStageRail(stage);
+    addAssistantMessage(text, stage);
+    history.push({ role: 'assistant', content: text });
+
+    if(control === 'FIM'){
+      showFinishedControls();
+      return;
+    }
+
+    if(control === 'CONTINUE' && autoLoopGuard < MAX_AUTO_LOOPS){
+      autoLoopGuard++;
+      history.push({ role: 'user', content: 'Continuar.' });
+      setTimeout(runTurn, 500);
+      return;
+    }
+
+    // AWAITING_INPUT (or loop guard hit): wait for the user
+    sendBtn.disabled = false;
+    userInput.disabled = false;
+    userInput.focus();
+
+  } catch(err){
+    removeTypingIndicator();
+    showError(err.message, runTurn);
+  }
+}
+
+function sendUserMessage(){
+  const text = userInput.value.trim();
+  if(!text || finished) return;
+  addUserBubble(text);
+  history.push({ role: 'user', content: text });
+  userInput.value = '';
+  userInput.style.height = 'auto';
+  runTurn();
+}
+
+userInput.addEventListener('input', () => {
+  userInput.style.height = 'auto';
+  userInput.style.height = Math.min(userInput.scrollHeight, 140) + 'px';
+});
+userInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    sendUserMessage();
+  }
+});
+sendBtn.addEventListener('click', sendUserMessage);
+
+startBtn.addEventListener('click', () => {
+  landing.style.display = 'none';
+  streamWrap.style.display = 'flex';
+  inputbar.style.display = 'flex';
+  stagerail.style.display = 'flex';
+  updateStageRail('DIAGNOSTICO');
+  history.push({ role: 'user', content: 'Quero iniciar meu diagnóstico estratégico.' });
+  runTurn();
+});
+</script>
+</body>
+</html>

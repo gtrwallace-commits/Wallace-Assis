@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raio-X do Negócio — wallaceassis.co</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#10201B; --ink-soft:#1C2E27; --ink-line: rgba(236,230,214,0.14);
+    --paper:#F4EEE1; --paper-soft:#EAE1CB; --paper-line: rgba(27,36,32,0.12);
+    --gold:#C9992E; --gold-soft:#E8C877; --clay:#B2543A; --clay-soft:#D98A6E;
+    --text-light:#ECE6D6; --text-muted-light:#A9B6A9; --text-dark:#1B2420; --text-muted-dark:#5C6B5F;
+    --red:#A6402E;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;}
+  body{font-family:'IBM Plex Sans',sans-serif;background:var(--ink);color:var(--text-light);transition:background .8s ease,color .8s ease;-webkit-font-smoothing:antialiased;}
+  body.phase-report{background:var(--paper);color:var(--text-dark);}
+  .serif{font-family:'Fraunces',serif;}
+  .mono{font-family:'IBM Plex Mono',monospace;letter-spacing:.04em;}
+  #app{min-height:100vh;display:flex;flex-direction:column;}
+
+  header.brandbar{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--ink-line);transition:border-color .8s ease;}
+  body.phase-report header.brandbar{border-color:var(--paper-line);}
+  .brandmark .name{font-size:15px;font-weight:600;}
+  .brandmark .tagline{font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;opacity:.6;}
+  .progress-wrap{width:110px;height:4px;background:var(--ink-line);border-radius:2px;overflow:hidden;}
+  body.phase-report .progress-wrap{background:var(--paper-line);}
+  .progress-bar{height:100%;width:0%;background:var(--gold);transition:width .5s ease;}
+
+  main{flex:1;display:flex;justify-content:center;}
+  .landing-wrap{flex:1;display:flex;justify-content:center;align-items:center;padding:24px;}
+  .landing{max-width:560px;}
+  .landing h1{font-size:clamp(30px,7vw,46px);line-height:1.08;font-weight:600;margin:0 0 16px;}
+  .landing h1 .dim{opacity:.45;}
+  .landing p.lede{font-size:15.5px;line-height:1.6;color:var(--text-muted-light);max-width:460px;margin:0 0 26px;}
+  .cta-primary{display:inline-flex;align-items:center;gap:10px;background:var(--gold);color:#1B1405;border:none;font-family:'IBM Plex Sans',sans-serif;font-weight:600;font-size:15px;padding:15px 26px;border-radius:4px;cursor:pointer;}
+  .cta-primary:hover{background:var(--gold-soft);}
+  .fineprint{margin-top:14px;font-size:12px;color:var(--text-muted-light);opacity:.7;}
+
+  .stream-wrap{flex:1;display:flex;justify-content:center;overflow-y:auto;width:100%;}
+  .stream{width:100%;max-width:680px;padding:24px 18px 150px;display:flex;flex-direction:column;gap:14px;}
+
+  .msg{max-width:84%;padding:13px 17px;border-radius:14px;font-size:14.5px;line-height:1.55;animation:rise .3s ease;}
+  @keyframes rise{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .msg.bot{align-self:flex-start;background:var(--ink-soft);border:1px solid var(--ink-line);border-bottom-left-radius:3px;}
+  .msg.user{align-self:flex-end;background:rgba(201,153,46,0.16);border:1px solid rgba(201,153,46,0.3);border-bottom-right-radius:3px;}
+
+  .typing{align-self:flex-start;display:flex;gap:5px;padding:15px 17px;}
+  .typing span{width:6px;height:6px;border-radius:50%;background:var(--text-muted-light);opacity:.5;animation:blink 1.2s infinite ease-in-out;}
+  .typing span:nth-child(2){animation-delay:.2s;}
+  .typing span:nth-child(3){animation-delay:.4s;}
+  @keyframes blink{0%,80%,100%{opacity:.25;}40%{opacity:.9;}}
+
+  /* SCORE REVEAL */
+  .score-card{align-self:stretch;background:var(--ink);border:1px solid var(--ink-line);border-radius:8px;padding:32px 24px;text-align:center;}
+  body.phase-report .score-card{background:var(--ink);}
+  .score-label{font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin-bottom:10px;}
+  .score-num{font-family:'Fraunces',serif;font-size:64px;font-weight:700;line-height:1;color:#fff;}
+  .score-num span{font-size:28px;opacity:.5;font-weight:500;}
+  .score-tag{font-size:15px;font-weight:600;margin-top:8px;}
+  .score-bar-wrap{width:100%;max-width:320px;height:8px;background:var(--ink-line);border-radius:4px;margin:16px auto 6px;overflow:hidden;}
+  .score-bar-fill{height:100%;border-radius:4px;transition:width 1s ease;}
+  .score-desc{font-size:13px;color:var(--text-muted-light);max-width:420px;margin:10px auto 0;line-height:1.6;}
+
+  .doc{align-self:stretch;max-width:100%;background:var(--paper-soft);border:1px solid var(--paper-line);color:var(--text-dark);padding:24px 22px;border-radius:6px;}
+  .doc h1{font-family:'Fraunces',serif;font-size:26px;margin:0 0 4px;}
+  .doc .report-sub{font-size:12.5px;color:var(--text-muted-dark);margin-bottom:6px;}
+  .doc .intro-line{font-size:14.5px;line-height:1.65;margin:16px 0 4px;padding-bottom:16px;border-bottom:1px solid var(--paper-line);}
+  .doc h2{font-family:'Fraunces',serif;font-size:18.5px;margin:22px 0 10px;border-bottom:1px solid var(--paper-line);padding-bottom:7px;}
+  .doc h2:first-of-type{margin-top:18px;}
+  .doc h3{font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--clay);margin:14px 0 5px;}
+  .doc p{margin:0 0 10px;font-size:14.5px;line-height:1.62;}
+  .doc ul{margin:0 0 10px;padding-left:20px;}
+  .doc li{margin-bottom:7px;font-size:14.5px;line-height:1.5;}
+  .doc li b{color:var(--clay);}
+  .doc table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px;}
+  .doc th,.doc td{border:1px solid var(--paper-line);padding:7px 8px;text-align:left;}
+  .doc th{font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;background:rgba(27,36,32,.05);}
+
+  .callout{background:rgba(201,153,46,0.14);border:1px solid rgba(201,153,46,0.4);border-radius:6px;padding:18px 20px;margin:16px 0;}
+  .callout.danger{background:rgba(166,64,46,0.1);border-color:rgba(166,64,46,0.4);}
+  .callout .callout-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--clay);margin-bottom:6px;}
+  .callout .callout-figure{font-family:'Fraunces',serif;font-size:26px;font-weight:600;margin:2px 0 8px;}
+  .callout .callout-note{font-size:12px;color:var(--text-muted-dark);}
+
+  .diy-box{background:#fff;border:1px dashed var(--paper-line);border-radius:6px;padding:18px 20px;margin:16px 0;}
+  .diy-box h3{color:var(--text-dark);}
+
+  .cta-card{align-self:stretch;background:var(--ink);color:var(--text-light);border-radius:6px;padding:28px 22px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;}
+  .cta-card p{max-width:440px;font-size:13.5px;line-height:1.65;color:var(--text-muted-light);margin:0;}
+  .cta-card p.strong-line{color:var(--gold-soft);font-weight:600;font-size:15px;}
+  .whatsapp-btn{display:inline-flex;align-items:center;gap:10px;background:var(--clay);color:#fff;font-weight:600;font-size:15px;padding:14px 24px;border-radius:5px;text-decoration:none;}
+  .whatsapp-btn:hover{background:var(--clay-soft);}
+  .restart-link{font-size:12px;opacity:.55;text-decoration:underline;background:none;border:none;color:inherit;cursor:pointer;}
+
+  .inputbar{position:sticky;bottom:0;left:0;right:0;display:flex;justify-content:center;padding:14px 18px 20px;background:linear-gradient(to top,var(--ink) 60%,transparent);}
+  body.phase-report .inputbar{display:none;}
+  .inputbar-inner{width:100%;max-width:680px;display:flex;gap:10px;align-items:flex-end;}
+  .inputbar textarea{flex:1;resize:none;min-height:46px;max-height:130px;background:var(--ink-soft);color:var(--text-light);border:1px solid var(--ink-line);border-radius:8px;padding:12px 13px;font-family:'IBM Plex Sans',sans-serif;font-size:14.5px;line-height:1.5;}
+  .inputbar textarea:focus{outline:none;border-color:var(--gold);}
+  .sendbtn{height:46px;width:46px;flex:0 0 auto;border-radius:8px;border:none;cursor:pointer;background:var(--gold);color:#1B1405;font-size:18px;display:flex;align-items:center;justify-content:center;}
+  .sendbtn:disabled{opacity:.4;cursor:not-allowed;}
+
+  footer.appfoot{text-align:center;font-size:11px;opacity:.35;padding:14px;font-family:'IBM Plex Mono',monospace;letter-spacing:.05em;}
+  @media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important;}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="brandbar">
+    <div class="brandmark">
+      <div class="name serif">wallaceassis.co</div>
+      <div class="tagline mono">Diagnóstico · Estratégia · Execução</div>
+    </div>
+    <div class="progress-wrap" id="progressWrap" style="display:none;"><div class="progress-bar" id="progressBar"></div></div>
+  </header>
+
+  <main id="main">
+    <div class="landing-wrap" id="landingWrap">
+      <div class="landing">
+        <h1 class="serif">Seu negócio tá <span class="dim">indo bem</span> ou só <span class="dim">parece</span> que tá?</h1>
+        <p class="lede">Responda algumas perguntas simples e descubra, em poucos minutos, sua nota real de saúde digital, quanto dinheiro pode estar escapando por mês, e o que fazer a partir de hoje.</p>
+        <button class="cta-primary" id="startBtn">Fazer meu Raio-X gratuito →</button>
+        <div class="fineprint">Leva uns 5 minutos. Sem enrolação, sem cadastro chato.</div>
+      </div>
+    </div>
+    <div class="stream-wrap" id="streamWrap" style="display:none;"><div class="stream" id="stream"></div></div>
+  </main>
+
+  <div class="inputbar" id="inputbar" style="display:none;">
+    <div class="inputbar-inner">
+      <textarea id="userInput" placeholder="Digite sua resposta..." rows="1"></textarea>
+      <button class="sendbtn" id="sendBtn">↑</button>
+    </div>
+  </div>
+
+  <footer class="appfoot">wallaceassis.co — atendimento em todo o rio de janeiro</footer>
+</div>
+
+<script>
+const WHATS_NUMBER = "5521982910639";
+
+function norm(s){ return (s||"").toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,""); }
+function matchKeywords(text, map, fallback){
+  const t = norm(text);
+  for(const [key, words] of Object.entries(map)){
+    if(words.some(w => t.includes(w))) return key;
+  }
+  return fallback;
+}
+function parseTicket(text){
+  const cleaned = (text||"").replace(/\./g,"").replace(",", ".");
+  const m = cleaned.match(/(\d+(\.\d+)?)/);
+  if(!m) return null;
+  const n = parseFloat(m[1]);
+  return (isNaN(n) || n <= 0) ? null : n;
+}
+function parseHoras(text){
+  const m = (text||"").match(/(\d+(\.\d+)?)/);
+  if(!m) return null;
+  const n = parseFloat(m[1]);
+  return (isNaN(n) || n <= 0) ? null : n;
+}
+
+const SEG_CTX = {
+  beleza:{ label:"salão de beleza", art:"o", pilares:{ autoridade:"um vídeo curto mostrando você explicando por que usa tal técnica", bastidores:"o preparo do espaço antes do primeiro cliente do dia", prova_social:"o antes e depois de um atendimento real (com autorização da cliente)", educacao:"uma dica rápida de cuidado em casa", objecoes:"mostrar o processo todo, pra justificar o preço" }},
+  barbearia:{ label:"barbearia", art:"a", pilares:{ autoridade:"o passo a passo de um corte mais técnico", bastidores:"a organização da barbearia antes de abrir", prova_social:"um cliente satisfeito, gravado rapidinho na saída", educacao:"dica de manutenção do corte em casa", objecoes:"mostrar por que vale pagar mais numa barbearia boa" }},
+  moto:{ label:"oficina", art:"a", pilares:{ autoridade:"explicar um problema comum de moto ou carro", bastidores:"um reparo sendo feito com cuidado", prova_social:"cliente pegando o veículo pronto, satisfeito", educacao:"dica simples de manutenção preventiva", objecoes:"explicar por que um orçamento mais caro pode sair mais barato depois" }},
+  alimentacao:{ label:"negócio de alimentação", art:"o", pilares:{ autoridade:"o preparo de um item mais elaborado do cardápio", bastidores:"a produção do dia, ingredientes sendo escolhidos", prova_social:"a reação de alguém provando o produto pela primeira vez", educacao:"um diferencial do seu processo", objecoes:"mostrar por que o preço reflete qualidade" }},
+  eventos:{ label:"negócio de eventos", art:"o", pilares:{ autoridade:"bastidor de um evento recente, mostrando organização", bastidores:"a preparação antes do dia do evento", prova_social:"um depoimento de cliente logo depois do evento", educacao:"uma dica prática pra quem tá planejando um evento", objecoes:"mostrar o que está incluso no pacote" }},
+  outro:{ label:"negócio", art:"o", pilares:{ autoridade:"um vídeo mostrando que você entende do que faz", bastidores:"sua rotina antes de atender o primeiro cliente", prova_social:"um depoimento real de cliente satisfeito", educacao:"uma dica prática do seu serviço", objecoes:"responder direto a dúvida mais comum sobre preço" }}
+};
+
+const SEGMENTO_MAP = { beleza:["beleza","salao","estetica","unha","cabel","maquiagem","spa"], barbearia:["barbearia","barbeiro","corte"], moto:["moto","oficina","mecanic","carro","auto"], alimentacao:["comida","doce","restaurante","lanchonete","confeitaria","bolo","alimentacao","gastronomia"], eventos:["evento","festa","foto","filmagem","casamento","buffet"] };
+const TEMPO_MAP = { novo:["mes","meses","6 mes","comec","novo","recente","abri ha pouco"], estabelecido:["anos","3 anos","4 anos","5 anos","10 anos","muito tempo","antig"] };
+const CANAL_MAP = { instagram:["instagram","insta","rede social"], indicacao:["indicac","boca a boca","amigo","conhecido"], google:["google","busca"], fachada:["fachada","loja fisica","passando","rua","ponto"], trafego:["anuncio","trafego","ads","impuls"] };
+const FREQ_MAP = { diario:["todo dia","diari","sempre","quase todo dia"], semanal:["semana","algumas vezes","2 vezes","3 vezes"], nao:["nao posto","nunca","nada"], raro:["raramente","de vez em quando","quase nao","pouco"] };
+const RESULT_MAP = { muito:["sim","bastante","muito","gera bem","funciona"], nada:["nao gera","nada","nenhum","sem resultado"], asvezes:["as vezes","de vez em quando","meio a meio"], naosei:["nao sei","nao meco","nao acompanho","dificil dizer"] };
+const DIFICULDADE_MAP = { nao_converto:["chamam","nao fecham","nao converte","conversa e some","some depois"], sem_tempo:["tempo","sozinho","corrid","nao dou conta"], preco:["preco","concorrenc","caro","barato"], nao_sei_postar:["nao sei o que postar","conteudo","criativ","ideia"], poucos_clientes:["poucos client","movimento fraco","fluxo baixo","cliente novo"] };
+const META_MAP = { conhecido:["conhecid","regiao","fama","autoridade"], previsibilidade:["previsibilidade","constante","estabilidade"], profissionalizar:["profissionaliz","organiz","estrutura"], faturamento:["faturamento","vender mais","lucro","dinheiro"] };
+const SIMNAO_MAP = { sim:["sim","claro","sempre","planejo","penso antes"], mais_ou_menos:["mais ou menos","as vezes","depende","meio"], nao:["nao","na hora","do jeito que vem","nunca penso","improviso"] };
+
+const QUESTIONS = [
+  { id:"nome", ask:"Oi! Antes de começar, me diz seu nome e o nome do seu negócio." },
+  { id:"segmento", ask:"Qual é o ramo do seu negócio?", map:SEGMENTO_MAP, fallback:"outro" },
+  { id:"tempo", ask:"Há quanto tempo esse negócio existe?", map:TEMPO_MAP, fallback:"consolidando" },
+  { id:"canal", ask:"Hoje, de onde vem a MAIORIA dos seus clientes?", map:CANAL_MAP, fallback:"instagram" },
+  { id:"frequencia", ask:"Com que frequência você posta conteúdo?", map:FREQ_MAP, fallback:"raro" },
+  { id:"resultado", ask:"E isso tem virado mensagem, agendamento ou venda de verdade?", map:RESULT_MAP, fallback:"naosei" },
+  { id:"estrategia", ask:"Sincero agora: quando você grava um vídeo, você já sabe pra que serve aquilo (vender, atrair, mostrar que você é bom no que faz), ou grava e só pensa depois no que postar?", map:SIMNAO_MAP, fallback:"nao" },
+  { id:"metricas", ask:"Você sabe dizer quantas mensagens ou agendamentos vieram de um vídeo específico que você postou?", map:SIMNAO_MAP, fallback:"nao" },
+  { id:"tempo_gasto", ask:"Mais ou menos quantas horas por semana você perde gravando, editando e pensando no que postar?", isHoras:true },
+  { id:"dificuldade", ask:"Qual é a sua maior dor hoje no negócio?", map:DIFICULDADE_MAP, fallback:"poucos_clientes" },
+  { id:"meta", ask:"E o que você mais quer que mude nos próximos 12 meses?", map:META_MAP, fallback:"faturamento" },
+  { id:"ticket", ask:"Última pergunta, e essa é a mais importante: quanto custa, em média, um serviço ou produto seu? Pode ser aproximado.", isTicket:true }
+];
+
+// Reactions that touch pain, said BEFORE moving to next question (not generic)
+function reactionFor(qid, rawAnswer, parsed){
+  switch(qid){
+    case 'frequencia':
+      if(parsed==='raro' || parsed==='nao') return "Entendi. Isso explica bastante coisa, viu? Sem postar direto, o negócio some da cabeça das pessoas.";
+      return "Boa, isso é mais raro do que parece.";
+    case 'resultado':
+      if(parsed==='nada' || parsed==='naosei') return "Poxa. Postar sem saber se dá retorno é como trabalhar de graça sem perceber.";
+      return "Ótimo, isso é sinal de que já tem algo funcionando aí.";
+    case 'estrategia':
+      if(parsed==='nao') return "Caraca. Então hoje, na prática, cada vídeo é um tiro no escuro. Isso sozinho já explica boa parte do resultado fraco.";
+      if(parsed==='mais_ou_menos') return "Beleza, então às vezes tem intenção, às vezes não. Isso deixa o resultado inconsistente.";
+      return "Muito bom, a maioria não faz isso.";
+    case 'metricas':
+      if(parsed==='nao') return "Aí está um ponto sério: sem saber o que funciona, você não tem como repetir o que dá certo. É dinheiro invisível escapando.";
+      return "Ótimo, poucos donos de negócio local acompanham isso de verdade.";
+    case 'tempo_gasto':
+      return "Anotado. Só isso já é tempo que podia estar sendo usado atendendo cliente, ou até descansando.";
+    default: return null;
+  }
+}
+
+let qIndex = 0;
+let answers = {};
+
+const landingWrap = document.getElementById('landingWrap');
+const streamWrap = document.getElementById('streamWrap');
+const stream = document.getElementById('stream');
+const startBtn = document.getElementById('startBtn');
+const inputbar = document.getElementById('inputbar');
+const userInput = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+const progressWrap = document.getElementById('progressWrap');
+const progressBar = document.getElementById('progressBar');
+
+function scrollBottom(){ streamWrap.scrollTop = streamWrap.scrollHeight; }
+function addBot(text){ const d=document.createElement('div'); d.className='msg bot'; d.textContent=text; stream.appendChild(d); scrollBottom(); }
+function addUser(text){ const d=document.createElement('div'); d.className='msg user'; d.textContent=text; stream.appendChild(d); scrollBottom(); }
+function addTyping(){ const d=document.createElement('div'); d.className='typing'; d.id='typingIndicator'; d.innerHTML='<span></span><span></span><span></span>'; stream.appendChild(d); scrollBottom(); }
+function removeTyping(){ const el=document.getElementById('typingIndicator'); if(el) el.remove(); }
+
+startBtn.addEventListener('click', () => {
+  landingWrap.style.display = 'none';
+  streamWrap.style.display = 'flex';
+  inputbar.style.display = 'flex';
+  progressWrap.style.display = 'block';
+  askNext(true);
+});
+
+function askNext(first){
+  const q = QUESTIONS[qIndex];
+  progressBar.style.width = Math.round((qIndex/QUESTIONS.length)*100) + '%';
+  addTyping();
+  setTimeout(() => {
+    removeTyping();
+    addBot(q.ask);
+    userInput.disabled = false; sendBtn.disabled = false; userInput.focus();
+  }, first ? 200 : 450);
+}
+
+function sendUserMessage(){
+  const text = userInput.value.trim();
+  if(!text) return;
+  addUser(text);
+  userInput.value = ''; userInput.style.height = 'auto';
+  userInput.disabled = true; sendBtn.disabled = true;
+
+  const q = QUESTIONS[qIndex];
+  let parsed = null;
+  if(q.id === 'nome'){
+    answers.nome = text.split(/[,-]/)[0].trim().split(' ')[0];
+  } else if(q.isTicket){
+    const p = parseTicket(text);
+    answers.ticket = p || 100;
+    answers.ticketWasGuessed = !p;
+  } else if(q.isHoras){
+    const p = parseHoras(text);
+    answers.tempo_gasto = p || 5;
+  } else {
+    parsed = matchKeywords(text, q.map, q.fallback);
+    answers[q.id] = parsed;
+  }
+
+  addTyping();
+  setTimeout(() => {
+    removeTyping();
+    const reaction = reactionFor(q.id, text, parsed);
+    if(reaction){
+      addBot(reaction);
+    }
+    if(qIndex < QUESTIONS.length - 1){
+      qIndex++;
+      setTimeout(() => askNext(false), reaction ? 700 : 300);
+    } else {
+      setTimeout(() => {
+        addBot("Beleza, tenho tudo que preciso. Calculando sua nota agora...");
+        inputbar.style.display = 'none';
+        setTimeout(() => {
+          document.body.classList.add('phase-report');
+          progressBar.style.width = '100%';
+          setTimeout(()=>{ progressWrap.style.display='none'; renderScore(); }, 500);
+        }, 1200);
+      }, reaction ? 700 : 100);
+    }
+  }, 600);
+}
+
+userInput.addEventListener('input', () => { userInput.style.height='auto'; userInput.style.height = Math.min(userInput.scrollHeight,130)+'px'; });
+userInput.addEventListener('keydown', (e) => { if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendUserMessage(); } });
+sendBtn.addEventListener('click', sendUserMessage);
+
+/* ---------------- SCORE ---------------- */
+function computeScore(a){
+  let s = 0;
+  s += {diario:25, semanal:15, raro:5, nao:0}[a.frequencia] ?? 5;
+  s += {muito:25, asvezes:15, naosei:5, nada:0}[a.resultado] ?? 5;
+  s += {sim:15, mais_ou_menos:8, nao:0}[a.estrategia] ?? 0;
+  s += {sim:15, mais_ou_menos:8, nao:0}[a.metricas] ?? 0;
+  s += {instagram:10, google:10, trafego:10, indicacao:5, fachada:0}[a.canal] ?? 5;
+  s += {estabelecido:10, consolidando:10, novo:5}[a.tempo] ?? 5;
+  return Math.min(100, Math.max(4, s));
+}
+function scoreTag(s){
+  if(s>=80) return {label:"Bem estruturado", color:"#7C9473"};
+  if(s>=50) return {label:"Mediano, com brechas caras", color:"#C9992E"};
+  if(s>=25) return {label:"Vulnerável, perdendo dinheiro todo mês", color:"#D98A6E"};
+  return {label:"Crítico, precisa agir com urgência", color:"#A6402E"};
+}
+
+function renderScore(){
+  const a = answers;
+  const score = computeScore(a);
+  const tag = scoreTag(score);
+
+  const card = document.createElement('div');
+  card.className = 'score-card';
+  card.innerHTML = `
+    <div class="score-label mono">SUA NOTA DE SAÚDE DIGITAL</div>
+    <div class="score-num">${score}<span>/100</span></div>
+    <div class="score-tag" style="color:${tag.color}">${tag.label}</div>
+    <div class="score-bar-wrap"><div class="score-bar-fill" id="scoreBarFill" style="width:0%;background:${tag.color};"></div></div>
+    <div class="score-desc">Essa nota mede o quanto seu negócio depende de sorte hoje, e o quanto depende de sistema. Quanto mais baixa, mais dinheiro está escapando sem você perceber. Rolando pra baixo, seu diagnóstico completo.</div>
+  `;
+  stream.appendChild(card);
+  scrollBottom();
+  setTimeout(()=>{ document.getElementById('scoreBarFill').style.width = score + '%'; }, 150);
+  setTimeout(renderReport, 1400);
+}
+
+/* ---------------- REPORT CONTENT (linguagem simples) ---------------- */
+
+const POSICIONAMENTO = {
+  novo: (seg) => `${seg.art[0].toUpperCase()+seg.art.slice(1)} ${seg.label} é novo, então esse é o melhor momento pra começar do jeito certo, antes de criar hábito difícil de mudar depois.`,
+  consolidando: (seg) => `${seg.art[0].toUpperCase()+seg.art.slice(1)} ${seg.label} já tem algum movimento, mas provavelmente ainda não tem uma resposta clara pra "por que escolher você e não o concorrente". É exatamente aqui que a maioria dos negócios trava.`,
+  estabelecido: (seg) => `${seg.art[0].toUpperCase()+seg.art.slice(1)} ${seg.label} já tem tempo de casa, isso passa confiança. Mas com o tempo é comum a comunicação ficar meio genérica. Vale conferir se ainda representa o que o negócio entrega hoje.`
+};
+
+const REDES = {
+  instagram:() => `O Instagram sendo o canal principal é bom, é onde seu público local mais está. O risco é depender só dele. Se o Instagram "sumir" um dia (mudança de algoritmo, conta bloqueada), o negócio para junto.`,
+  indicacao:() => `Viver de indicação mostra que o serviço é bom de verdade, isso é raro e vale ouro. Só que indicação cresce devagar, porque depende de outra pessoa lembrar de você na hora certa. Conteúdo faz esse mesmo efeito, só que pra muito mais gente ao mesmo tempo.`,
+  google:() => `Quem chega pelo Google já está mais decidido a comprar. Vale caprichar nas fotos e nas avaliações do Google, porque isso pesa muito na hora da pessoa escolher entre você e o concorrente.`,
+  fachada:() => `Depender de quem passa na rua limita seu alcance a poucas quadras. Conteúdo online resolve exatamente isso: estica seu alcance bem além da sua rua.`,
+  trafego:() => `Já investir em anúncio mostra que você leva o negócio a sério. Mas anúncio sem conteúdo forte por trás custa mais caro por cliente, porque ninguém confia numa marca que nunca viu antes.`
+};
+
+const COMERCIAL_NAO_CONVERTO = () => `Esse é o ponto mais urgente: gente com interesse de verdade está chamando, e o dinheiro tá escapando na conversa. Normalmente é demora pra responder, ou não ter um próximo passo claro (tipo "vamos marcar seu horário agora?").`;
+const COMERCIAL_DEFAULT = () => `Vale prestar atenção em quanto tempo você demora pra responder no WhatsApp. Esse detalhe sozinho, muitas vezes, decide se a pessoa fecha com você ou com o concorrente que respondeu primeiro.`;
+
+const FUNIL = {
+  poucos_clientes: (seg) => `Pouca gente nova conhecendo ${seg.art} ${seg.label} é o problema real aqui. Não adianta melhorar o atendimento se quase ninguém novo está batendo à porta.`,
+  nao_sei_postar: (seg) => `Sem saber o que postar, o conteúdo acaba atraindo gente curiosa, não gente pronta pra comprar.`,
+  nao_converto: (seg) => `Gente chega até você, mas fica pelo caminho. O problema não é atrair, é o meio da conversa.`,
+  sem_tempo: (seg) => `Sem tempo sobrando, tudo fica pela metade: posta um pouco, responde atrasado, esquece de fazer follow-up. Não é falta de esforço, é falta de sistema.`,
+  preco: (seg) => `Cliente compara o preço porque não está enxergando o valor antes de perguntar quanto custa. Isso se resolve mostrando diferencial antes do preço, não depois.`
+};
+
+const OFERTA_PRECO = () => `Hoje sua oferta provavelmente está sendo vendida só pelo número final. Faltam os detalhes que fazem esse número fazer sentido: o cuidado, o material usado, o resultado esperado.`;
+const OFERTA_DEFAULT = (seg) => `Vale conferir se, em poucos segundos, alguém de fora entende exatamente o que ${seg.art} ${seg.label} entrega e por que vale o preço cobrado.`;
+
+const CONTEUDO = {
+  diario: (seg) => `Postar quase todo dia já te coloca à frente da maioria. Agora o foco não é postar mais, é postar melhor.`,
+  semanal: (seg) => `Postar algumas vezes por semana é uma base ok, mas ainda deixa buraco de presença. Quem some por dias, some da cabeça das pessoas.`,
+  raro: (seg) => `Postar raramente é hoje um dos maiores freios do seu crescimento. Cada post recomeça do zero, porque não tem constância pra construir confiança.`,
+  nao: (seg) => `Não postar significa que ${seg.art} ${seg.label} só é visto por quem já te conhece. Todo o resto do mercado simplesmente não sabe que você existe.`
+};
+
+const RESULTADO_TXT = {
+  muito: () => `O conteúdo já traz retorno de verdade. Agora o próximo passo é fazer isso de forma mais organizada, pra crescer sem perder qualidade.`,
+  asvezes: () => `Funcionar "às vezes" quer dizer que ainda não ficou claro o que dá certo. Sem esse padrão, cada post é sorte, não estratégia.`,
+  naosei: () => `Não saber o que funciona custa caro: sem saber, você não consegue repetir o que dá certo nem parar o que não dá.`,
+  nada: () => `Postar sem gerar retorno quase sempre é problema de "chamada pra ação", não de estética. Não adianta postar mais, tem que postar com intenção de venda.`
+};
+
+const DIFICULDADE_LABEL = {poucos_clientes:"poucos clientes novos", nao_sei_postar:"não saber o que postar", nao_converto:"as pessoas chamam mas não fecham", sem_tempo:"falta de tempo pra cuidar disso", preco:"cliente comparando só o preço"};
+const META_LABEL = {faturamento:"faturar mais", conhecido:"ficar mais conhecido na região", previsibilidade:"ter mais previsibilidade de clientes", profissionalizar:"profissionalizar a marca"};
+
+function extraClientesEstimados(dificuldade){
+  return {poucos_clientes:4, nao_converto:3, nao_sei_postar:3, sem_tempo:2, preco:2}[dificuldade] || 3;
+}
+
+function buildFullReportText(a, seg, extra, ticketFmt, score, monthly, q90, ano, horasAno){
+  const nome = a.nome || 'você';
+  const lines = [
+    `Olá Wallace! Fiz o Raio-X do meu negócio no seu site. Segue meu diagnóstico completo, igual ao que apareceu pra mim:`, ``,
+    `*DIAGNÓSTICO COMPLETO DE ${nome.toUpperCase()}*`,
+    `${seg.label} · nota de saúde digital: ${score}/100`, ``,
+    `*Como estou hoje*`,
+    POSICIONAMENTO[a.tempo](seg),
+    CONTEUDO[a.frequencia](seg),
+    RESULTADO_TXT[a.resultado](), ``,
+    `*Onde meus clientes me encontram*`,
+    REDES[a.canal] ? REDES[a.canal]() : REDES.instagram(), ``,
+    `*Como estou fechando vendas*`,
+    a.dificuldade === 'nao_converto' ? COMERCIAL_NAO_CONVERTO() : COMERCIAL_DEFAULT(), ``,
+    `*Por onde o dinheiro está escapando*`,
+    FUNIL[a.dificuldade](seg),
+    a.dificuldade === 'preco' ? OFERTA_PRECO() : OFERTA_DEFAULT(seg), ``,
+    `*O custo do meu tempo*`,
+    `${a.tempo_gasto}h por semana sem estratégia clara, cerca de ${horasAno}h por ano.`, ``,
+    `*Quanto pode estar escapando por mês*`,
+    `Ticket médio: ${ticketFmt}. Estimativa: +R$ ${monthly.toLocaleString('pt-BR')}/mês, ~R$ ${q90.toLocaleString('pt-BR')} em 90 dias, ~R$ ${ano.toLocaleString('pt-BR')} em 12 meses (estimativa, não é garantia).`, ``,
+    `*Maior dor:* ${DIFICULDADE_LABEL[a.dificuldade]}`,
+    `*Objetivo em 12 meses:* ${META_LABEL[a.meta]}`, ``,
+    `*Resumo direto*`,
+    `Maior problema: ${DIFICULDADE_LABEL[a.dificuldade]}.`,
+    `Maior chance: +R$ ${monthly.toLocaleString('pt-BR')}/mês só corrigindo esse ponto.`,
+    `O que mais custa caro sem eu perceber: ${a.resultado === 'nada' || a.resultado === 'naosei' || a.metricas === 'nao' ? 'produzir conteúdo sem saber o que dá retorno' : 'não ter um processo por trás do que já funciona'}.`, ``,
+    `Percebi que isso precisa de um trabalho sério, estruturado. Quero conversar sobre como resolver isso.`
+  ];
+  return lines.join('\n');
+}
+
+function renderReport(){
+  const a = answers;
+  const seg = SEG_CTX[a.segmento] || SEG_CTX.outro;
+  const nome = a.nome || 'você';
+  const score = computeScore(a);
+  const extra = extraClientesEstimados(a.dificuldade);
+  const monthly = a.ticket * extra;
+  const q90 = monthly * 3;
+  const ano = monthly * 12;
+  const ticketFmt = a.ticketWasGuessed ? `não ficou claro, usei R$ ${a.ticket} de referência` : `R$ ${a.ticket.toLocaleString('pt-BR')}`;
+  const horasMes = a.tempo_gasto * 4;
+  const horasAno = Math.round(horasMes * 12);
+
+  const whatsUrl = `https://wa.me/${WHATS_NUMBER}?text=${encodeURIComponent(buildFullReportText(a, seg, extra, ticketFmt, score, monthly, q90, ano, horasAno))}`;
+  const instaUrl = `https://instagram.com/wallaceassis.co`;
+
+  const doc = document.createElement('div');
+  doc.className = 'doc';
+  doc.innerHTML = `
+    <h1 class="serif">Diagnóstico completo de ${nome}</h1>
+    <div class="report-sub mono">${seg.label.toUpperCase()} · GERADO EM ${new Date().toLocaleDateString('pt-BR')}</div>
+    <div class="intro-line">${nome}, isso não é um texto genérico. Foi montado com base no que VOCÊ respondeu. Alguns pontos abaixo podem incomodar um pouco, mas é melhor descobrir aqui do que continuar perdendo dinheiro sem saber por quê.</div>
+
+    <h2>Como você está hoje</h2>
+    <p>${POSICIONAMENTO[a.tempo](seg)}</p>
+    <p>${CONTEUDO[a.frequencia](seg)}</p>
+    <p>${RESULTADO_TXT[a.resultado]()}</p>
+
+    <h2>Onde seus clientes te encontram</h2>
+    <p>${REDES[a.canal] ? REDES[a.canal]() : REDES.instagram()}</p>
+
+    <h2>O jeito que você fecha vendas hoje</h2>
+    <p>${a.dificuldade === 'nao_converto' ? COMERCIAL_NAO_CONVERTO() : COMERCIAL_DEFAULT()}</p>
+
+    <h2>Por onde o dinheiro está escapando</h2>
+    <p>${FUNIL[a.dificuldade](seg)}</p>
+    <p>${a.dificuldade === 'preco' ? OFERTA_PRECO() : OFERTA_DEFAULT(seg)}</p>
+
+    <div class="callout danger">
+      <div class="callout-label mono">O custo do seu tempo</div>
+      <div class="callout-figure serif">${a.tempo_gasto}h/semana</div>
+      <p style="margin:0 0 6px;">Você gasta cerca de ${a.tempo_gasto} horas por semana gravando, editando e pensando no que postar, sem uma estratégia clara. Em um ano, são aproximadamente <b>${horasAno} horas</b>. Esse tempo podia estar atendendo cliente, descansando, ou sendo usado com um sistema que não depende só de você lembrar todo dia.</p>
+    </div>
+
+    <div class="callout">
+      <div class="callout-label mono">Quanto dinheiro pode estar escapando por mês</div>
+      <div class="callout-figure serif">+R$ ${monthly.toLocaleString('pt-BR')}/mês</div>
+      <p style="margin:0 0 6px;">Com o ticket médio que você informou (${ticketFmt}) e resolvendo "${DIFICULDADE_LABEL[a.dificuldade]}", ${nome} pode chegar perto de <b>R$ ${q90.toLocaleString('pt-BR')}</b> em 90 dias e <b>R$ ${ano.toLocaleString('pt-BR')}</b> em 12 meses, só corrigindo esse ponto.</p>
+      <div class="callout-note">Isso é uma estimativa baseada no que você respondeu, não é promessa nem garantia. Serve pra mostrar o tamanho da oportunidade.</div>
+    </div>
+
+    <h2>O que postar (pro seu tipo de negócio)</h2>
+    <p>O ideal pra ${seg.art} ${seg.label} é de 4 a 6 vídeos curtos por semana, feitos com celular, boa luz, e corte rápido. Foco em Reels no Instagram.</p>
+    <ul>
+      <li><b>Mostrar que entende do assunto:</b> ${seg.pilares.autoridade}.</li>
+      <li><b>Bastidor:</b> ${seg.pilares.bastidores}.</li>
+      <li><b>Prova real:</b> ${seg.pilares.prova_social}.</li>
+      <li><b>Dica útil:</b> ${seg.pilares.educacao}.</li>
+      <li><b>Tirar dúvida de preço:</b> ${seg.pilares.objecoes}.</li>
+    </ul>
+
+    <h2>O que fazer, em ordem</h2>
+    <h3>Primeiros 30 dias</h3>
+    <ul>
+      <li>Resolver primeiro "${DIFICULDADE_LABEL[a.dificuldade]}", porque é o que mais está custando dinheiro agora.</li>
+      <li>Olhar os 3 conteúdos que mais deram resultado nos últimos 60 dias e repetir a fórmula.</li>
+      <li>Definir um horário fixo pra responder o WhatsApp, sem deixar contato esfriar.</li>
+    </ul>
+    <h3>Em 90 dias</h3>
+    <ul>
+      <li>Deixar claro, numa frase só, por que escolher ${seg.art} ${seg.label} e não o concorrente.</li>
+      <li>Ter um calendário fixo de conteúdo, sem depender de lembrar todo dia.</li>
+    </ul>
+    <h3>Em 12 meses</h3>
+    <ul><li>Estar no caminho de ${META_LABEL[a.meta]}, revisando o plano a cada 3 meses.</li></ul>
+
+    <div class="diy-box">
+      <h3 class="mono">DÁ PRA FAZER SOZINHO?</h3>
+      <p>Sim, uma parte dá. Responder mais rápido, repetir o que já deu certo, postar com mais frequência, isso você consegue começar hoje sozinho, sem pagar nada. Mas a parte que exige olhar de fora, tipo definir um posicionamento que realmente diferencie ${seg.art} ${seg.label}, corrigir o vazamento no meio do funil, e montar um sistema que não trave quando você não tiver tempo, é onde a maioria empaca sozinha. Não por falta de esforço, mas porque é difícil enxergar o próprio negócio de fora.</p>
+    </div>
+
+    <h2>Resumo direto</h2>
+    <p><b>Maior problema:</b> ${DIFICULDADE_LABEL[a.dificuldade]}.</p>
+    <p><b>Maior chance:</b> +R$ ${monthly.toLocaleString('pt-BR')}/mês só corrigindo esse ponto, sem precisar reinventar o negócio.</p>
+    <p><b>O que mais custa caro sem você perceber:</b> ${a.resultado === 'nada' || a.resultado === 'naosei' || a.metricas === 'nao' ? 'produzir conteúdo sem saber o que dá retorno' : 'não ter um processo por trás do que já funciona'}.</p>
+  `;
+
+  const cta = document.createElement('div');
+  cta.className = 'cta-card';
+  cta.innerHTML = `
+    <p class="strong-line">${nome}, pelas suas próprias contas, cada mês parado nesse ponto é cerca de R$ ${monthly.toLocaleString('pt-BR')} que não entram. Em um ano, isso vira R$ ${ano.toLocaleString('pt-BR')}.</p>
+    <p>Você pode tentar sozinho, o caminho tá descrito acima. Mas o que esse diagnóstico mostra não é um detalhe pra ajustar no domingo à noite, é um problema estrutural que, sem um trabalho sério e acompanhado de perto, tende a continuar do jeito que está. Se quiser tratar isso com a seriedade que merece, me chama. Atendo em todo o Rio de Janeiro, onde você estiver.</p>
+    <a class="whatsapp-btn" href="${whatsUrl}" target="_blank" rel="noopener">💬 Enviar meu diagnóstico completo pro Wallace</a>
+    <a class="restart-link" href="${instaUrl}" target="_blank" rel="noopener" style="opacity:.85;">ou me segue no Instagram: @wallaceassis.co</a>
+    <button class="restart-link" id="restartBtn">Fazer um novo diagnóstico</button>
+  `;
+
+  stream.appendChild(doc);
+  stream.appendChild(cta);
+  scrollBottom();
+  document.getElementById('restartBtn').addEventListener('click', () => window.location.reload());
+}
+</script>
+</body>
+</html>

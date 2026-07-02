@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>wallaceassis.co — Diagnóstico Estratégico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0E1116;
+    --surface:#161B22;
+    --surface-2:#1D232C;
+    --border:#2A313C;
+    --text:#F3F1EA;
+    --muted:#8B93A3;
+    --gold:#C9A15A;
+    --teal:#4E9C82;
+    --rust:#C1622D;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;background:var(--bg);color:var(--text);}
+  body{
+    font-family:'Inter',sans-serif;
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--gold);color:#0E1116;}
+  h1,h2,h3{font-family:'Fraunces',serif;font-weight:500;letter-spacing:-0.01em;margin:0;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  #app{position:relative;width:100vw;height:100vh;display:flex;flex-direction:column;}
+
+  /* ---- progress rail (signature element) ---- */
+  .rail{
+    display:flex;gap:6px;padding:16px 20px 0;flex-shrink:0;
+  }
+  .rail-seg{flex:1;position:relative;}
+  .rail-seg .track{height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+  .rail-seg .fill{height:100%;width:0%;background:var(--gold);transition:width .5s cubic-bezier(.4,0,.2,1);}
+  .rail-seg .label{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);margin-top:8px;transition:color .3s;
+  }
+  .rail-seg.active .label{color:var(--gold);}
+  .rail-seg.done .fill{width:100%;}
+
+  /* ---- slide viewport ---- */
+  .viewport{flex:1;position:relative;overflow:hidden;}
+  .slide{
+    position:absolute;inset:0;
+    padding:56px 8vw 40px;
+    display:flex;flex-direction:column;
+    opacity:0;pointer-events:none;
+    transform:translateY(14px);
+    transition:opacity .45s ease, transform .45s ease;
+    overflow-y:auto;
+  }
+  .slide.active{opacity:1;pointer-events:auto;transform:translateY(0);}
+  .slide-inner{max-width:1040px;margin:0 auto;width:100%;flex:1;display:flex;flex-direction:column;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;
+  }
+  .slide h2{font-size:clamp(28px,3.4vw,44px);line-height:1.12;margin-bottom:18px;}
+  .lede{font-size:18px;line-height:1.6;color:var(--muted);max-width:680px;margin-bottom:8px;}
+
+  /* ---- nav ---- */
+  .nav{
+    flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+    padding:14px 8vw 22px;
+  }
+  .nav-btn{
+    background:var(--surface);border:1px solid var(--border);color:var(--text);
+    width:44px;height:44px;border-radius:50%;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;font-size:18px;
+    transition:background .2s, border-color .2s;
+  }
+  .nav-btn:hover{background:var(--surface-2);border-color:var(--gold);}
+  .nav-btn:disabled{opacity:.25;cursor:default;}
+  .nav-btn:disabled:hover{background:var(--surface);border-color:var(--border);}
+  .dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:60vw;}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--border);cursor:pointer;transition:background .2s, transform .2s;}
+  .dot.active{background:var(--gold);transform:scale(1.5);}
+  .slide-count{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);}
+
+  /* ---- cover ---- */
+  .cover{justify-content:center;align-items:flex-start;}
+  .cover .mark{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:28px;}
+  .cover h1{font-size:clamp(38px,6vw,74px);line-height:1.04;margin-bottom:22px;max-width:820px;}
+  .cover h1 em{font-style:normal;color:var(--gold);}
+  .cover .tagline{
+    display:flex;gap:10px;align-items:center;color:var(--muted);font-size:16px;margin-bottom:44px;
+  }
+  .cover .tagline span:nth-child(2n){color:var(--border);}
+  .cover-meta{display:flex;gap:48px;border-top:1px solid var(--border);padding-top:22px;width:100%;max-width:640px;flex-wrap:wrap;}
+  .cover-meta .field label{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+  .cover-meta input{
+    background:none;border:none;border-bottom:1px solid var(--border);color:var(--text);
+    font-family:'Fraunces',serif;font-size:19px;padding:2px 0;min-width:200px;outline:none;
+  }
+  .cover-meta input:focus{border-color:var(--gold);}
+
+  /* ---- generic cards ---- */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px 26px;}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  @media(max-width:800px){.grid-2,.grid-3{grid-template-columns:1fr;}}
+
+  /* ---- conceito ---- */
+  .not-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;}
+  .not-chip{
+    border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--muted);
+    font-size:15px;display:flex;align-items:center;gap:10px;
+  }
+  .not-chip::before{content:'×';color:var(--rust);font-family:'IBM Plex Mono',monospace;font-weight:600;}
+  .thesis-line{font-family:'Fraunces',serif;font-size:clamp(22px,2.4vw,30px);line-height:1.3;color:var(--text);margin:28px 0;max-width:760px;font-style:italic;border-left:2px solid var(--gold);padding-left:24px;}
+
+  /* ---- diagnostic blocks ---- */
+  .qcard{border-bottom:1px solid var(--border);padding:20px 0;}
+  .qcard:last-child{border-bottom:none;}
+  .qcard .qnum{font-family:'IBM Plex Mono',monospace;color:var(--gold);font-size:13px;margin-bottom:6px;}
+  .qcard .qtext{font-size:19px;line-height:1.42;margin-bottom:8px;}
+  .qcard .qwhy{font-size:14px;color:var(--muted);line-height:1.5;}
+  .qcard .qwhy::before{content:'Por que perguntar: ';color:var(--teal);}
+  .notes-area{margin-top:20px;}
+  .notes-area label{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+  textarea.notes{
+    width:100%;min-height:90px;background:var(--surface);border:1px solid var(--border);border-radius:10px;
+    color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:12px 14px;resize:vertical;outline:none;
+  }
+  textarea.notes:focus{border-color:var(--gold);}
+  .ans-wrap{margin-top:12px;}
+  .ans-wrap label{display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+  textarea.qanswer{
+    width:100%;min-height:56px;background:var(--surface);border:1px solid var(--border);border-radius:9px;
+    color:var(--text);font-family:'Inter',sans-serif;font-size:14.5px;padding:10px 13px;resize:vertical;outline:none;
+    transition:border-color .2s, background .2s;
+  }
+  textarea.qanswer:focus{border-color:var(--gold);background:var(--surface-2);}
+  textarea.qanswer:not(:placeholder-shown){border-color:var(--border);background:var(--surface-2);}
+
+  /* ---- checklist ---- */
+  .check-list{display:flex;flex-direction:column;gap:0;margin-top:8px;}
+  .check-item{
+    display:flex;align-items:center;gap:14px;padding:15px 4px;border-bottom:1px solid var(--border);cursor:pointer;
+  }
+  .check-item:last-child{border-bottom:none;}
+  .box{
+    width:22px;height:22px;border-radius:6px;border:1.5px solid var(--border);flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;transition:all .15s;
+  }
+  .box.checked{background:var(--gold);border-color:var(--gold);}
+  .box.checked::after{content:'✓';color:#0E1116;font-size:13px;font-weight:700;}
+  .check-item .cname{font-size:17px;}
+  .check-item .ccat{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+
+  /* ---- solucoes ---- */
+  .sol-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px 28px;margin-bottom:18px;}
+  .sol-card h3{font-size:21px;margin-bottom:14px;color:var(--gold);}
+  .sol-row{display:grid;grid-template-columns:110px 1fr;gap:16px;padding:9px 0;border-top:1px solid var(--border);}
+  .sol-row:first-of-type{border-top:none;}
+  .sol-row .k{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-top:2px;}
+  .sol-row .v{font-size:15px;line-height:1.55;}
+  .empty-state{color:var(--muted);font-size:16px;padding:40px 0;text-align:center;border:1px dashed var(--border);border-radius:12px;}
+
+  /* ---- ecosystem ---- */
+  .eco-wrap{position:relative;flex:1;min-height:420px;display:flex;align-items:center;justify-content:center;}
+  .eco-center{
+    width:150px;height:150px;border-radius:50%;background:var(--gold);color:#0E1116;
+    display:flex;align-items:center;justify-content:center;text-align:center;font-family:'Fraunces',serif;
+    font-size:16px;font-weight:500;line-height:1.25;padding:10px;z-index:2;position:relative;
+  }
+  .eco-node{
+    position:absolute;width:150px;padding:14px 16px;border-radius:12px;background:var(--surface);
+    border:1px solid var(--border);text-align:left;z-index:2;
+  }
+  .eco-node .t{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+  .eco-node .d{font-size:12.5px;color:var(--muted);line-height:1.4;}
+  svg.eco-lines{position:absolute;inset:0;width:100%;height:100%;z-index:1;}
+
+  /* ---- comparativo ---- */
+  table.compare{width:100%;border-collapse:collapse;margin-top:10px;}
+  table.compare th{
+    text-align:left;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--border);
+  }
+  table.compare td{padding:13px 12px;border-bottom:1px solid var(--border);font-size:14.5px;vertical-align:middle;}
+  table.compare tr:hover td{background:var(--surface);}
+  .compare-input{
+    background:var(--surface-2);border:1px solid var(--border);border-radius:7px;color:var(--gold);
+    font-family:'IBM Plex Mono',monospace;padding:7px 10px;width:110px;outline:none;font-size:13.5px;
+  }
+  .compare-input:focus{border-color:var(--gold);}
+  .totals-row{display:flex;gap:16px;margin-top:22px;flex-wrap:wrap;}
+  .total-card{flex:1;min-width:220px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;}
+  .total-card .lbl{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  .total-card .amt{font-family:'Fraunces',serif;font-size:28px;margin-top:6px;}
+  .total-card.you{border-color:var(--gold);}
+  .total-card.you .amt{color:var(--gold);}
+  .foot-note{font-size:12px;color:var(--muted);margin-top:16px;line-height:1.5;}
+
+  /* ---- proposta ---- */
+  .prop-list{margin-top:10px;}
+  .prop-item{
+    display:flex;align-items:center;justify-content:space-between;padding:14px 4px;border-bottom:1px solid var(--border);
+  }
+  .prop-item .name{font-size:15.5px;}
+  .prop-item .amt{font-family:'IBM Plex Mono',monospace;color:var(--gold);}
+  .prop-total{
+    display:flex;justify-content:space-between;align-items:baseline;margin-top:20px;padding-top:20px;border-top:1.5px solid var(--gold);
+  }
+  .prop-total .lbl{font-family:'Fraunces',serif;font-size:20px;}
+  .prop-total .val{font-family:'Fraunces',serif;font-size:34px;color:var(--gold);}
+
+  /* ---- objections / faq ---- */
+  .acc{border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;background:var(--surface);}
+  .acc-head{padding:16px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;gap:12px;}
+  .acc-head .q{font-size:15.5px;font-family:'Fraunces',serif;}
+  .acc-head .plus{font-family:'IBM Plex Mono',monospace;color:var(--gold);flex-shrink:0;transition:transform .2s;}
+  .acc.open .plus{transform:rotate(45deg);}
+  .acc-body{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+  .acc.open .acc-body{max-height:900px;}
+  .acc-body p{padding:0 20px 18px;margin:0;color:var(--muted);font-size:14.5px;line-height:1.6;}
+
+  /* ---- closing ---- */
+  .closing{justify-content:center;}
+  .closing .neg-list{margin-bottom:22px;}
+  .closing .neg-list div{font-size:16px;color:var(--muted);margin-bottom:6px;}
+  .closing .neg-list div::before{content:'✕ ';color:var(--rust);}
+  .closing .pos{font-family:'Fraunces',serif;font-size:clamp(26px,3.2vw,40px);color:var(--gold);margin:8px 0 26px;line-height:1.25;}
+  .closing .sign{border-top:1px solid var(--border);padding-top:20px;color:var(--muted);font-size:14px;margin-top:20px;}
+
+  .scroll-fade{position:relative;flex:1;overflow-y:auto;padding-right:4px;}
+
+  /* ---- planos ---- */
+  .plans-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:8px;}
+  @media(max-width:900px){.plans-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:600px){.plans-grid{grid-template-columns:1fr;}}
+  .plan-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 18px;
+    cursor:pointer;transition:border-color .15s, transform .15s, background .15s;display:flex;flex-direction:column;
+  }
+  .plan-card:hover{border-color:var(--gold);}
+  .plan-card.selected{border-color:var(--gold);background:linear-gradient(180deg, rgba(201,161,90,0.1), var(--surface));transform:translateY(-2px);}
+  .plan-card.highlight .plan-name::after{content:'sugerido';font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold);border-radius:20px;padding:2px 8px;margin-left:8px;vertical-align:middle;}
+  .plan-name{font-family:'Fraunces',serif;font-size:19px;}
+  .plan-tagline{color:var(--muted);font-size:12.5px;margin:4px 0 14px;line-height:1.4;min-height:32px;}
+  .plan-price{font-family:'Fraunces',serif;font-size:26px;color:var(--gold);margin-bottom:14px;}
+  .plan-price span{font-family:'Inter',sans-serif;font-size:12px;color:var(--muted);}
+  .plan-features{list-style:none;margin:0;padding:0;flex:1;}
+  .plan-features li{font-size:12.5px;line-height:1.5;color:var(--text);padding:7px 0;border-top:1px solid var(--border);}
+  .plan-features li:first-child{border-top:none;}
+  .addons-wrap{margin-top:26px;}
+  .addon-row{
+    display:flex;align-items:center;gap:14px;padding:13px 4px;border-bottom:1px solid var(--border);cursor:pointer;
+  }
+  .addon-row:last-child{border-bottom:none;}
+  .addon-row .info{flex:1;}
+  .addon-row .name{font-size:15px;}
+  .addon-row .desc{font-size:12.5px;color:var(--muted);margin-top:2px;}
+  .addon-row .price{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--gold);white-space:nowrap;}
+  .addon-row.included{cursor:default;opacity:.55;}
+  .addon-row.included .price{color:var(--teal);}
+  .total-bar{
+    margin-top:24px;border:1.5px solid var(--gold);border-radius:14px;padding:18px 22px;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+    background:linear-gradient(180deg, rgba(201,161,90,0.08), transparent);
+  }
+  .total-bar .tb-label{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  .total-bar .tb-amt{font-family:'Fraunces',serif;font-size:30px;color:var(--gold);}
+  .total-bar .tb-once{font-size:12.5px;color:var(--muted);margin-top:4px;}
+
+  /* ---- section-sub reused for objections/faq (kept for possible future use) ---- */
+  .section-sub{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin:26px 0 12px;}
+  .section-sub:first-child{margin-top:0;}
+
+  /* ---- próximos passos ---- */
+  .steps-list{margin-top:6px;}
+  .step-item{display:flex;gap:18px;padding:16px 0;border-top:1px solid var(--border);}
+  .step-item:first-child{border-top:none;}
+  .step-num{font-family:'Fraunces',serif;font-size:21px;color:var(--gold);flex-shrink:0;width:30px;}
+  .step-title{font-size:16px;margin-bottom:4px;}
+  .step-desc{font-size:13.5px;color:var(--muted);line-height:1.5;}
+  .pay-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:10px;}
+  @media(max-width:800px){.pay-grid{grid-template-columns:1fr;}}
+  .pay-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+  .pay-card .pname{font-size:15px;margin-bottom:6px;}
+  .pay-card .pdesc{font-size:12.5px;color:var(--muted);line-height:1.5;}
+  .pay-rule{margin-top:16px;padding:14px 16px;border:1px dashed var(--border);border-radius:10px;font-size:13.5px;color:var(--muted);}
+
+  @media(max-width:700px){
+    .slide{padding:40px 5vw 24px;}
+    .nav{padding:12px 5vw 18px;}
+    .rail{padding:12px 5vw 0;}
+    .grid-2,.grid-3{grid-template-columns:1fr;}
+    .sol-row{grid-template-columns:1fr;gap:4px;}
+    table.compare{font-size:12px;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="rail" id="rail"></div>
+  <div class="viewport" id="viewport"></div>
+  <div class="nav">
+    <button class="nav-btn" id="prevBtn">‹</button>
+    <div class="dots" id="dots"></div>
+    <span class="slide-count mono" id="count"></span>
+    <button class="nav-btn" id="nextBtn">›</button>
+  </div>
+</div>
+
+<script>
+/* ============================= DATA ============================= */
+
+const SERVICES = [
+  {id:'diagnostico', name:'Diagnóstico de Marketing', cat:'Estratégia', low:800, high:2000, sugg:800, freq:'projeto',
+    problem:'A empresa toma decisões de comunicação por impulso, sem entender de verdade o que atrai ou afasta o cliente.',
+    consequence:'Investe tempo e dinheiro em ações soltas, sem saber o que está funcionando e o que está sendo desperdiçado.',
+    solution:'Um raio-x completo do negócio, da marca e do mercado, feito antes de qualquer ação prática.',
+    benefits:'Clareza sobre o que priorizar. Decisões baseadas em diagnóstico, não em achismo.',
+    impact:'Todo investimento seguinte passa a ter direção, reduzindo erro e retrabalho.'},
+  {id:'posicionamento', name:'Posicionamento', cat:'Estratégia', low:1500, high:4000, sugg:1800, freq:'projeto',
+    problem:'O cliente não sabe, em poucas palavras, por que deveria escolher essa empresa e não a concorrente.',
+    consequence:'A comunicação fica genérica e o negócio passa a competir por preço, em vez de competir por valor.',
+    solution:'Definição clara do território da marca, do tom de voz e da promessa única que ela representa.',
+    benefits:'Comunicação consistente em qualquer canal. Reconhecimento mais rápido. Menos objeção de preço.',
+    impact:'A marca deixa de ser "mais uma opção" e passa a ser a primeira lembrança do cliente.'},
+  {id:'conteudo', name:'Estratégia de Conteúdo', cat:'Estratégia', low:600, high:1500, sugg:700, freq:'mensal',
+    problem:'As postagens são feitas sem plano, respondendo à pressão do dia, sem ligação com um objetivo maior.',
+    consequence:'O perfil cresce sem direção clara e atrai o público errado, ou nenhum público relevante.',
+    solution:'Um plano editorial com pilares de conteúdo ligados diretamente aos objetivos comerciais do negócio.',
+    benefits:'Conteúdo constante e coerente. Menos tempo perdido decidindo "o que postar hoje".',
+    impact:'Cada publicação passa a empurrar o negócio em uma direção, não apenas ocupar espaço no feed.'},
+  {id:'consultoria', name:'Consultoria Estratégica', cat:'Estratégia', low:800, high:2000, sugg:900, freq:'mensal',
+    problem:'O dono do negócio toma decisões de marketing sozinho, sem um olhar externo e especializado.',
+    consequence:'Erros se repetem, oportunidades passam despercebidas e decisões demoram mais do que deveriam.',
+    solution:'Acompanhamento periódico com um parceiro estratégico que entende de marketing e entende do negócio.',
+    benefits:'Decisões mais rápidas e seguras. Correção de rota antes que o erro custe caro.',
+    impact:'O negócio ganha um parceiro de visão de longo prazo, não apenas um fornecedor de tarefas.'},
+  {id:'audiovisual', name:'Produção Audiovisual', cat:'Produção', low:1200, high:3000, sugg:1400, freq:'mensal',
+    problem:'A empresa não tem material em vídeo que mostre, de verdade, a qualidade do que ela entrega.',
+    consequence:'O cliente em potencial não consegue "sentir" o produto ou serviço antes de decidir, e desconfia.',
+    solution:'Produção de vídeos profissionais que mostram o negócio na prática, com direção e propósito.',
+    benefits:'Prova social visual. Mais confiança do público. Material reaproveitável em vários canais.',
+    impact:'O vídeo passa a vender antes mesmo da primeira conversa com o cliente.'},
+  {id:'edicao', name:'Edição de Vídeos', cat:'Produção', low:600, high:1800, sugg:700, freq:'mensal',
+    problem:'O material bruto existe, mas não é transformado em algo que prende atenção e comunica bem.',
+    consequence:'Horas de gravação se perdem em arquivos que nunca viram conteúdo, ou saem sem qualidade.',
+    solution:'Edição profissional que transforma gravação bruta em conteúdo pronto para publicar e converter.',
+    benefits:'Ritmo, cortes certos, legendas e identidade visual aplicados com consistência.',
+    impact:'Cada vídeo publicado passa a representar a marca com o padrão que ela merece.'},
+  {id:'criativos', name:'Criação de Criativos', cat:'Produção', low:400, high:1200, sugg:500, freq:'mensal',
+    problem:'As artes usadas nas redes e no material de divulgação são feitas às pressas, sem padrão visual.',
+    consequence:'A marca parece amadora, mesmo quando o produto ou serviço é de altíssima qualidade.',
+    solution:'Criativos pensados para cada objetivo, com identidade visual aplicada de forma consistente.',
+    benefits:'Percepção de profissionalismo. Maior reconhecimento visual da marca.',
+    impact:'O visual passa a comunicar qualidade antes mesmo do texto ser lido.'},
+  {id:'instagram', name:'Gestão de Instagram', cat:'Presença Digital', low:800, high:2500, sugg:900, freq:'mensal',
+    problem:'Quando o perfil existe, não recebe constância nem estratégia. Quando não existe, o negócio simplesmente não está onde boa parte do público procura.',
+    consequence:'Sem isso, seguidores não crescem (ou nem existem), engajamento não acontece, e quem pesquisa a empresa não encontra nada.',
+    solution:'Gestão ativa do Instagram, com planejamento, publicação, interação e acompanhamento de métricas.',
+    benefits:'Presença constante. Relacionamento real com o público. Dados para ajustar a estratégia.',
+    impact:'O Instagram deixa de ser custo de tempo e passa a gerar conversa com cliente em potencial.'},
+  {id:'padronizacao', name:'Padronização Visual', cat:'Presença Digital', low:1500, high:4000, sugg:1200, freq:'projeto',
+    problem:'Os materiais da empresa, quando existem, não seguem um padrão: cores, fontes e estilos não conversam entre si. Quando não existem, a marca ainda não tem uma cara definida.',
+    consequence:'O cliente demora mais para reconhecer a marca, e a comunicação perde força.',
+    solution:'Um padrão visual definido e aplicado em todos os pontos de contato com o público.',
+    benefits:'Reconhecimento mais rápido. Aparência mais profissional. Economia de tempo em cada nova peça.',
+    impact:'A marca passa a ser identificada em segundos, em qualquer lugar que apareça.'},
+  {id:'paginas', name:'Páginas de Conversão', cat:'Presença Digital', low:1500, high:5000, sugg:1000, freq:'projeto',
+    problem:'Quando alguém se interessa pelo negócio, não existe um lugar pensado para transformar esse interesse em contato ou venda.',
+    consequence:'O interesse se perde no meio do caminho, entre um story visto e uma mensagem de WhatsApp esquecida.',
+    solution:'Páginas construídas com um único objetivo: conduzir o visitante até a ação certa.',
+    benefits:'Mais conversões com o mesmo volume de interessados. Processo de contato mais organizado.',
+    impact:'Cada real investido em atrair atenção passa a ter um destino que converte.'},
+  {id:'copywriting', name:'Copywriting', cat:'Comunicação', low:500, high:1500, sugg:600, freq:'mensal',
+    problem:'Os textos usados na comunicação da empresa informam, mas não convencem nem conduzem à ação.',
+    consequence:'O público lê, rola a tela e segue em frente, sem sentir necessidade de agir agora.',
+    solution:'Textos estratégicos, escritos para gerar entendimento, desejo e ação em cada ponto de contato.',
+    benefits:'Comunicação mais persuasiva, sem parecer forçada ou artificial.',
+    impact:'As palavras passam a vender junto com a imagem, não apenas descrevê-la.'},
+];
+
+const DIAG_BLOCKS = [
+  {title:'Empresa, Produtos & Concorrência', tags:'Empresa · Modelo de Negócio · Produtos ou Serviços · Diferenciais · Concorrência', qs:[
+    {q:'Como a empresa começou, e qual problema ela resolve hoje?', w:'a origem revela a história que pode virar conteúdo e autoridade.'},
+    {q:'Como o negócio gera receita hoje: produto, serviço, assinatura, projeto?', w:'o modelo de negócio define que tipo de comunicação converte melhor.'},
+    {q:'Quantos anos de mercado, e qual foi a maior mudança nesse período?', w:'tempo de mercado é prova social. Se não está sendo comunicado, está sendo desperdiçado.'},
+    {q:'Quais são os 3 produtos ou serviços mais vendidos hoje?', w:'mostra onde concentrar o conteúdo e a produção de vídeo.'},
+    {q:'O que essa empresa faz que a concorrência não faz, ou faz pior?', w:'sem diferencial claro, a comunicação vira genérica e compete só por preço.'},
+    {q:'Quem são os 3 principais concorrentes, e o que eles comunicam bem?', w:'mapear a concorrência mostra o espaço vazio que a marca pode ocupar.'},
+  ]},
+  {title:'Público-Alvo & Comunicação', tags:'Público-Alvo · Comunicação', qs:[
+    {q:'Quem é o cliente que mais compra e mais indica hoje?', w:'toda comunicação eficaz fala com uma pessoa específica, não com "todo mundo".'},
+    {q:'Como esse cliente costuma decidir a compra: pesquisa, indicação, impulso?', w:'define se o foco deve ser conteúdo educativo, prova social ou urgência.'},
+    {q:'Qual é o tom que a marca usa hoje: sério, descontraído, técnico, próximo?', w:'consistência de tom é o que torna a marca reconhecível.'},
+  ]},
+  {title:'Comercial, Vendas, Marketing & Conteúdo', tags:'Processo Comercial · Captação de Clientes · Processo de Vendas · Atendimento · Marketing · Conteúdo', qs:[
+    {q:'Como um cliente novo chega até vocês hoje, na maioria das vezes?', w:'mostra se o negócio depende de um único canal, o que é um risco.'},
+    {q:'O que acontece entre o primeiro contato e o fechamento da venda?', w:'gargalos no meio do caminho custam clientes que já estavam quase comprando.'},
+    {q:'Como é feito o atendimento depois que a venda acontece?', w:'cliente bem atendido depois da venda vira conteúdo, indicação e recompra.'},
+    {q:'O que já foi tentado em marketing até hoje, e o que funcionou ou não?', w:'evita repetir erro e mostra o que já foi testado sem precisar reinventar.'},
+    {q:'Quem hoje é responsável por postar, gravar ou pensar o conteúdo?', w:'revela se existe estrutura, ou se tudo depende do tempo livre de alguém.'},
+    {q:'A empresa publica algum conteúdo hoje? Se sim, com que frequência? Se não, o que impediu até agora?', w:'frequência irregular, ou a ausência total, são pontos de partida diferentes e mudam o plano.'},
+  ]},
+  {title:'Presença Digital, Tempo & Equipe', tags:'Presença Digital · Tempo Disponível · Equipe', qs:[
+    {q:'Hoje esse negócio já tem alguma presença digital (Instagram, site, WhatsApp Business), ou estaria começando do zero?', w:'define se a conversa é sobre construir algo novo ou reorganizar o que já existe.'},
+    {q:'Quando alguém pesquisa essa empresa agora, o que encontra?', w:'a primeira impressão digital já filtra quem segue ou desiste do contato, mesmo quando a resposta é "nada".'},
+    {q:'Existe algum lugar pensado para transformar esse interesse em contato?', w:'sem destino claro, o interesse gerado nas redes se perde no caminho.'},
+    {q:'Quantas horas por semana o dono ou a equipe dedica hoje à comunicação?', w:'mede o quanto isso está sobrecarregando quem deveria estar cuidando do negócio.'},
+    {q:'Existe alguém com função específica para isso, ou é tarefa extra de alguém?', w:'tarefa extra costuma ser a primeira a ser abandonada quando o dia aperta.'},
+  ]},
+  {title:'Objetivos, Dores & Orçamento', tags:'Objetivos · Metas · Crescimento · Dores · Gargalos · Orçamento', qs:[
+    {q:'Onde esse negócio precisa estar em 12 meses para ser considerado um sucesso?', w:'sem meta clara, qualquer ação de marketing parece válida, mesmo sem gerar resultado real.'},
+    {q:'O que precisa crescer primeiro: número de clientes, ticket médio, ou reconhecimento de marca?', w:'define a prioridade estratégica antes de qualquer execução.'},
+    {q:'Qual é a maior dor hoje quando o assunto é comunicação ou marketing?', w:'nomear a dor é o primeiro passo para o cliente reconhecer o valor da solução.'},
+    {q:'O que trava esse negócio de crescer mais rápido hoje?', w:'identifica se o gargalo é de marketing, comercial, operacional ou de mentalidade.'},
+    {q:'Existe um valor mensal já reservado, mesmo que aproximado, para presença digital?', w:'alinha expectativa antes da proposta, evitando desgaste na hora do valor.'},
+  ]},
+];
+
+const FAQ = [
+  {q:'Isso garante mais vendas?', a:'Não. Meu trabalho gera atenção, interesse e contato: ele leva a pessoa certa até você. A venda em si depende de outro processo, o atendimento, a negociação, o time comercial do negócio. Marketing sozinho não vende, senão qualquer produto se venderia sozinho. É um trabalho colaborativo: eu cuido de trazer gente até a porta, o negócio cuida do que acontece dali pra frente.'},
+  {q:'Como pensar nesse investimento?', a:'Um único cliente bem fechado, dependendo do ticket do negócio, já pode cobrir o valor do plano inteiro no mês. Um advogado, por exemplo, costuma faturar algo perto de R$5.000 numa única causa. Se a presença digital ajudar a trazer só um cliente assim a mais por mês, o investimento já se pagou.'},
+  {q:'Vocês fazem tráfego pago?', a:'Não diretamente. Quando essa necessidade aparece no diagnóstico, ela é indicada como próximo passo, feito com parceiros especializados nessa etapa.'},
+  {q:'Preciso contratar o plano mais caro?', a:'Não. Os planos existem justamente para cada negócio entrar no nível que faz sentido agora, e subir quando fizer sentido.'},
+  {q:'Quanto tempo até ver resultado?', a:'Não dá pra cravar um prazo. Depende de coisas que estão comigo, como a estratégia e a constância, e de coisas que não estão, como a intenção de compra do cliente ou até um concorrente cobrando mais barato. O que dá pra afirmar: sem estratégia, fica tudo mais difícil. Como referência, a própria Meta (dona do Instagram) diz que leva uns 90 dias postando de 3 a 5 vezes por semana pra rede entender o perfil e começar a mostrar ele pra mais gente. Isso é o tempo mínimo pro trabalho começar a rodar, não uma promessa de resultado. Ninguém consegue garantir quando o próximo cliente vai aparecer.'},
+  {q:'Como funciona o contrato?', a:'Mensal, com o escopo do plano escolhido definido por escrito. Sem surpresa depois.'},
+  {q:'Isso substitui um funcionário interno?', a:'Não necessariamente. Pode complementar uma equipe existente, trazendo a direção estratégica que costuma faltar no dia a dia operacional.'},
+];
+
+/* ============================= PLANOS ============================= */
+
+const PLANS = [
+  {id:'essencial', name:'Essencial', price:1300, tagline:'Para começar com consistência.', features:[
+    '4 vídeos por mês (1 por semana), gravação e edição completas',
+    'Instagram: planejamento do que será postado e publicação no perfil',
+    'Estratégia: eu defino, coordeno e executo, do início ao fim',
+  ]},
+  {id:'estrategico', name:'Estratégico', price:2200, tagline:'Para quem já sente que precisa de ritmo.', features:[
+    '8 vídeos por mês (2 por semana), gravação e edição completas',
+    'Instagram: planejamento e publicação',
+    'Estratégia definida, coordenada e executada por mim, com reunião mensal de ajuste',
+  ]},
+  {id:'avancado', name:'Avançado', price:3000, tagline:'O sistema completo rodando todo mês.', highlight:true, features:[
+    '12 vídeos por mês (3 por semana), gravação e edição completas',
+    'Instagram: planejamento e publicação',
+    'Estratégia definida, coordenada e executada por mim',
+  ]},
+  {id:'completo', name:'Completo', price:5500, tagline:'Alguém cuidando de absolutamente tudo.', features:[
+    'Tudo do plano Avançado',
+    'Página de vendas com quiz integrado, incluída na mensalidade',
+    'Identidade de marca (posicionamento + padrão visual), incluída na mensalidade',
+    'Interação diária: 1h/dia respondendo comentários, curtidas e mensagens',
+    'Todas as redes do negócio, cada uma com sua própria estratégia',
+    'Marketing contínuo: novas ações e materiais ao longo do tempo',
+  ]},
+];
+
+const ADDONS = [
+  {id:'interacao', name:'Interação diária no Instagram', desc:'1h/dia respondendo comentário, curtida e mensagem.', price:900, unit:'/mês'},
+  {id:'pagina', name:'Página de vendas com quiz integrado', desc:'Link pra bio, informações do negócio, botão pro WhatsApp.', price:1200, unit:'pagamento único'},
+  {id:'identidade', name:'Identidade de marca', desc:'Posicionamento e padrão visual.', price:1500, unit:'pagamento único'},
+  {id:'rede_replica', name:'Replicar vídeo em outra rede', desc:'Mesmo conteúdo do Instagram, adaptado, sem estratégia própria.', price:400, unit:'/mês por rede'},
+  {id:'rede_propria', name:'Estratégia própria pra outra rede', desc:'Planejamento específico pra essa rede (TikTok, YouTube etc).', price:1200, unit:'/mês por rede'},
+];
+
+/* ============================= STATE ============================= */
+const state = {
+  slide: 0,
+  checked: new Set(),      // service ids marked as needs (Diagnóstico Final / Soluções)
+  selectedPlan: 'avancado',
+  selectedAddons: new Set(),
+};
+
+/* ============================= SLIDE BUILDERS ============================= */
+
+function fmt(n){ return 'R$ ' + Number(n).toLocaleString('pt-BR'); }
+
+function slideCover(){
+  return `
+  <div class="slide-inner cover">
+    <div class="mark">wallaceassis.co</div>
+    <h1>Diagnóstico<br><em>Estratégico.</em></h1>
+    <div class="tagline">
+      <span>Diagnóstico</span><span>·</span><span>Estratégia</span><span>·</span><span>Execução</span>
+    </div>
+    <div class="cover-meta">
+      <div class="field"><label>Cliente</label><input type="text" placeholder="Nome da empresa"></div>
+      <div class="field"><label>Responsável</label><input type="text" placeholder="Nome do contato"></div>
+      <div class="field"><label>Data</label><input type="text" placeholder="__ / __ / ____"></div>
+    </div>
+  </div>`;
+}
+
+function slideAbertura(){
+  return `
+  <div class="slide-inner">
+    <div class="eyebrow">Antes de começar</div>
+    <h2>Isto não é uma apresentação de vendas.</h2>
+    <p class="lede">É um diagnóstico estratégico. Nada será oferecido antes de este negócio ser compreendido a fundo: como ele funciona, onde trava e para onde precisa ir.</p>
+    <div class="grid-3" style="margin-top:32px;">
+      <div class="card"><div class="eyebrow" style="margin-bottom:8px;">01 · Diagnóstico</div><p style="color:var(--muted);font-size:14.5px;line-height:1.55;margin:0;">Entender o negócio antes de propor qualquer coisa.</p></div>
+      <div class="card"><div class="eyebrow" style="margin-bottom:8px;">02 · Estratégia</div><p style="color:var(--muted);font-size:14.5px;line-height:1.55;margin:0;">Traduzir o diagnóstico em direção clara e priorizada.</p></div>
+      <div class="card"><div class="eyebrow" style="margin-bottom:8px;">03 · Execução</div><p style="color:var(--muted);font-size:14.5px;line-height:1.55;margin:0;">Um plano construído sob medida, não um pacote genérico.</p></div>
+    </div>
+    <p class="lede" style="margin-top:36px;">A ordem importa: primeiro compreensão, depois recomendação.</p>
+  </div>`;
+}
+
+function slideConceito(){
+  return `
+  <div class="slide-inner">
+    <div class="eyebrow">Um ponto de partida</div>
+    <h2>O que é marketing, de verdade.</h2>
+    <div class="thesis-line">"Marketing é a estratégia que conecta uma empresa às pessoas certas, da forma certa, para gerar valor, clientes e crescimento."</div>
+    <p class="lede" style="margin-top:8px;">Marketing não é sinônimo de:</p>
+    <div class="not-grid">
+      <div class="not-chip">Instagram</div>
+      <div class="not-chip">Produção de vídeos</div>
+      <div class="not-chip">Design</div>
+      <div class="not-chip">Postagens</div>
+      <div class="not-chip">Tráfego pago</div>
+      <div class="not-chip">Vendas</div>
+    </div>
+    <p class="lede" style="margin-top:22px;">Esses elementos são ferramentas. Marketing é a estratégia que as integra em direção a um objetivo real de negócio, e cada serviço deste diagnóstico fortalece os demais: não são tarefas soltas, são um sistema.</p>
+  </div>`;
+}
+
+function slideDiag(block, idx){
+  const qs = block.qs.map((item,i)=>`
+    <div class="qcard">
+      <div class="qnum">Q${i+1}</div>
+      <div class="qtext">${item.q}</div>
+      <div class="qwhy">${item.w}</div>
+      <div class="ans-wrap">
+        <label>Resposta do cliente</label>
+        <textarea class="qanswer" placeholder="Anote aqui o que o cliente responder..."></textarea>
+      </div>
+    </div>`).join('');
+  return `
+  <div class="slide-inner">
+    <div class="eyebrow">Diagnóstico Estratégico · Bloco ${idx+1} de ${DIAG_BLOCKS.length}</div>
+    <h2>${block.title}</h2>
+    <p class="lede" style="margin-bottom:6px;">${block.tags}</p>
+    <div class="scroll-fade">
+      ${qs}
+    </div>
+  </div>`;
+}
+
+function slideDiagFinal(){
+  const items = SERVICES.map(s=>`
+    <div class="check-item" data-id="${s.id}">
+      <div class="box ${state.checked.has(s.id)?'checked':''}"></div>
+      <div class="cname">${s.name}</div>
+      <div class="ccat">${s.cat}</div>
+    </div>`).join('');
+  return `
+  <div class="slide-inner">
+    <div class="eyebrow">Síntese do diagnóstico</div>
+    <h2>O que este negócio precisa, de verdade.</h2>
+    <p class="lede">Marque, durante a conversa, cada necessidade real identificada.</p>
+    <div class="scroll-fade">
+      <div class="check-list">${items}</div>
+    </div>
+  </div>`;
+}
+
+function slideSolucoes(){
+  const chosen = SERVICES.filter(s=>state.checked.has(s.id));
+  let body;
+  if(chosen.length===0){
+    body = `<div class="empty-state">Nenhuma necessidade marcada ainda.<br>Volte ao Diagnóstico Final e marque o que foi identificado na conversa.</div>`;
+  } else {
+    body = chosen.map(s=>`
+      <div class="sol-card">
+        <h3>${s.name}</h3>
+        <div class="sol-row"><div class="k">Problema</div><div class="v">${s.problem}</div></div>
+        <div class="sol-row"><div class="k">Sem resolver</div><div class="v">${s.consequence}</div></div>
+        <div class="sol-row"><div class="k">Solução</div><div class="v">${s.solution}</div></div>
+        <div class="sol-row"><div class="k">Benefícios</div><div class="v">${s.benefits}</div></div>
+        <div class="sol-row"><div class="k">Impacto</div><div class="v">${s.impact}</div></div>
+      </div>`).join('');
+  }
+  return `
+  <div class="slide-inner">
+    <div class="eyebrow">Estratégia</div>
+    <h2>Soluções para o que foi identificado.</h2>
+    <div class="scroll-fade">${body}</div>
+  </div>`;
+}
+
+function calcPlanTotal(){
+  const plan = PLANS.find(p=>p.id===state.selectedPlan) || PLANS[0];
+  let monthly = plan.price;
+  let once = 0;
+  if(plan.id!=='completo'){
+    ADDONS.forEach(a=>{
+      if(state.selectedAddons.has(a.id)){
+        if(a.unit==='pagamento único') once += a.price;
+        else monthly += a.price;
+      }
+    });
+  }
+  return {plan, monthly, once};
+}
+
+function slidePlanos(){
+  const t = calcPlanTotal();
+  const planCards = PLANS.map(p=>`
+    <div class="plan-card ${p.id===state.selectedPlan?'selected':''} ${p.highlight?'highlight':''}" data-plan="${p.id}">
+      <div class="plan-name">${p.name}</div>
+      <div class="plan-tagline">${p.tagline}</div>
+      <div class="plan-price">${fmt(p.price)}<span>/mês</span></div>
+      <ul class="plan-features">${p.features.map(f=>`<li>${f}</li>`).join('')}</ul>
+    </div>`).join('');
+
+  const isCompleto = state.selectedPlan==='completo';
+  const addonRows = ADDONS.map(a=>{
+    if(isCompleto){
+      return `<div class="addon-row included"><div class="info"><div class="name">${a.name}</div><div class="desc">${a.desc}</div></div><div class="price">Incluído</div></div>`;
+    }
+    const isSel = state.selectedAddons.has(a.id);
+    return `
+    <div class="addon-row" data-addon="${a.id}">
+      <div class="box ${isSel?'checked':''}"></div>
+      <div class="info"><div class="name">${a.name}</div><div class="desc">${a.desc}</div></div>
+      <div class="price">${fmt(a.price)} <span style="color:var(--muted);">${a.unit}</span></div>
+    </div>`;
+  }).join('');
+
+  return `
+  <div class="slide-inner">
+    <div class="eyebrow">Execução</div>
+    <h2>Planos.</h2>
+    <p class="lede">Toque num plano pra selecionar. Os adicionais abaixo somam ao valor mensal, exceto no plano Completo, onde já vêm inclusos.</p>
+    <div class="scroll-fade">
+      <div class="plans-grid">${planCards}</div>
+
+      <div class="addons-wrap">
+        <div class="section-sub">Adicionais</div>
+        ${addonRows}
+      </div>
+
+      <div class="total-bar">
+        <div>
+          <div class="tb-label">Plano ${t.plan.name} + adicionais selecionados</div>
+          <div class="tb-amt">${fmt(t.monthly)}<span style="font-size:15px;color:var(--muted);"> /mês</span></div>
+          ${t.once>0 ? `<div class="tb-once">+ ${fmt(t.once)} em pagamento único</div>` : ''}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function slideObjFaq(){
+  const faqItems = FAQ.map((o,i)=>`
+    <div class="acc" data-i="faq${i}">
+      <div class="acc-head"><div class="q">${o.q}</div><div class="plus">+</div></div>
+      <div class="acc-body"><p>${o.a}</p></div>
+    </div>`).join('');
+  return `
+  <div class="slide-inner">
+    <div class="eyebrow">Execução</div>
+    <h2>Perguntas frequentes.</h2>
+    <p class="lede">Toque para expandir cada resposta durante a conversa.</p>
+    <div class="scroll-fade">
+      ${faqItems}
+    </div>
+  </div>`;
+}
+
+const PROXIMOS_PASSOS = [
+  {title:'Contrato assinado', desc:'Formaliza o plano escolhido, os valores e o que está incluso.'},
+  {title:'Primeiro pagamento', desc:'A entrada (quando tiver implementação) e/ou a primeira mensalidade.'},
+  {title:'Reunião de início', desc:'Alinhamento de expectativas, coleta de acessos e materiais: login do Instagram, referências, o que for preciso.'},
+  {title:'Implementação inicial', desc:'Quando o plano inclui: construção da página de vendas, do quiz e da identidade de marca. Isso acontece antes do ciclo mensal começar, não é entregue no primeiro dia.'},
+  {title:'Início da produção mensal', desc:'Primeira leva de vídeos, Instagram e estratégia rodando.'},
+  {title:'Primeira entrega', desc:'Revisão junto com você.'},
+  {title:'Rotina definida', desc:'O ciclo mensal passa a rodar sozinho.'},
+];
+
+const PAYMENT_METHODS = [
+  {name:'PIX', desc:'A forma mais usada e mais rápida, sem taxa. Ideal para a mensalidade.'},
+  {name:'Cartão de crédito recorrente', desc:'Para parcelar a entrada da implementação, ou automatizar a cobrança mensal.'},
+  {name:'Boleto', desc:'Mais comum quando o cliente precisa de comprovante formal para a contabilidade.'},
+];
+
+function slideProximosPassos(){
+  const steps = PROXIMOS_PASSOS.map((s,i)=>`
+    <div class="step-item">
+      <div class="step-num">${String(i+1).padStart(2,'0')}</div>
+      <div>
+        <div class="step-title">${s.title}</div>
+        <div class="step-desc">${s.desc}</div>
+      </div>
+    </div>`).join('');
+  const pays = PAYMENT_METHODS.map(p=>`
+    <div class="pay-card">
+      <div class="pname">${p.name}</div>
+      <div class="pdesc">${p.desc}</div>
+    </div>`).join('');
+  return `
+  <div class="slide-inner">
+    <div class="eyebrow">Execução</div>
+    <h2>Próximos passos.</h2>
+    <p class="lede">O que acontece a partir de agora, na ordem.</p>
+    <div class="scroll-fade">
+      <div class="steps-list">${steps}</div>
+      <div class="section-sub">Formas de pagamento</div>
+      <div class="pay-grid">${pays}</div>
+      <div class="pay-rule">O trabalho começa com o contrato assinado e o primeiro pagamento confirmado. É prática padrão do mercado, protege os dois lados.</div>
+    </div>
+  </div>`;
+}
+
+function slideEncerramento(){
+  return `
+  <div class="slide-inner closing">
+    <div class="eyebrow">Combinado</div>
+    <div class="pos">Parabéns pelo próximo passo.</div>
+    <p class="lede">Fico feliz com essa conversa, e animado pra ajudar esse negócio a crescer. Um lembrete importante: eu não prometo quantos clientes vão chegar, isso não depende só de mim. O que eu prometo é entregar o melhor trabalho que eu puder, com estratégia por trás de cada entrega.</p>
+    <div class="sign mono">wallaceassis.co — Diagnóstico · Estratégia · Execução</div>
+  </div>`;
+}
+
+/* ============================= SLIDE LIST & STAGES ============================= */
+
+const slides = [
+  {stage:0, render: slideCover},
+  {stage:0, render: slideAbertura},
+  {stage:0, render: slideConceito},
+  ...DIAG_BLOCKS.map((b,i)=>({stage:0, render:()=>slideDiag(b,i)})),
+  {stage:0, render: slideDiagFinal},
+  {stage:1, render: slideSolucoes},
+  {stage:2, render: slidePlanos},
+  {stage:2, render: slideObjFaq},
+  {stage:2, render: slideProximosPassos},
+  {stage:2, render: slideEncerramento},
+];
+const STAGE_LABELS = ['Diagnóstico','Estratégia','Execução'];
+
+/* ============================= RENDER ============================= */
+
+const viewport = document.getElementById('viewport');
+const railEl = document.getElementById('rail');
+const dotsEl = document.getElementById('dots');
+const countEl = document.getElementById('count');
+
+function buildRail(){
+  railEl.innerHTML = STAGE_LABELS.map((label,i)=>`
+    <div class="rail-seg" data-stage="${i}">
+      <div class="track"><div class="fill"></div></div>
+      <div class="label">${label}</div>
+    </div>`).join('');
+}
+
+function buildDots(){
+  dotsEl.innerHTML = slides.map((_,i)=>`<div class="dot" data-i="${i}"></div>`).join('');
+  dotsEl.querySelectorAll('.dot').forEach(d=>d.addEventListener('click', ()=>goTo(+d.dataset.i)));
+}
+
+function renderAll(){
+  viewport.innerHTML = slides.map((s,i)=>`<section class="slide" data-i="${i}">${s.render()}</section>`).join('');
+}
+
+function updateChrome(){
+  document.querySelectorAll('.slide').forEach((el,i)=> el.classList.toggle('active', i===state.slide));
+  document.querySelectorAll('.dot').forEach((el,i)=> el.classList.toggle('active', i===state.slide));
+  countEl.textContent = (state.slide+1) + ' / ' + slides.length;
+  document.getElementById('prevBtn').disabled = state.slide===0;
+  document.getElementById('nextBtn').disabled = state.slide===slides.length-1;
+
+  const curStage = slides[state.slide].stage;
+  document.querySelectorAll('.rail-seg').forEach((seg,i)=>{
+    seg.classList.toggle('active', i===curStage);
+    seg.classList.toggle('done', i<curStage);
+    const fill = seg.querySelector('.fill');
+    if(i<curStage) fill.style.width='100%';
+    else if(i===curStage){
+      const stageSlides = slides.map((s,idx)=>({s,idx})).filter(x=>x.s.stage===i);
+      const firstIdx = stageSlides[0].idx;
+      const lastIdx = stageSlides[stageSlides.length-1].idx;
+      const pct = ((state.slide-firstIdx)/(Math.max(1,lastIdx-firstIdx)))*100;
+      fill.style.width = pct+'%';
+    } else fill.style.width='0%';
+  });
+}
+
+function goTo(i){
+  state.slide = Math.max(0, Math.min(slides.length-1, i));
+  syncDynamicSlides();
+  updateChrome();
+}
+
+/* ---- single delegated click handler, attached once, never duplicated ---- */
+function setupDelegatedHandlers(){
+  viewport.addEventListener('click', (e)=>{
+    const checkItem = e.target.closest('.check-item[data-id]');
+    if(checkItem){
+      const id = checkItem.dataset.id;
+      if(state.checked.has(id)) state.checked.delete(id); else state.checked.add(id);
+      checkItem.querySelector('.box').classList.toggle('checked');
+      return;
+    }
+    const planCard = e.target.closest('[data-plan]');
+    if(planCard){
+      state.selectedPlan = planCard.dataset.plan;
+      refreshSlide(slidePlanos);
+      return;
+    }
+    const addonRow = e.target.closest('[data-addon]');
+    if(addonRow){
+      const id = addonRow.dataset.addon;
+      if(state.selectedAddons.has(id)) state.selectedAddons.delete(id); else state.selectedAddons.add(id);
+      refreshSlide(slidePlanos);
+      return;
+    }
+    const accHead = e.target.closest('.acc-head');
+    if(accHead){
+      accHead.closest('.acc').classList.toggle('open');
+      return;
+    }
+  });
+}
+
+function refreshSlide(renderFn){
+  const idx = slides.findIndex(s=>s.render===renderFn);
+  if(idx<0) return;
+  const el = viewport.querySelector(`.slide[data-i="${idx}"]`);
+  if(el){
+    const wasActive = el.classList.contains('active');
+    el.innerHTML = slides[idx].render();
+    if(wasActive) el.classList.add('active');
+  }
+}
+
+function syncDynamicSlides(){
+  slides.forEach((s,i)=>{
+    if(s.render===slideSolucoes || s.render===slideDiagFinal || s.render===slidePlanos){
+      const el = viewport.querySelector(`.slide[data-i="${i}"]`);
+      if(el){
+        const wasActive = el.classList.contains('active');
+        el.innerHTML = s.render();
+        if(wasActive) el.classList.add('active');
+      }
+    }
+  });
+}
+
+/* ============================= INIT & NAV ============================= */
+
+buildRail();
+buildDots();
+renderAll();
+setupDelegatedHandlers();
+updateChrome();
+
+document.getElementById('prevBtn').addEventListener('click', ()=>goTo(state.slide-1));
+document.getElementById('nextBtn').addEventListener('click', ()=>goTo(state.slide+1));
+document.addEventListener('keydown', (e)=>{
+  const tag = document.activeElement ? document.activeElement.tagName : '';
+  if(tag==='TEXTAREA' || tag==='INPUT') return;
+  if(e.key==='ArrowRight') goTo(state.slide+1);
+  if(e.key==='ArrowLeft') goTo(state.slide-1);
+});
+
+let touchX=null;
+viewport.addEventListener('touchstart', e=>{ touchX = e.touches[0].clientX; });
+viewport.addEventListener('touchend', e=>{
+  if(touchX===null) return;
+  const dx = e.changedTouches[0].clientX - touchX;
+  if(Math.abs(dx)>60){ dx<0 ? goTo(state.slide+1) : goTo(state.slide-1); }
+  touchX=null;
+});
+</script>
+</body>
+</html>

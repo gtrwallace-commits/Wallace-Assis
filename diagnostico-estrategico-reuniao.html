@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Diagnóstico Estratégico Digital</title>
+<meta name="description" content="Descubra o que está limitando o crescimento da sua empresa no digital. Diagnóstico estratégico personalizado em poucos minutos.">
+<style>
+/* =========================================================
+   DESIGN TOKENS — Apple-inspired system
+   Palette: near-white canvas, ink-black text, single system
+   blue accent. Typography: native San Francisco stack.
+   Signature element: Activity-Ring style score gauge.
+   ========================================================= */
+:root{
+  --bg:        #F5F5F7;
+  --surface:   #FFFFFF;
+  --surface-2: #FBFBFD;
+  --line:      rgba(0,0,0,0.08);
+  --line-soft: rgba(0,0,0,0.05);
+  --text:      #1D1D1F;
+  --muted:     #6E6E73;
+  --muted-2:   #86868B;
+  --accent:    #0071E3;
+  --accent-press:#0060C6;
+  --accent-soft: rgba(0,113,227,0.1);
+  --ring-a:    #0A84FF;   /* outer ring — overall score */
+  --ring-b:    #30D158;   /* inner ring — growth potential */
+  --track:     #E8E8ED;
+  --radius-lg: 26px;
+  --radius:    18px;
+  --radius-sm: 12px;
+  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ease: cubic-bezier(.25,.1,.25,1);
+}
+
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+}
+
+::selection{ background:var(--accent-soft); color:var(--text); }
+
+/* =========================================================
+   FRAME / LAYOUT
+   ========================================================= */
+.frame{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  max-width:640px;
+  margin:0 auto;
+  padding:0 20px;
+}
+
+.frame-header{
+  position:sticky;
+  top:0;
+  z-index:10;
+  padding:20px 0 14px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  background:rgba(245,245,247,0.82);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  margin:0 -20px;
+  padding-left:20px;
+  padding-right:20px;
+}
+
+.brand{ display:flex; align-items:center; gap:8px; }
+.brand-mark{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--accent);
+}
+.brand-name{
+  font-size:13px;
+  letter-spacing:-.01em;
+  font-weight:600;
+  color:var(--muted);
+}
+
+.progress-wrap{ display:flex; align-items:center; gap:12px; }
+.progress-track{
+  flex:1;
+  height:4px;
+  background:var(--track);
+  border-radius:4px;
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  width:0%;
+  background:var(--accent);
+  border-radius:4px;
+  transition:width .5s var(--ease);
+}
+.progress-label{
+  font-size:12px;
+  color:var(--muted-2);
+  white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+  font-weight:500;
+}
+
+.stage{
+  flex:1;
+  display:flex;
+  align-items:center;
+  padding:18px 0 40px;
+}
+
+.step{ width:100%; }
+
+.frame-footer{
+  padding:14px 0 28px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  flex-wrap:wrap;
+}
+.footer-note{
+  font-size:11.5px;
+  color:var(--muted-2);
+}
+.btn-back{
+  background:none;border:none;color:var(--accent);
+  font-family:var(--sans); font-size:15px; font-weight:500; cursor:pointer;
+  padding:6px 2px;
+  transition:opacity .2s;
+}
+.btn-back:hover{ opacity:.6; }
+
+/* =========================================================
+   STEP TRANSITION
+   ========================================================= */
+.step-enter{ animation: stepIn .45s var(--ease) both; }
+@keyframes stepIn{
+  from{ opacity:0; transform:translateY(10px) scale(.99); }
+  to{ opacity:1; transform:translateY(0) scale(1); }
+}
+
+/* =========================================================
+   TYPOGRAPHY BLOCKS
+   ========================================================= */
+.eyebrow{
+  font-size:13px;
+  letter-spacing:-.01em;
+  color:var(--accent);
+  margin:0 0 12px;
+  font-weight:600;
+}
+h1.headline{
+  font-weight:700;
+  font-size:clamp(30px,7vw,44px);
+  line-height:1.08;
+  margin:0 0 14px;
+  letter-spacing:-.02em;
+}
+p.subhead{
+  color:var(--muted);
+  font-size:17px;
+  line-height:1.5;
+  margin:0 0 30px;
+  max-width:52ch;
+  font-weight:400;
+}
+h2.q-title{
+  font-weight:700;
+  font-size:clamp(23px,4.6vw,29px);
+  line-height:1.2;
+  margin:0 0 8px;
+  letter-spacing:-.015em;
+}
+p.q-help{
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.5;
+  margin:0 0 24px;
+}
+
+/* Insight microcopy card injected between steps */
+.insight{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  background:var(--surface);
+  border:1px solid var(--line-soft);
+  border-radius:var(--radius);
+  padding:18px 20px;
+  margin:0 0 26px;
+  font-size:15px;
+  line-height:1.5;
+  color:var(--text);
+  box-shadow:0 1px 2px rgba(0,0,0,0.03);
+}
+.insight-icon{ color:var(--accent); font-size:18px; line-height:1.3; margin-top:1px; }
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+.btn{
+  appearance:none;
+  border:none;
+  cursor:pointer;
+  font-family:var(--sans);
+  font-weight:600;
+  font-size:17px;
+  letter-spacing:-.01em;
+  border-radius:980px;
+  padding:16px 28px;
+  transition:transform .15s var(--ease), opacity .15s var(--ease), background .15s;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.btn-primary{
+  background:var(--accent);
+  color:#fff;
+}
+.btn-primary:hover{ background:var(--accent-press); }
+.btn-primary:active{ transform:scale(.97); }
+.btn-primary:disabled{ opacity:.35; cursor:not-allowed; transform:none; }
+.btn-block{ width:100%; }
+.btn-ghost{
+  background:var(--surface);
+  border:1px solid var(--line);
+  color:var(--text);
+}
+.btn-ghost:hover{ background:var(--surface-2); }
+.btn-row{ display:flex; gap:12px; margin-top:8px; flex-wrap:wrap; }
+
+/* =========================================================
+   FORM FIELDS
+   ========================================================= */
+.field{ margin-bottom:22px; }
+.field label{
+  display:block;
+  font-size:13px;
+  color:var(--muted);
+  margin-bottom:8px;
+  font-weight:500;
+}
+.field input{
+  width:100%;
+  background:var(--surface);
+  border:1px solid var(--line);
+  color:var(--text);
+  font-family:var(--sans);
+  font-size:17px;
+  padding:16px 18px;
+  border-radius:var(--radius-sm);
+  outline:none;
+  transition:border-color .2s, box-shadow .2s;
+}
+.field input::placeholder{ color:var(--muted-2); }
+.field input:focus{ border-color:var(--accent); box-shadow:0 0 0 4px var(--accent-soft); }
+.field-error{ color:#FF3B30; font-size:12.5px; margin-top:7px; display:none; }
+.field.invalid input{ border-color:#FF3B30; }
+.field.invalid .field-error{ display:block; }
+
+/* =========================================================
+   CHOICE LIST — grouped iOS-style card
+   ========================================================= */
+.choices{
+  display:flex;
+  flex-direction:column;
+  background:var(--surface);
+  border-radius:var(--radius);
+  overflow:hidden;
+  margin-bottom:20px;
+  box-shadow:0 1px 2px rgba(0,0,0,0.03);
+}
+.choice{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:17px 20px;
+  cursor:pointer;
+  transition:background .15s;
+  font-size:16px;
+  color:var(--text);
+  border-bottom:1px solid var(--line-soft);
+}
+.choices .choice:last-child{ border-bottom:none; }
+.choice:hover{ background:var(--surface-2); }
+.choice:active{ background:var(--accent-soft); }
+.choice.selected{ background:var(--accent-soft); }
+.choice .mark{
+  width:22px;height:22px;flex:none;
+  border-radius:50%;
+  border:1.5px solid var(--track);
+  position:relative;
+  transition:border-color .15s, background .15s;
+}
+.choice.selected .mark{ border-color:var(--accent); background:var(--accent); }
+.choice.selected .mark::before{
+  content:"✓";
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:12px; font-weight:800;
+}
+.choice[data-multi] .mark{ border-radius:6px; }
+
+/* =========================================================
+   PROCESSING SCREEN — signature Apple-style loading
+   ========================================================= */
+.processing{ text-align:center; padding:30px 0; }
+.scanner{
+  position:relative;
+  width:88px;
+  height:88px;
+  margin:0 auto 34px;
+  border-radius:50%;
+}
+.scanner .spin-ring{
+  position:absolute; inset:0;
+  border-radius:50%;
+  border:5px solid var(--track);
+  border-top-color:var(--accent);
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{ to{ transform:rotate(360deg); } }
+.processing-msg{
+  font-size:16px;
+  color:var(--muted);
+  min-height:22px;
+  transition:opacity .3s;
+  font-weight:500;
+}
+.processing-title{
+  font-weight:700;
+  font-size:23px;
+  margin:0 0 6px;
+  letter-spacing:-.015em;
+}
+
+/* =========================================================
+   RESULTS — Activity Ring score gauge
+   ========================================================= */
+.results-head{ text-align:center; margin-bottom:32px; }
+.gauge-rings{
+  position:relative;
+  width:184px; height:184px;
+  margin:0 auto 20px;
+}
+.ring{ position:absolute; border-radius:50%; }
+.ring-outer{
+  inset:0;
+  background:conic-gradient(var(--ring-a) calc(var(--geral,0) * 1%), var(--track) 0);
+  animation:ringIn 1.1s var(--ease) both;
+}
+.ring-outer::after{
+  content:""; position:absolute; inset:16px; border-radius:50%; background:var(--bg);
+}
+.ring-inner{
+  inset:28px;
+  background:conic-gradient(var(--ring-b) calc(var(--potencial,0) * 1%), var(--track) 0);
+  animation:ringIn 1.3s var(--ease) both;
+}
+.ring-inner::after{
+  content:""; position:absolute; inset:14px; border-radius:50%; background:var(--bg);
+}
+@keyframes ringIn{ from{ opacity:0; transform:rotate(-20deg) scale(.9); } to{ opacity:1; transform:rotate(0) scale(1); } }
+.gauge-value{
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:38px;
+  font-weight:700;
+  letter-spacing:-.02em;
+  z-index:1;
+}
+.gauge-value span{ font-size:14px; color:var(--muted); font-weight:600; margin-left:2px; }
+.gauge-legend{ display:flex; justify-content:center; gap:20px; margin-bottom:14px; }
+.gauge-legend-item{ display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--muted); font-weight:500; }
+.gauge-dot{ width:8px; height:8px; border-radius:50%; }
+
+.confetti{ position:absolute; inset:0; pointer-events:none; z-index:2; }
+.confetti-dot{
+  position:absolute; top:50%; left:50%;
+  width:7px; height:7px; border-radius:2px;
+  transform:translate(-50%,-50%) scale(0);
+  animation:confettiBurst .95s cubic-bezier(.22,.9,.34,1) forwards;
+}
+@keyframes confettiBurst{
+  0%{ transform:translate(-50%,-50%) scale(0) rotate(0deg); opacity:1; }
+  70%{ opacity:1; }
+  100%{ transform:translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1) rotate(180deg); opacity:0; }
+}
+.results-label{ color:var(--muted); font-size:15px; line-height:1.5; }
+.results-label b{ color:var(--text); }
+
+.breakdown{ display:flex; flex-direction:column; gap:16px; margin:30px 0; }
+.bd-row{ display:flex; flex-direction:column; gap:7px; }
+.bd-top{ display:flex; justify-content:space-between; font-size:14px; }
+.bd-name{ color:var(--text); font-weight:500; }
+.bd-num{ color:var(--muted); font-variant-numeric:tabular-nums; }
+.bd-track{ height:6px; border-radius:6px; background:var(--track); overflow:hidden; }
+.bd-fill{ height:100%; border-radius:6px; background:var(--accent); width:0%; transition:width 1s var(--ease); }
+
+.report-block{ margin:28px 0; }
+.report-block h3{
+  font-weight:700; font-size:17px;
+  margin:0 0 12px; color:var(--text);
+  letter-spacing:-.01em;
+}
+.report-block ul{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; }
+.report-block li{
+  font-size:15px; line-height:1.5; color:var(--muted);
+  padding-left:20px; position:relative;
+}
+.report-block li::before{
+  content:"–"; position:absolute; left:0; color:var(--accent); font-weight:700;
+}
+
+/* =========================================================
+   RECOMMENDATION
+   ========================================================= */
+.reco-box{
+  background:var(--surface);
+  border-radius:var(--radius);
+  padding:26px 24px;
+  text-align:center;
+  margin:10px 0 30px;
+  box-shadow:0 1px 2px rgba(0,0,0,0.03);
+}
+.reco-box p{ color:var(--muted); font-size:15.5px; line-height:1.55; margin:0; }
+
+/* =========================================================
+   PLANS
+   ========================================================= */
+.launch-note{
+  font-size:12.5px;
+  color:var(--muted-2);
+  background:var(--surface);
+  border-radius:var(--radius-sm);
+  padding:13px 16px;
+  margin-bottom:14px;
+  line-height:1.5;
+}
+.plans{ display:flex; flex-direction:column; gap:14px; margin-top:20px;}
+.plan{
+  position:relative;
+  background:var(--surface);
+  border:1.5px solid transparent;
+  border-radius:var(--radius);
+  padding:22px 22px 20px;
+  cursor:pointer;
+  transition:border-color .2s, transform .15s;
+  box-shadow:0 1px 2px rgba(0,0,0,0.04);
+}
+.plan:hover{ transform:translateY(-2px); }
+.plan.selected{ border-color:var(--accent); }
+.plan.recommended{ border-color:var(--accent-soft); }
+.plan-badge{
+  position:absolute; top:-11px; left:20px;
+  background:var(--accent); color:#fff;
+  font-size:11px; font-weight:700; letter-spacing:0;
+  padding:4px 11px; border-radius:999px;
+}
+.plan-top{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px; }
+.plan-name{ font-weight:700; font-size:19px; letter-spacing:-.01em; }
+.plan-price{ font-size:19px; font-weight:700; color:var(--text); font-variant-numeric:tabular-nums; }
+.plan-price span{ font-size:12px; color:var(--muted); font-weight:500; }
+
+.plan-market{ display:flex; justify-content:space-between; align-items:center; margin:4px 0 6px; flex-wrap:wrap; gap:6px; }
+.plan-market-old{ font-size:12px; color:var(--muted-2); text-decoration:line-through; }
+.plan-market-save{ font-size:11.5px; font-weight:700; color:var(--ring-b); }
+
+.plan ul{ margin:14px 0 0; padding:0; list-style:none; display:flex; flex-direction:column; gap:8px; }
+.plan li{ font-size:14px; color:var(--muted); padding-left:18px; position:relative; }
+.plan li::before{ content:"✓"; position:absolute; left:0; color:var(--accent); font-weight:700; font-size:12px; top:1px; }
+
+/* =========================================================
+   WHATSAPP FINAL SCREEN
+   ========================================================= */
+.wa-final{ text-align:center; }
+.wa-summary{
+  background:var(--surface); border-radius:var(--radius);
+  padding:20px; margin:24px 0;
+  text-align:left; font-size:14px; color:var(--muted);
+  display:flex; flex-direction:column; gap:7px;
+  box-shadow:0 1px 2px rgba(0,0,0,0.03);
+}
+.wa-summary b{ color:var(--text); }
+.btn-whatsapp{
+  background:#30D158; color:#fff;
+}
+.btn-whatsapp:hover{ background:#28B24C; }
+
+/* =========================================================
+   RESUME BANNER
+   ========================================================= */
+.resume-banner{
+  background:var(--surface); border-radius:var(--radius-sm);
+  padding:16px 18px;
+  display:flex; justify-content:space-between; align-items:center;
+  gap:14px; margin-bottom:26px; flex-wrap:wrap;
+  box-shadow:0 1px 2px rgba(0,0,0,0.03);
+}
+.resume-banner p{ margin:0; font-size:14px; color:var(--muted); }
+.resume-banner button{ font-size:14px; padding:11px 18px; }
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width:480px){
+  .frame{ padding:0 16px; }
+  .frame-header{ padding-left:16px; padding-right:16px; margin:0 -16px; }
+  .btn{ font-size:16px; padding:15px 24px; }
+  .gauge-rings{ width:160px; height:160px; }
+  .gauge-value{ font-size:32px; }
+}
+
+/* Focus visibility */
+a:focus-visible, button:focus-visible, input:focus-visible, .choice:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+
+</style>
+</head>
+<body>
+
+  <!-- Fixed diagnostic frame chrome -->
+  <div class="frame">
+    <header class="frame-header" id="frameHeader">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">Diagnóstico Estratégico</span>
+      </div>
+      <div class="progress-wrap" id="progressWrap" hidden>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <span class="progress-label" id="progressLabel">Etapa 1</span>
+      </div>
+    </header>
+
+    <main class="stage" id="stage">
+      <div class="step" id="app-content"></div>
+    </main>
+
+    <footer class="frame-footer">
+      <button class="btn-back" id="btnBack" hidden aria-label="Voltar">← Voltar</button>
+      <span class="footer-note">Suas respostas ficam salvas neste dispositivo enquanto você responde.</span>
+    </footer>
+  </div>
+
+  <script>
+/* =========================================================
+   DIAGNÓSTICO ESTRATÉGICO DIGITAL — engine
+   Vanilla JS, no dependencies. Data-driven step flow with
+   localStorage autosave/resume, scoring engine, and a
+   WhatsApp handoff that carries the full diagnostic.
+   ========================================================= */
+(function () {
+  "use strict";
+
+  /* ---------------------------------------------------------
+     CONFIG
+  --------------------------------------------------------- */
+  const WHATSAPP_NUMBER = "5521982910639"; // +55 21 98291-0639
+  const STORAGE_KEY = "diagnostico_estrategico_v1";
+  const PROCESSING_MS = 3600;
+
+  const PLANS = {
+    essencial: {
+      id: "essencial",
+      name: "Plano Essencial",
+      price: "R$ 1.500/mês",
+      priceValue: 1500,
+      marketPrice: 2400,
+      items: [
+        "8 vídeos por mês",
+        "Estratégia de conteúdo",
+        "Gestão de redes sociais",
+        "1 reunião mensal",
+      ],
+    },
+    profissional: {
+      id: "profissional",
+      name: "Plano Profissional",
+      price: "R$ 2.500/mês",
+      priceValue: 2500,
+      marketPrice: 4200,
+      recommended: true,
+      badge: "Mais escolhido",
+      items: [
+        "12 vídeos por mês",
+        "Estratégia de conteúdo",
+        "Gestão de redes sociais",
+        "1 página simples",
+        "1 reunião mensal",
+        "Otimização de performance",
+      ],
+    },
+    premium: {
+      id: "premium",
+      name: "Plano Premium",
+      price: "R$ 5.500/mês",
+      priceValue: 5500,
+      marketPrice: 9000,
+      items: [
+        "20 vídeos por mês",
+        "Estratégia de conteúdo avançada",
+        "Gestão de redes sociais completa",
+        "1 página otimizada para venda",
+        "Consultoria contínua",
+        "Suporte prioritário",
+        "Reuniões sempre que necessário",
+      ],
+    },
+  };
+
+  function formatBRL(n) {
+    return "R$ " + n.toLocaleString("pt-BR");
+  }
+
+  /* ---------------------------------------------------------
+     STEP DEFINITIONS
+     Each step: { id, type, key, question, help, placeholder,
+                  options, optional, condition }
+     condition(answers) => boolean. Steps without a condition
+     always appear.
+  --------------------------------------------------------- */
+  const hasInsta = (a) => a.temInstagram === "Sim";
+  const noInsta = (a) => a.temInstagram === "Não";
+
+  const STEPS = [
+    { id: "intro", type: "intro" },
+
+    { id: "nome", type: "text", key: "nome",
+      question: "Como você se chama?",
+      placeholder: "Seu nome completo" },
+
+    { id: "empresa", type: "text", key: "empresa",
+      question: "Qual o nome da sua empresa?",
+      placeholder: "Nome da empresa ou marca" },
+
+    { id: "profissao", type: "text", key: "profissao",
+      question: "Qual sua área de atuação?",
+      placeholder: "Ex: barbearia, nail designer, clínica de estética..." },
+
+    { id: "cidade", type: "text", key: "cidade",
+      question: "Em qual cidade sua empresa atua?",
+      placeholder: "Cidade / região" },
+
+    { id: "whatsapp", type: "tel", key: "whatsapp",
+      question: "Qual seu WhatsApp?",
+      help: "Usaremos apenas para enviar o resultado do seu diagnóstico.",
+      placeholder: "(21) 90000-0000" },
+
+    { id: "email", type: "email", key: "email", optional: true,
+      question: "Qual seu e-mail?",
+      help: "Opcional.",
+      placeholder: "seu@email.com" },
+
+    { id: "insight1", type: "insight",
+      text: "A forma como sua empresa se apresenta hoje impacta diretamente o tipo de cliente que você atrai." },
+
+    { id: "temInstagram", type: "single", key: "temInstagram",
+      question: "Você possui um Instagram profissional?",
+      options: ["Sim", "Não"] },
+
+    /* ---------- FLUXO COM INSTAGRAM ---------- */
+    { id: "instaHandle", type: "text", key: "instaHandle", condition: hasInsta,
+      question: "Qual o @ do seu Instagram?",
+      placeholder: "@suaempresa" },
+
+    { id: "tempoAtuacao", type: "single", key: "tempoAtuacao", condition: hasInsta,
+      question: "Há quanto tempo você atua no digital?",
+      options: ["Menos de 6 meses", "6 meses a 1 ano", "1 a 2 anos", "Mais de 2 anos"] },
+
+    { id: "seguidores", type: "single", key: "seguidores", condition: hasInsta,
+      question: "Aproximadamente quantos seguidores você tem?",
+      options: ["Menos de 500", "500 a 2 mil", "2 mil a 10 mil", "Mais de 10 mil"] },
+
+    { id: "frequencia", type: "single", key: "frequencia", condition: hasInsta,
+      question: "Com que frequência você posta conteúdo?",
+      options: ["Raramente", "1x por semana", "2 a 3x por semana", "Quase todos os dias"] },
+
+    { id: "insight2", type: "insight", condition: hasInsta,
+      text: "Consistência de conteúdo é um dos principais fatores de crescimento previsível." },
+
+    { id: "comoChegam", type: "single", key: "comoChegam", condition: hasInsta,
+      question: "Como seus clientes chegam até você hoje?",
+      options: ["Indicação", "Instagram / redes sociais", "Anúncios pagos", "Google / busca", "Não sei dizer"] },
+
+    { id: "objetivo", type: "single", key: "objetivo", condition: hasInsta,
+      question: "Qual seu principal objetivo agora?",
+      options: ["Atrair mais clientes", "Aumentar o ticket médio", "Fortalecer minha marca", "Profissionalizar minha comunicação"] },
+
+    { id: "dificuldade", type: "single", key: "dificuldade", condition: hasInsta,
+      question: "Qual sua maior dificuldade hoje?",
+      options: ["Falta de tempo para postar", "Não sei o que postar", "Poucos resultados com o que já faço", "Falta de identidade visual clara"] },
+
+    { id: "jaContratouAgencia", type: "single", key: "jaContratouAgencia", condition: hasInsta,
+      question: "Você já contratou uma agência ou profissional para cuidar disso?",
+      options: ["Sim", "Não"] },
+
+    { id: "jaInvestiuAds", type: "single", key: "jaInvestiuAds", condition: hasInsta,
+      question: "Você já investiu em anúncios pagos?",
+      options: ["Sim", "Não"] },
+
+    { id: "investimento", type: "single", key: "investimento", condition: hasInsta,
+      question: "Qual seu investimento mensal aproximado em marketing hoje?",
+      options: ["Nenhum", "Até R$ 500", "R$ 500 a R$ 1.500", "Acima de R$ 1.500"] },
+
+    { id: "resultadoEsperado", type: "text", key: "resultadoEsperado", condition: hasInsta,
+      question: "Em uma frase, qual resultado você espera alcançar?",
+      placeholder: "Ex: dobrar o número de clientes em 3 meses" },
+
+    { id: "liveAudit", type: "liveaudit", condition: hasInsta },
+
+    /* ---------- FLUXO SEM INSTAGRAM ---------- */
+    { id: "motivoSemInsta", type: "single", key: "motivoSemInsta", condition: noInsta,
+      question: "Qual o principal motivo de ainda não ter um Instagram profissional?",
+      options: ["Falta de tempo", "Não sei por onde começar", "Não vejo necessidade", "Já tive e abandonei"] },
+
+    { id: "comoConseguemNao", type: "single", key: "comoConseguemNao", condition: noInsta,
+      question: "Como você consegue clientes hoje?",
+      options: ["Indicação de clientes", "Ponto físico / passagem", "Grupos e contatos pessoais", "Outra plataforma online"] },
+
+    { id: "dependeIndicacao", type: "single", key: "dependeIndicacao", condition: noInsta,
+      question: "O quanto seu negócio depende de indicação para crescer?",
+      options: ["Totalmente", "Bastante", "Um pouco", "Quase nada"] },
+
+    { id: "objetivoNao", type: "single", key: "objetivoNao", condition: noInsta,
+      question: "Qual seu objetivo de crescimento para os próximos meses?",
+      options: ["Ter mais previsibilidade de clientes", "Parar de depender só de indicação", "Construir uma marca reconhecida", "Vender mais sem depender do boca a boca"] },
+
+    { id: "insightNao", type: "insight", condition: noInsta,
+      text: "Presença digital estratégica não substitui a indicação: ela multiplica seu alcance e constrói autoridade enquanto você trabalha." },
+
+    /* ---------- FINANCEIRO (comum aos dois fluxos) ---------- */
+    { id: "insightFinanceiro", type: "insight",
+      text: "Entender os números do seu negócio hoje é o primeiro passo para saber exatamente qual caminho leva você aonde quer chegar." },
+
+    { id: "faturamentoAtual", type: "single", key: "faturamentoAtual",
+      question: "Qual seu faturamento médio mensal hoje?",
+      options: ["Até R$ 3.000", "R$ 3.000 a R$ 8.000", "R$ 8.000 a R$ 20.000", "Acima de R$ 20.000"] },
+
+    { id: "ticketMedio", type: "single", key: "ticketMedio",
+      question: "Qual o ticket médio do seu serviço ou produto?",
+      options: ["Até R$ 50", "R$ 50 a R$ 150", "R$ 150 a R$ 400", "Acima de R$ 400"] },
+
+    { id: "faturamentoDesejado", type: "single", key: "faturamentoDesejado",
+      question: "Quanto você gostaria de estar faturando por mês daqui a 1 ano?",
+      options: ["Dobrar o que faturo hoje", "Triplicar o que faturo hoje", "Multiplicar por 5x ou mais", "Ainda não parei pra pensar nisso"] },
+
+    /* ---------- PERGUNTAS DE VERIFICAÇÃO (teste de conhecimento) ---------- */
+    { id: "insightVerificacao", type: "insight",
+      text: "As próximas perguntas ajudam a entender o quanto suas decisões hoje são baseadas em dados — e o quanto ainda dependem de achismo." },
+
+    { id: "conhCusto", type: "single", key: "conhCusto",
+      question: "Você sabe quanto custa, em média, conquistar um cliente novo hoje?",
+      options: ["Sim, sei calcular esse número", "Tenho uma estimativa", "Nunca parei pra calcular isso"] },
+
+    { id: "conhOrigem", type: "single", key: "conhOrigem",
+      question: "Você sabe dizer, com precisão, de onde vêm a maioria dos seus clientes hoje?",
+      options: ["Sim, tenho esse dado claro", "Tenho uma ideia aproximada", "Não sei dizer com certeza"] },
+
+    { id: "conhImpacto", type: "single", key: "conhImpacto",
+      question: "Se você parasse de divulgar seu trabalho por 30 dias, sabe qual seria o impacto real nas suas vendas?",
+      options: ["Sim, tenho essa clareza", "Acho que sim, mas nunca testei", "Não faço ideia"] },
+
+    { id: "autoavaliacao", type: "single", key: "autoavaliacao",
+      question: "Depois dessas perguntas, como você diria que está seu domínio sobre estratégia digital hoje?",
+      options: ["Domino bem, só preciso de execução", "Entendo o básico, mas erro nas decisões", "Sinceramente, não sei quase nada sobre isso"] },
+
+    /* ---------- COMUM ---------- */
+    { id: "servicos", type: "multi", key: "servicos",
+      question: "Quais soluções mais fazem sentido para você?",
+      help: "Selecione quantas fizerem sentido.",
+      options: [
+        "Produção de Vídeos",
+        "Estratégia de Conteúdo",
+        "Gestão de Redes Sociais",
+        "Desenvolvimento de Landing Pages",
+        "Consultoria Estratégica",
+        "Não sei o que preciso (quero recomendação)",
+      ] },
+
+    { id: "processing", type: "processing" },
+    { id: "results", type: "results" },
+    { id: "recommendation", type: "recommendation" },
+    { id: "mercadoServicos", type: "mercado-servicos" },
+    { id: "mercadoPacotes", type: "mercado-pacotes" },
+    { id: "plans", type: "plans" },
+    { id: "whatsapp-final", type: "whatsapp" },
+  ];
+
+  /* ---------------------------------------------------------
+     STATE
+  --------------------------------------------------------- */
+  let state = {
+    answers: {},
+    currentId: "intro",
+    selectedPlan: null,
+    scores: null,
+    report: null,
+  };
+
+  const $content = document.getElementById("app-content");
+  const $progressWrap = document.getElementById("progressWrap");
+  const $progressFill = document.getElementById("progressFill");
+  const $progressLabel = document.getElementById("progressLabel");
+  const $btnBack = document.getElementById("btnBack");
+
+  /* ---------------------------------------------------------
+     PERSISTENCE
+  --------------------------------------------------------- */
+  function persist() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        answers: state.answers,
+        currentId: state.currentId,
+        selectedPlan: state.selectedPlan,
+      }));
+    } catch (e) { /* storage unavailable — fail silently */ }
+  }
+
+  function loadSaved() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+
+  function clearSaved() {
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  }
+
+  /* ---------------------------------------------------------
+     NAVIGATION
+  --------------------------------------------------------- */
+  function getVisible() {
+    return STEPS.filter((s) => !s.condition || s.condition(state.answers));
+  }
+
+  function indexOfCurrent(visible) {
+    const idx = visible.findIndex((s) => s.id === state.currentId);
+    return idx === -1 ? 0 : idx;
+  }
+
+  function goToIndex(idx) {
+    const visible = getVisible();
+    if (idx < 0 || idx >= visible.length) return;
+    state.currentId = visible[idx].id;
+    persist();
+    render(visible[idx], idx, visible.length);
+  }
+
+  function goNext() {
+    const visible = getVisible();
+    goToIndex(indexOfCurrent(visible) + 1);
+  }
+
+  function goBack() {
+    const visible = getVisible();
+    goToIndex(indexOfCurrent(visible) - 1);
+  }
+
+  /* ---------------------------------------------------------
+     RENDER HELPERS
+  --------------------------------------------------------- */
+  function esc(str) {
+    return String(str == null ? "" : str).replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+    }[c]));
+  }
+
+  function updateChrome(idx, total, step) {
+    const hideChrome = step.type === "intro";
+    $progressWrap.hidden = hideChrome;
+    if (!hideChrome) {
+      const pct = Math.round((idx / (total - 1)) * 100);
+      $progressFill.style.width = pct + "%";
+      $progressLabel.textContent = `Etapa ${idx + 1} de ${total}`;
+    }
+    const noBack = ["intro", "processing", "liveaudit"].includes(step.type) || idx === 0;
+    $btnBack.hidden = noBack;
+  }
+
+  function mount(html) {
+    $content.innerHTML = `<div class="step step-enter">${html}</div>`;
+  }
+
+  /* ---------------------------------------------------------
+     STEP RENDERERS
+  --------------------------------------------------------- */
+  function render(step, idx, total) {
+    updateChrome(idx, total, step);
+    const renderers = {
+      intro: renderIntro,
+      text: renderTextLike,
+      tel: renderTextLike,
+      email: renderTextLike,
+      single: renderSingle,
+      multi: renderMulti,
+      insight: renderInsight,
+      liveaudit: renderLiveAudit,
+      processing: renderProcessing,
+      results: renderResults,
+      recommendation: renderRecommendation,
+      "mercado-servicos": renderMercadoServicos,
+      "mercado-pacotes": renderMercadoPacotes,
+      plans: renderPlans,
+      whatsapp: renderWhatsapp,
+    };
+    (renderers[step.type] || renderTextLike)(step);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function renderIntro() {
+    const saved = loadSaved();
+    const canResume = saved && saved.currentId && saved.currentId !== "intro";
+
+    mount(`
+      <p class="eyebrow">Diagnóstico estratégico</p>
+      <h1 class="headline">Descubra o que está limitando o crescimento da sua empresa no digital.</h1>
+      <p class="subhead">Receba um diagnóstico estratégico personalizado em poucos minutos — e entenda exatamente onde estão seus gargalos e suas oportunidades.</p>
+
+      ${canResume ? `
+        <div class="resume-banner">
+          <p>Encontramos um diagnóstico em andamento. Deseja continuar de onde parou?</p>
+          <button class="btn btn-primary" id="btnResume" type="button">Continuar</button>
+        </div>
+      ` : ""}
+
+      <button class="btn btn-primary btn-block" id="btnStart" type="button">Começar Diagnóstico</button>
+    `);
+
+    document.getElementById("btnStart").addEventListener("click", () => {
+      if (canResume) clearSaved();
+      state.answers = {};
+      state.currentId = "intro";
+      goNext();
+    });
+
+    if (canResume) {
+      document.getElementById("btnResume").addEventListener("click", () => {
+        state.answers = saved.answers || {};
+        state.selectedPlan = saved.selectedPlan || null;
+        state.currentId = saved.currentId;
+        const visible = getVisible();
+        const idx = indexOfCurrent(visible);
+        goToIndex(idx);
+      });
+    }
+  }
+
+  function renderInsight(step) {
+    mount(`
+      <div class="insight">
+        <span class="insight-icon">”</span>
+        <span>${esc(step.text)}</span>
+      </div>
+      <button class="btn btn-primary btn-block" id="btnContinue" type="button">Continuar</button>
+    `);
+    document.getElementById("btnContinue").addEventListener("click", goNext);
+  }
+
+  function renderTextLike(step) {
+    const val = state.answers[step.key] || "";
+    const inputType = step.type === "email" ? "email" : step.type === "tel" ? "tel" : "text";
+    mount(`
+      <h2 class="q-title">${esc(step.question)}</h2>
+      ${step.help ? `<p class="q-help">${esc(step.help)}</p>` : ""}
+      <div class="field" id="fieldWrap">
+        <input type="${inputType}" id="fieldInput" placeholder="${esc(step.placeholder || "")}" value="${esc(val)}" autocomplete="on" />
+        <div class="field-error" id="fieldError">Vamos precisar dessa informação para continuar.</div>
+      </div>
+      <button class="btn btn-primary btn-block" id="btnNext" type="button">Continuar</button>
+    `);
+
+    const input = document.getElementById("fieldInput");
+    const wrap = document.getElementById("fieldWrap");
+    input.focus();
+
+    function commit() {
+      const v = input.value.trim();
+      if (!step.optional && v.length < 2) {
+        wrap.classList.add("invalid");
+        return false;
+      }
+      if (step.type === "email" && v && !/^\S+@\S+\.\S+$/.test(v)) {
+        wrap.classList.add("invalid");
+        document.getElementById("fieldError").textContent = "Digite um e-mail válido ou deixe em branco.";
+        return false;
+      }
+      if (step.type === "tel" && v.replace(/\D/g, "").length < 10) {
+        wrap.classList.add("invalid");
+        document.getElementById("fieldError").textContent = "Digite um WhatsApp válido com DDD.";
+        return false;
+      }
+      wrap.classList.remove("invalid");
+      state.answers[step.key] = v;
+      persist();
+      return true;
+    }
+
+    document.getElementById("btnNext").addEventListener("click", () => { if (commit()) goNext(); });
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") { if (commit()) goNext(); } });
+  }
+
+  function renderSingle(step) {
+    const current = state.answers[step.key];
+    mount(`
+      <h2 class="q-title">${esc(step.question)}</h2>
+      ${step.help ? `<p class="q-help">${esc(step.help)}</p>` : ""}
+      <div class="choices" id="choiceList">
+        ${step.options.map((opt, i) => `
+          <div class="choice ${opt === current ? "selected" : ""}" data-value="${esc(opt)}" tabindex="0" role="button">
+            <span>${esc(opt)}</span>
+            <span class="mark"></span>
+          </div>
+        `).join("")}
+      </div>
+    `);
+
+    document.querySelectorAll("#choiceList .choice").forEach((el) => {
+      const pick = () => {
+        state.answers[step.key] = el.dataset.value;
+        persist();
+        goNext();
+      };
+      el.addEventListener("click", pick);
+      el.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+    });
+  }
+
+  function renderMulti(step) {
+    const current = new Set(state.answers[step.key] || []);
+    mount(`
+      <h2 class="q-title">${esc(step.question)}</h2>
+      ${step.help ? `<p class="q-help">${esc(step.help)}</p>` : ""}
+      <div class="choices" id="choiceList">
+        ${step.options.map((opt) => `
+          <div class="choice ${current.has(opt) ? "selected" : ""}" data-multi data-value="${esc(opt)}" tabindex="0" role="button">
+            <span>${esc(opt)}</span>
+            <span class="mark"></span>
+          </div>
+        `).join("")}
+      </div>
+      <button class="btn btn-primary btn-block" id="btnNext" type="button">Continuar</button>
+    `);
+
+    document.querySelectorAll("#choiceList .choice").forEach((el) => {
+      el.addEventListener("click", () => {
+        const v = el.dataset.value;
+        if (current.has(v)) current.delete(v); else current.add(v);
+        el.classList.toggle("selected");
+      });
+    });
+
+    document.getElementById("btnNext").addEventListener("click", () => {
+      state.answers[step.key] = Array.from(current);
+      persist();
+      goNext();
+    });
+  }
+
+  function renderProcessing() {
+    mount(`
+      <div class="processing">
+        <p class="eyebrow">Analisando</p>
+        <h2 class="processing-title">Preparando seu diagnóstico</h2>
+        <div class="scanner"><span class="spin-ring"></span></div>
+        <p class="processing-msg" id="procMsg">Analisando respostas...</p>
+      </div>
+    `);
+
+    const messages = [
+      "Analisando respostas...",
+      "Identificando padrões...",
+      "Avaliando presença digital...",
+      "Cruzando dados de mercado...",
+      "Gerando diagnóstico personalizado...",
+    ];
+    let i = 0;
+    const msgEl = document.getElementById("procMsg");
+    const interval = setInterval(() => {
+      i = (i + 1) % messages.length;
+      msgEl.style.opacity = 0;
+      setTimeout(() => { msgEl.textContent = messages[i]; msgEl.style.opacity = 1; }, 180);
+    }, PROCESSING_MS / messages.length);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      state.scores = computeScores(state.answers);
+      state.report = buildReport(state.answers, state.scores);
+      persist();
+      goNext();
+    }, PROCESSING_MS);
+  }
+
+  function renderResults() {
+    const s = state.scores || computeScores(state.answers);
+    const r = state.report || buildReport(state.answers, s);
+    const nome = state.answers.nome ? state.answers.nome.split(" ")[0] : "";
+
+    const rows = [
+      ["Presença Digital", s.presenca],
+      ["Autoridade", s.autoridade],
+      ["Consistência", s.consistencia],
+      ["Clareza de Comunicação", s.clareza],
+      ["Estratégia", s.estrategia],
+      ["Aquisição de Clientes", s.aquisicao],
+      ["Domínio de Indicadores", s.indicadores],
+      ["Potencial de Crescimento", s.potencial],
+    ];
+
+    mount(`
+      <div class="results-head">
+        <p class="eyebrow">Diagnóstico concluído</p>
+        <div class="gauge-rings" style="--geral:0;--potencial:0" id="gaugeRings">
+          <div class="confetti" id="confetti"></div>
+          <div class="ring ring-outer"></div>
+          <div class="ring ring-inner"></div>
+          <div class="gauge-value" id="gaugeValue">0<span>/100</span></div>
+        </div>
+        <div class="gauge-legend">
+          <span class="gauge-legend-item"><span class="gauge-dot" style="background:var(--ring-a)"></span>Score geral</span>
+          <span class="gauge-legend-item"><span class="gauge-dot" style="background:var(--ring-b)"></span>Potencial de crescimento</span>
+        </div>
+        <p class="results-label">${nome ? `${esc(nome)}, este é o` : "Este é o"} <b>Score de Saúde Digital</b> de ${esc(state.answers.empresa || "sua empresa")}.</p>
+      </div>
+
+      <div class="breakdown">
+        ${rows.map(([label, val]) => `
+          <div class="bd-row">
+            <div class="bd-top"><span class="bd-name">${label}</span><span class="bd-num">${val}/100</span></div>
+            <div class="bd-track"><div class="bd-fill" style="width:${val}%"></div></div>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="report-block">
+        <h3>Pontos fortes</h3>
+        <ul>${r.strengths.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
+      </div>
+      <div class="report-block">
+        <h3>Pontos de atenção</h3>
+        <ul>${r.weaknesses.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
+      </div>
+      <div class="report-block">
+        <h3>Oportunidades identificadas</h3>
+        <ul>${r.opportunities.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
+      </div>
+
+      <button class="btn btn-primary btn-block" id="btnNext" type="button">Ver prioridades e próximos passos</button>
+    `);
+
+    document.getElementById("btnNext").addEventListener("click", goNext);
+
+    animateGaugeReveal(s.geral, s.potencial);
+  }
+
+  function animateGaugeReveal(geral, potencial) {
+    const ringsEl = document.getElementById("gaugeRings");
+    const valueEl = document.getElementById("gaugeValue");
+    const confettiEl = document.getElementById("confetti");
+    if (!ringsEl || !valueEl) return;
+
+    const duration = 1100;
+    const start = performance.now();
+
+    function tick(now) {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const curGeral = Math.round(eased * geral);
+      const curPotencial = Math.round(eased * potencial);
+      ringsEl.style.setProperty("--geral", curGeral);
+      ringsEl.style.setProperty("--potencial", curPotencial);
+      valueEl.innerHTML = `${curGeral}<span>/100</span>`;
+      if (t < 1) {
+        requestAnimationFrame(tick);
+      } else if (confettiEl) {
+        burstConfetti(confettiEl);
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function burstConfetti(container) {
+    const colors = ["var(--ring-a)", "var(--ring-b)", "#FFD60A"];
+    const count = 14;
+    for (let i = 0; i < count; i++) {
+      const dot = document.createElement("span");
+      const angle = (Math.PI * 2 * i) / count + Math.random() * 0.3;
+      const distance = 70 + Math.random() * 50;
+      const x = Math.cos(angle) * distance;
+      const y = Math.sin(angle) * distance;
+      dot.className = "confetti-dot";
+      dot.style.background = colors[i % colors.length];
+      dot.style.setProperty("--x", `${x}px`);
+      dot.style.setProperty("--y", `${y}px`);
+      dot.style.animationDelay = `${Math.random() * 80}ms`;
+      container.appendChild(dot);
+    }
+    setTimeout(() => { container.innerHTML = ""; }, 1400);
+  }
+
+  function renderRecommendation() {
+    const r = state.report || buildReport(state.answers, state.scores);
+    mount(`
+      <p class="eyebrow">Prioridades</p>
+      <h2 class="q-title">O que priorizar agora</h2>
+      <div class="report-block">
+        <ul>${r.priorities.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
+      </div>
+
+      <div class="report-block">
+        <h3>Próximos passos</h3>
+        <ul>${r.nextSteps.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
+      </div>
+
+      <div class="reco-box">
+        <p>Com base no seu diagnóstico, identificamos a solução com maior potencial para gerar resultados no seu cenário atual.</p>
+      </div>
+
+      <button class="btn btn-primary btn-block" id="btnNext" type="button">Ver minha recomendação</button>
+    `);
+    document.getElementById("btnNext").addEventListener("click", goNext);
+  }
+
+  function renderPlans() {
+    const recoId = decidePlan(state.answers, state.scores);
+    if (!state.selectedPlan) state.selectedPlan = recoId;
+
+    const order = ["essencial", "profissional", "premium"];
+    mount(`
+      <p class="eyebrow">Recomendação</p>
+      <h2 class="q-title">O plano pensado pra este momento do seu negócio</h2>
+      <p class="q-help">Os valores são definidos conversando com você, para se ajustarem exatamente ao que faz sentido para ${esc(state.answers.empresa || "sua empresa")}.</p>
+
+      <div class="plans" id="planList">
+        ${order.map((id) => {
+          const p = PLANS[id];
+          const isReco = id === recoId;
+          const isSelected = id === state.selectedPlan;
+          return `
+            <div class="plan ${isSelected ? "selected" : ""} ${isReco ? "recommended" : ""}" data-plan="${id}" tabindex="0" role="button">
+              ${isReco ? `<span class="plan-badge">Recomendado para você</span>` : ""}
+              <div class="plan-top">
+                <span class="plan-name">${p.name}</span>
+              </div>
+              <ul>${p.items.map((it) => `<li>${esc(it)}</li>`).join("")}</ul>
+            </div>
+          `;
+        }).join("")}
+      </div>
+
+      <button class="btn btn-primary btn-block" id="btnNext" type="button" style="margin-top:22px;">Continuar com este plano</button>
+    `);
+
+    document.querySelectorAll("#planList .plan").forEach((el) => {
+      el.addEventListener("click", () => {
+        document.querySelectorAll("#planList .plan").forEach((p) => p.classList.remove("selected"));
+        el.classList.add("selected");
+        state.selectedPlan = el.dataset.plan;
+        persist();
+      });
+    });
+
+    document.getElementById("btnNext").addEventListener("click", () => { persist(); goNext(); });
+  }
+
+  function renderWhatsapp() {
+    const p = PLANS[state.selectedPlan] || PLANS.profissional;
+    const s = state.scores || computeScores(state.answers);
+    mount(`
+      <div class="wa-final">
+        <p class="eyebrow">Última etapa</p>
+        <h2 class="q-title">Seu diagnóstico está pronto</h2>
+        <p class="q-help">Vamos conversar pelo WhatsApp para entender seu cenário com mais detalhes e te apresentar uma proposta sob medida para ${esc(state.answers.empresa || "sua empresa")}.</p>
+
+        <div class="wa-summary">
+          <span><b>Empresa:</b> ${esc(state.answers.empresa || "—")}</span>
+          <span><b>Score geral:</b> ${s.geral}/100</span>
+          <span><b>Plano de interesse:</b> ${p.name}</span>
+        </div>
+
+        <a class="btn btn-whatsapp btn-block" id="btnWhats" target="_blank" rel="noopener">Quero conversar e agendar</a>
+      </div>
+    `);
+
+    document.getElementById("btnWhats").href = buildWhatsappUrl();
+    document.getElementById("btnWhats").addEventListener("click", () => {
+      clearSaved();
+    });
+  }
+
+  function renderLiveAudit(step) {
+    const a = state.answers;
+    const handle = a.instaHandle ? (a.instaHandle.startsWith("@") ? a.instaHandle : `@${a.instaHandle}`) : "seu perfil";
+
+    mount(`
+      <div class="processing">
+        <p class="eyebrow">Verificando ${esc(handle)}</p>
+        <h2 class="processing-title">Cruzando suas respostas com padrões de mercado</h2>
+        <div class="scanner"><span class="spin-ring"></span></div>
+        <p class="processing-msg" id="auditMsg">Lendo frequência de publicação...</p>
+      </div>
+    `);
+
+    const findings = buildAuditFindings(a, handle);
+    const messages = ["Lendo frequência de publicação...", "Cruzando origem dos clientes...", "Calculando pontos de perda..."];
+    let i = 0;
+    const msgEl = document.getElementById("auditMsg");
+    const interval = setInterval(() => {
+      i = (i + 1) % messages.length;
+      msgEl.style.opacity = 0;
+      setTimeout(() => { if (msgEl) { msgEl.textContent = messages[i]; msgEl.style.opacity = 1; } }, 150);
+    }, 900);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      mount(`
+        <p class="eyebrow">Encontramos isto em ${esc(handle)}</p>
+        <h2 class="q-title">O que já dá pra ver antes mesmo do score</h2>
+        <div class="report-block">
+          <ul>${findings.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
+        </div>
+        <p class="q-help">Isso é só a superfície. O diagnóstico completo, com score e plano recomendado, vem a seguir.</p>
+        <button class="btn btn-primary btn-block" id="btnNext" type="button">Ver diagnóstico completo</button>
+      `);
+      document.getElementById("btnNext").addEventListener("click", goNext);
+    }, 2700);
+  }
+
+  function buildAuditFindings(a, handle) {
+    const findings = [];
+    const freqMap = {
+      "Raramente": `${handle} está postando raramente — o algoritmo do Instagram reduz o alcance de contas assim, mesmo para quem já segue o perfil.`,
+      "1x por semana": `Postando 1x por semana, ${handle} aparece pouco na tela de quem já segue — e quase nunca para quem ainda não segue.`,
+    };
+    if (freqMap[a.frequencia]) findings.push(freqMap[a.frequencia]);
+
+    if (a.comoChegam === "Indicação" || a.comoChegam === "Não sei dizer") {
+      findings.push(`${handle} hoje depende de canais fora do próprio Instagram para trazer cliente — o perfil existe, mas não está vendendo sozinho.`);
+    }
+    if (a.jaInvestiuAds === "Não") {
+      findings.push(`${handle} nunca impulsionou conteúdo pago — está disputando espaço só no orgânico, contra contas que investem.`);
+    }
+    if (a.dificuldade === "Não sei o que postar" || a.dificuldade === "Falta de identidade visual clara") {
+      findings.push(`A maior dificuldade apontada (${a.dificuldade.toLowerCase()}) costuma ser sintoma de falta de estratégia de conteúdo, não de falta de esforço.`);
+    }
+    if (a.seguidores === "Menos de 500" || a.seguidores === "500 a 2 mil") {
+      findings.push(`Com o volume de seguidores atual, cada post de ${handle} ainda tem alcance limitado — o problema não é falta de talento, é falta de estrutura.`);
+    }
+
+    if (!findings.length) {
+      findings.push(`${handle} já tem uma base decente, mas as respostas indicam espaço real para transformar seguidores em clientes de forma mais consistente.`);
+    }
+    return findings.slice(0, 4);
+  }
+  function clamp(n) { return Math.max(0, Math.min(100, Math.round(n))); }
+
+  function computeScores(a) {
+    let presenca, autoridade, consistencia, clareza, estrategia, aquisicao;
+
+    const conhMap = { "Sim, sei calcular esse número": 85, "Sim, tenho esse dado claro": 85, "Sim, tenho essa clareza": 85,
+      "Tenho uma estimativa": 50, "Tenho uma ideia aproximada": 50, "Acho que sim, mas nunca testei": 50,
+      "Nunca parei pra calcular isso": 20, "Não sei dizer com certeza": 20, "Não faço ideia": 20,
+      "Domino bem, só preciso de execução": 85, "Entendo o básico, mas erro nas decisões": 50,
+      "Sinceramente, não sei quase nada sobre isso": 12 };
+    const conhScores = [a.conhCusto, a.conhOrigem, a.conhImpacto, a.autoavaliacao].map((v) => conhMap[v] ?? 35);
+    const indicadores = clamp(conhScores.reduce((s, v) => s + v, 0) / conhScores.length);
+
+    if (a.temInstagram === "Sim") {
+      const tempoMap = { "Menos de 6 meses": 20, "6 meses a 1 ano": 45, "1 a 2 anos": 70, "Mais de 2 anos": 90 };
+      const segMap = { "Menos de 500": 15, "500 a 2 mil": 40, "2 mil a 10 mil": 70, "Mais de 10 mil": 90 };
+      const freqMap = { "Raramente": 15, "1x por semana": 40, "2 a 3x por semana": 70, "Quase todos os dias": 90 };
+      const investMap = { "Nenhum": 20, "Até R$ 500": 45, "R$ 500 a R$ 1.500": 65, "Acima de R$ 1.500": 85 };
+      const aquisMap = { "Indicação": 40, "Instagram / redes sociais": 65, "Anúncios pagos": 75, "Google / busca": 60, "Não sei dizer": 25 };
+
+      const tempo = tempoMap[a.tempoAtuacao] ?? 30;
+      const seg = segMap[a.seguidores] ?? 30;
+      const invest = investMap[a.investimento] ?? 20;
+
+      presenca = clamp(tempo * 0.4 + seg * 0.6);
+      consistencia = clamp(freqMap[a.frequencia] ?? 30);
+      autoridade = clamp(tempo * 0.5 + (a.jaContratouAgencia === "Sim" ? 20 : 0) + seg * 0.3);
+      aquisicao = clamp(aquisMap[a.comoChegam] ?? 35);
+      estrategia = clamp((a.jaContratouAgencia === "Sim" ? 25 : 5) + (a.jaInvestiuAds === "Sim" ? 25 : 5) + invest * 0.5);
+      clareza = clamp(a.resultadoEsperado && a.resultadoEsperado.trim().length > 8 ? 65 : 40);
+    } else {
+      const depMap = { "Totalmente": 15, "Bastante": 30, "Um pouco": 55, "Quase nada": 75 };
+      presenca = 12;
+      autoridade = 20;
+      consistencia = 10;
+      estrategia = 15;
+      clareza = 32;
+      aquisicao = clamp(depMap[a.dependeIndicacao] ?? 30);
+    }
+
+    const potencial = clamp((presenca + autoridade + consistencia + clareza + estrategia + aquisicao + indicadores) / 7 + 15);
+    const geral = clamp((presenca + autoridade + consistencia + clareza + estrategia + aquisicao + indicadores + potencial) / 8);
+
+    return { presenca, autoridade, consistencia, clareza, estrategia, aquisicao, indicadores, potencial, geral };
+  }
+
+  /* ---------------------------------------------------------
+     REPORT NARRATIVE
+  --------------------------------------------------------- */
+  const CATS = {
+    presenca: { label: "presença digital",
+      strong: "Sua presença digital já tem uma base perceptível, o que ajuda clientes em potencial a te encontrarem.",
+      weak: "Sua presença digital ainda é pouco visível para quem procura soluções como a sua." },
+    autoridade: { label: "autoridade",
+      strong: "Você já constrói autoridade no seu nicho, o que facilita a confiança do cliente antes mesmo do primeiro contato.",
+      weak: "Falta construir mais autoridade: hoje o cliente tende a decidir mais pelo preço do que pela confiança na marca." },
+    consistencia: { label: "consistência",
+      strong: "Sua consistência de publicação é um ponto forte que sustenta crescimento previsível.",
+      weak: "A falta de consistência na comunicação está limitando o alcance e a lembrança da marca." },
+    clareza: { label: "clareza de comunicação",
+      strong: "Sua comunicação já deixa claro o que você oferece e para quem.",
+      weak: "A comunicação ainda não deixa claro, de forma imediata, o que você faz e para quem." },
+    estrategia: { label: "estratégia",
+      strong: "Existe uma base estratégica sendo aplicada, mesmo que ainda possa ser otimizada.",
+      weak: "Falta uma estratégia estruturada guiando as ações de marketing: hoje as ações parecem isoladas." },
+    aquisicao: { label: "aquisição de clientes",
+      strong: "Você já tem canais de aquisição funcionando, com espaço para diversificar.",
+      weak: "A aquisição de clientes depende de poucos canais, o que traz instabilidade ao negócio." },
+    indicadores: { label: "domínio de indicadores",
+      strong: "Você já tem clareza sobre os números do seu negócio, o que facilita decisões mais assertivas.",
+      weak: "Falta clareza sobre indicadores básicos do negócio: hoje as decisões dependem mais de intuição do que de dados." },
+  };
+
+  const PRIORITY_ACTIONS = {
+    presenca: "Estruturar uma presença digital profissional, com identidade visual e biografia claras.",
+    autoridade: "Produzir conteúdo que demonstre resultado e experiência, para construir confiança antes do contato.",
+    consistencia: "Criar uma rotina de publicação sustentável, mesmo que em ritmo moderado.",
+    clareza: "Revisar a comunicação para deixar evidente o que é oferecido, para quem e com qual resultado.",
+    estrategia: "Estruturar um plano estratégico de conteúdo e aquisição, em vez de ações isoladas.",
+    aquisicao: "Diversificar os canais de aquisição de clientes, reduzindo a dependência de um único canal.",
+    indicadores: "Passar a acompanhar indicadores básicos (custo de aquisição, origem dos clientes, impacto das ações) para decidir com dados, não só com intuição.",
+  };
+
+  function buildReport(a, s) {
+    const empresa = a.empresa || "sua empresa";
+    const cats = ["presenca", "autoridade", "consistencia", "clareza", "estrategia", "aquisicao", "indicadores"];
+
+    const sorted = cats.slice().sort((x, y) => s[y] - s[x]);
+    const strongCats = cats.filter((c) => s[c] >= 65);
+    const weakCats = cats.filter((c) => s[c] < 45);
+
+    const strengths = (strongCats.length ? strongCats : [sorted[0]]).slice(0, 3).map((c) => CATS[c].strong);
+    const weaknesses = (weakCats.length ? weakCats : [sorted[sorted.length - 1]]).slice(0, 3).map((c) => CATS[c].weak);
+
+    const opportunities = [];
+    const weakestTwo = sorted.slice(-2).reverse();
+    opportunities.push(`Corrigir os pontos de atenção identificados pode elevar significativamente o score geral de ${empresa} nos próximos meses.`);
+    weakestTwo.forEach((c) => opportunities.push(PRIORITY_ACTIONS[c]));
+    if (a.temInstagram === "Não") {
+      opportunities.push("Criar uma presença digital estruturada abre um canal de aquisição que hoje simplesmente não existe.");
+    }
+    if (a.faturamentoDesejado && a.faturamentoDesejado !== "Ainda não parei pra pensar nisso") {
+      opportunities.push(`A meta de "${a.faturamentoDesejado.toLowerCase()}" é alcançável, mas exige tratar marketing como estratégia contínua, não como ação isolada.`);
+    }
+    if (a.autoavaliacao === "Sinceramente, não sei quase nada sobre isso") {
+      opportunities.push("Você mesmo reconheceu que ainda não domina estratégia digital — e está tudo bem, esse não é o seu trabalho. É exatamente para isso que existe um profissional dedicado a isso.");
+    }
+
+    const priorities = weakestTwo.map((c, i) => `${i + 1}. ${PRIORITY_ACTIONS[c]}`);
+    priorities.push(`${priorities.length + 1}. Consolidar os pontos fortes já existentes para acelerar resultados com menos esforço.`);
+
+    const plan = decidePlan(a, s);
+    const planName = PLANS[plan].name;
+    const nextSteps = [
+      `Organizar as prioridades acima em um plano de ação com etapas claras e responsáveis.`,
+      `Iniciar a execução com o ${planName}, dimensionado para o cenário atual de ${empresa}.`,
+      `Acompanhar os indicadores mês a mês, ajustando a estratégia conforme os resultados.`,
+    ];
+
+    return { strengths, weaknesses, opportunities, priorities, nextSteps };
+  }
+
+  const MARKET_SERVICES = [
+    { name: "Produção de vídeo (por vídeo)", range: "R$ 150 – R$ 400" },
+    { name: "Estratégia de conteúdo (mensal)", range: "R$ 600 – R$ 1.200" },
+    { name: "Gestão de redes sociais (mensal)", range: "R$ 800 – R$ 1.800" },
+    { name: "Página de vendas / landing page", range: "R$ 800 – R$ 2.500" },
+    { name: "Consultoria estratégica (mensal)", range: "R$ 500 – R$ 1.000" },
+  ];
+
+  const MARKET_PACKAGES = [
+    { name: "Pacote básico", desc: "Produção pontual + gestão simples", range: "R$ 1.800 – R$ 3.000/mês" },
+    { name: "Pacote intermediário", desc: "Produção + estratégia + gestão de redes", range: "R$ 3.000 – R$ 6.000/mês" },
+    { name: "Pacote completo", desc: "Produção + estratégia + gestão + página + consultoria", range: "R$ 6.000 – R$ 12.000/mês" },
+  ];
+
+  function renderMercadoServicos() {
+    mount(`
+      <p class="eyebrow">Referência de mercado</p>
+      <h2 class="q-title">Quanto cada serviço custa avulso hoje</h2>
+      <p class="q-help">Valores praticados por agências e profissionais independentes de produção audiovisual e gestão de redes, contratados separadamente.</p>
+
+      <div class="choices">
+        ${MARKET_SERVICES.map((s) => `
+          <div class="choice" style="cursor:default;">
+            <span>${esc(s.name)}</span>
+            <span class="bd-num" style="font-weight:700;">${esc(s.range)}</span>
+          </div>
+        `).join("")}
+      </div>
+
+      <button class="btn btn-primary btn-block" id="btnNext" type="button">Ver preços de pacotes</button>
+    `);
+    document.getElementById("btnNext").addEventListener("click", goNext);
+  }
+
+  function renderMercadoPacotes() {
+    mount(`
+      <p class="eyebrow">Referência de mercado</p>
+      <h2 class="q-title">Quanto o mercado cobra em pacote</h2>
+      <p class="q-help">Contratar os serviços combinados costuma sair mais barato do que contratar cada um separado — essa é a faixa praticada hoje por agências da região.</p>
+
+      <div class="plans">
+        ${MARKET_PACKAGES.map((p) => `
+          <div class="plan" style="cursor:default;">
+            <div class="plan-top">
+              <span class="plan-name">${esc(p.name)}</span>
+            </div>
+            <p class="q-help" style="margin:2px 0 8px;">${esc(p.desc)}</p>
+            <span class="plan-price" style="font-size:17px;">${esc(p.range)}</span>
+          </div>
+        `).join("")}
+      </div>
+
+      <button class="btn btn-primary btn-block" id="btnNext" type="button" style="margin-top:20px;">Ver minha recomendação</button>
+    `);
+    document.getElementById("btnNext").addEventListener("click", goNext);
+  }
+  function decidePlan(a, s) {
+    const scores = s || computeScores(a);
+    const servicos = (a.servicos || []).filter((x) => x !== "Não sei o que preciso (quero recomendação)");
+    const manyServices = servicos.length >= 3;
+    const highInvestment = a.investimento === "Acima de R$ 1.500";
+    const highAmbition = a.faturamentoDesejado === "Multiplicar por 5x ou mais";
+
+    if (scores.geral < 40 || a.temInstagram === "Não") {
+      return manyServices || highInvestment || highAmbition ? "profissional" : "essencial";
+    }
+    if (scores.geral < 70) {
+      return highInvestment || manyServices || highAmbition ? "premium" : "profissional";
+    }
+    return highInvestment || highAmbition ? "premium" : "profissional";
+  }
+
+  /* ---------------------------------------------------------
+     WHATSAPP MESSAGE
+  --------------------------------------------------------- */
+  function buildWhatsappUrl() {
+    const a = state.answers;
+    const s = state.scores || computeScores(a);
+    const plan = PLANS[state.selectedPlan] || PLANS.profissional;
+    const recoPlan = PLANS[decidePlan(a, s)];
+    const servicos = (a.servicos || []).join(", ") || "—";
+    const instagram = a.temInstagram === "Sim" ? (a.instaHandle || "—") : "não possui Instagram profissional";
+
+    const lines = [
+      "Olá! Finalizei meu diagnóstico estratégico e gostaria de agendar uma conversa para entender melhor a proposta para minha empresa.",
+      "",
+      "*Meus dados*",
+      `Nome: ${a.nome || "—"}`,
+      `Empresa: ${a.empresa || "—"}`,
+      `Profissão: ${a.profissao || "—"}`,
+      `Cidade: ${a.cidade || "—"}`,
+      `Instagram: ${instagram}`,
+      "",
+      "*Resultado do diagnóstico*",
+      `Score geral: ${s.geral}/100`,
+      `Faturamento atual: ${a.faturamentoAtual || "—"}`,
+      `Ticket médio: ${a.ticketMedio || "—"}`,
+      `Meta de faturamento em 1 ano: ${a.faturamentoDesejado || "—"}`,
+      `Serviços de interesse: ${servicos}`,
+      `Plano recomendado: ${recoPlan.name}`,
+      `Plano de interesse: ${plan.name}`,
+    ];
+
+    const text = encodeURIComponent(lines.join("\n"));
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
+  }
+
+  /* ---------------------------------------------------------
+     GLOBAL NAV
+  --------------------------------------------------------- */
+  $btnBack.addEventListener("click", goBack);
+
+  /* ---------------------------------------------------------
+     INIT
+  --------------------------------------------------------- */
+  function init() {
+    const saved = loadSaved();
+    if (saved && saved.answers) {
+      // Keep answers available for the resume banner, but always
+      // land on the intro screen first so the user chooses explicitly.
+      state.answers = {};
+    }
+    goToIndex(0);
+  }
+
+  init();
+})();
+
+</script>
+</body>
+</html>

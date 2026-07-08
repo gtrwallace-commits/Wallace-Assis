@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposta Comercial - Danielle Costa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #5e4a8f;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+
+        header p {
+            color: white;
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: white;
+            font-weight: 400;
+        }
+
+        .intro-section {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            margin-bottom: 50px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .intro-section p {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .intro-section p strong {
+            color: #6b9c7f;
+            font-weight: 700;
+        }
+
+        .intro-section p:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 50px 0 30px 0;
+            color: white;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #6b9c7f;
+        }
+
+        .section-title + p {
+            color: white !important;
+            margin-bottom: 30px !important;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .option-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border-left: 4px solid #6b9c7f;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .option-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .option-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #6b9c7f;
+            margin-bottom: 15px;
+        }
+
+        .option-desc {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .price-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .price-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .price-value {
+            color: #6b9c7f;
+            font-weight: 600;
+        }
+
+        .promotion {
+            background: #f1f8e9;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            border-left: 3px solid #7cb342;
+        }
+
+        .promotion-label {
+            font-size: 12px;
+            color: #558b2f;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .promotion-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #558b2f;
+        }
+
+        .combo-large {
+            background: linear-gradient(135deg, #6b9c7f 0%, #4caf50 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 8px;
+            margin-bottom: 50px;
+        }
+
+        .combo-large .option-title {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .combo-large .price-row {
+            color: white;
+        }
+
+        .combo-large .price-label {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .combo-large .price-value {
+            color: white;
+        }
+
+        .combo-large .promotion {
+            background: rgba(255,255,255,0.2);
+            border-left-color: white;
+        }
+
+        .combo-large .promotion-label {
+            color: white;
+        }
+
+        .combo-large .promotion-value {
+            color: white;
+        }
+
+        .full-width-section {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .options-full {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .options-full {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .option-vertical {
+            padding: 25px;
+            border: 1px solid #e0dcd6;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .option-vertical:hover {
+            border-color: #6b9c7f;
+            background: #f0f6f3;
+        }
+
+        .option-vertical.recommended {
+            background: #f0f6f3;
+            border: 2px solid #6b9c7f;
+        }
+
+        .recommended-badge {
+            display: inline-block;
+            background: #6b9c7f;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .option-vertical .option-title {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .option-vertical .option-desc {
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .final-cta {
+            background: #6b9c7f;
+            color: white;
+            padding: 40px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .final-cta p {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .final-cta p:last-child {
+            margin-bottom: 0;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+        }
+
+        footer p {
+            color: white;
+        }
+
+        .highlight {
+            color: #ffd54f;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Proposta Comercial</h1>
+            <p class="subtitle">Danielle Costa — Psicóloga</p>
+        </header>
+
+        <div class="intro-section">
+            <p>Baseado em pesquisa de mercado, um padrão é claro: psicólogos que crescem mais não têm necessariamente mais capacidade técnica. Têm <strong>melhor visibilidade e credibilidade digital</strong>.</p>
+            <p>Um potencial paciente procura "psicólogo especializado" ou "terapia para ansiedade" e encontra você com presença profissional, ou encontra um concorrente melhor posicionado? Essa é geralmente a diferença entre ter fila de espera ou ter agenda vazia.</p>
+        </div>
+
+        <div class="intro-section">
+            <p><strong>O cenário atual:</strong> O mercado de psicologia está aquecido. Quem aparece profissionalmente — com portfólio de confiança, conteúdo educativo de qualidade, atendimento claro — tende a capturar mais pacientes.</p>
+            <p>Se você não está com essa estrutura, está deixando pacientes em potencial passarem por seus concorrentes.</p>
+        </div>
+
+        <div class="intro-section">
+            <p><strong>A solução:</strong> Dois produtos que trabalham juntos:</p>
+            <p style="margin-top: 15px; padding-left: 20px;">
+                1. Duas páginas profissionais (sua página de apresentação + sua agenda online com chatbot inteligente)<br>
+                2. Videomaker estratégico (conteúdo educativo que gera confiança e atrai pacientes)
+            </p>
+        </div>
+
+        <!-- OPÇÃO 1 -->
+        <h2 class="section-title">Opção 1: Apenas as Páginas</h2>
+        <p>Se você quer começar com uma presença digital profissional</p>
+
+        <div class="options-grid">
+            <div class="option-card">
+                <div class="option-title">Página 1 — Perfil Profissional + Contatos</div>
+                <div class="option-desc">Sua apresentação profissional, especialidades, abordagens, modo de contato direto</div>
+                <div class="price-row">
+                    <span class="price-label">Mercado:</span>
+                    <span class="price-value">R$ 2.800</span>
+                </div>
+                <div class="price-row">
+                    <span class="price-label">Desconto 20%:</span>
+                    <span class="price-value">R$ 2.240</span>
+                </div>
+                <div class="promotion">
+                    <div class="promotion-label">Promoção - Fechando Agora</div>
+                    <div class="promotion-value">R$ 1.800</div>
+                </div>
+            </div>
+
+            <div class="option-card">
+                <div class="option-title">Página 2 — Agenda Online + Chatbot IA</div>
+                <div class="option-desc">Agenda interativa, IA respondendo perguntas frequentes, integração segura</div>
+                <div class="price-row">
+                    <span class="price-label">Mercado:</span>
+                    <span class="price-value">R$ 3.840</span>
+                </div>
+                <div class="price-row">
+                    <span class="price-label">Desconto 20%:</span>
+                    <span class="price-value">R$ 3.072</span>
+                </div>
+                <div class="promotion">
+                    <div class="promotion-label">Promoção - Fechando Agora</div>
+                    <div class="promotion-value">R$ 2.600</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="combo-large">
+            <div class="option-title">Combo (Páginas 1 + 2)</div>
+            <p style="color: rgba(255,255,255,0.9); margin-bottom: 20px; font-size: 15px;">Feche as duas páginas agora e economize mais</p>
+            <div class="price-row">
+                <span class="price-label">Subtotal com Desconto:</span>
+                <span class="price-value">R$ 5.312</span>
+            </div>
+            <div class="promotion">
+                <div class="promotion-label">Promoção - Fechando Agora</div>
+                <div class="promotion-value">R$ 3.900</div>
+                <p style="color: rgba(255,255,255,0.8); font-size: 13px; margin-top: 10px;">Você economiza R$ 1.412 <strong style="color: #ffd54f;">(26,6% de desconto)</strong></p>
+            </div>
+        </div>
+
+        <!-- OPÇÃO 2 -->
+        <h2 class="section-title">Opção 2: Páginas + Videomaker Estratégico</h2>
+        <p>A estrutura completa — Presença profissional + conteúdo educativo que atrai pacientes</p>
+
+        <div class="full-width-section">
+            <div class="options-full">
+                <div class="option-vertical">
+                    <div class="option-title">Básico</div>
+                    <div class="option-desc">4 vídeos estratégicos/mês (dicas, psicoeducação) + 2 páginas profissionais</div>
+                    
+                    <div style="background: #f0f6f3; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                        <div class="price-row" style="margin-bottom: 8px;">
+                            <span class="price-label">Páginas (uma vez):</span>
+                            <span class="price-value">R$ 3.900</span>
+                        </div>
+                        <div class="price-row">
+                            <span class="price-label">Videomaker/mês:</span>
+                            <span class="price-value">R$ 1.920</span>
+                        </div>
+                    </div>
+                    
+                    <div class="price-row">
+                        <span class="price-label"><strong>1º Mês (com desconto):</strong></span>
+                        <span class="price-value"><strong>R$ 4.947</strong></span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-label">Próximos meses:</span>
+                        <span class="price-value">R$ 1.920/mês</span>
+                    </div>
+                </div>
+
+                <div class="option-vertical">
+                    <div class="option-title">Intermediário</div>
+                    <div class="option-desc">8 vídeos estratégicos/mês + 2 páginas + relatório mensal de engajamento</div>
+                    
+                    <div style="background: #f0f6f3; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                        <div class="price-row" style="margin-bottom: 8px;">
+                            <span class="price-label">Páginas (uma vez):</span>
+                            <span class="price-value">R$ 3.900</span>
+                        </div>
+                        <div class="price-row">
+                            <span class="price-label">Videomaker/mês:</span>
+                            <span class="price-value">R$ 2.880</span>
+                        </div>
+                    </div>
+                    
+                    <div class="price-row">
+                        <span class="price-label"><strong>1º Mês (com desconto):</strong></span>
+                        <span class="price-value"><strong>R$ 5.763</strong></span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-label">Próximos meses:</span>
+                        <span class="price-value">R$ 2.880/mês</span>
+                    </div>
+                </div>
+
+                <div class="option-vertical recommended">
+                    <div class="recommended-badge">⭐ Mais Escolhido</div>
+                    <div class="option-title">Completo</div>
+                    <div class="option-desc">12 vídeos estratégicos/mês + 2 páginas + análise de estratégia + chatbot 24/7</div>
+                    
+                    <div style="background: #f0f6f3; padding: 15px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #6b9c7f;">
+                        <div class="price-row" style="margin-bottom: 8px;">
+                            <span class="price-label">Páginas (uma vez):</span>
+                            <span class="price-value">R$ 3.900</span>
+                        </div>
+                        <div class="price-row">
+                            <span class="price-label">Videomaker/mês:</span>
+                            <span class="price-value">R$ 3.840</span>
+                        </div>
+                    </div>
+                    
+                    <div class="price-row">
+                        <span class="price-label"><strong>1º Mês (com desconto):</strong></span>
+                        <span class="price-value"><strong>R$ 6.579</strong></span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-label">Próximos meses:</span>
+                        <span class="price-value">R$ 3.840/mês</span>
+                    </div>
+                </div>
+
+                <div class="option-vertical">
+                    <div class="option-title">Tudo Tudo</div>
+                    <div class="option-desc">16 vídeos estratégicos/mês + 2 páginas + análise profunda + suporte direto</div>
+                    
+                    <div style="background: #f0f6f3; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                        <div class="price-row" style="margin-bottom: 8px;">
+                            <span class="price-label">Páginas (uma vez):</span>
+                            <span class="price-value">R$ 3.900</span>
+                        </div>
+                        <div class="price-row">
+                            <span class="price-label">Videomaker/mês:</span>
+                            <span class="price-value">R$ 4.800</span>
+                        </div>
+                    </div>
+                    
+                    <div class="price-row">
+                        <span class="price-label"><strong>1º Mês (com desconto):</strong></span>
+                        <span class="price-value"><strong>R$ 7.395</strong></span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-label">Próximos meses:</span>
+                        <span class="price-value">R$ 4.800/mês</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="intro-section">
+            <strong>Por que funciona:</strong>
+            <p style="margin-top: 15px;">✓ Sua página aparece quando pacientes buscam por você<br>
+            ✓ Seus vídeos educativos geram confiança e posicionam você como especialista<br>
+            ✓ Seu chatbot responde perguntas frequentes enquanto você atende pacientes<br>
+            ✓ Tudo integrado, seguro e profissional</p>
+        </div>
+
+        <div class="intro-section" style="background: #f0f6f3; border-left: 4px solid #6b9c7f;">
+            <strong style="color: #6b9c7f;">Sobre o timing:</strong>
+            <p style="margin-top: 10px;">Essa promoção é para quem decide nos próximos dias. Depois voltamos aos valores normais.</p>
+        </div>
+
+        <div class="final-cta">
+            <p>Bora conversar?</p>
+        </div>
+
+        <footer>
+            <p>Wallace Assis | Videomaker Estratégico</p>
+        </footer>
+    </div>
+</body>
+</html>
